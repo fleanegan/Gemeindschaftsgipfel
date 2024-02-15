@@ -1,15 +1,19 @@
 using Kompetenzgipfel.Models;
+using Kompetenzgipfel.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddDbContext<Database>(options =>
 {
     var config = builder.Configuration;
     var connectionString = config.GetConnectionString("database");
     options.UseSqlite(connectionString);
 });
+builder.Services.AddCors();
+builder.Services.AddScoped<TopicRepository, TopicRepository>();
+builder.Services.AddScoped<ITopicService, TopicService>();
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -26,11 +30,20 @@ else
     app.UseHsts();
 }
 
+app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 app.Run();
+
+public partial class Program
+{
+} // needed for testing
