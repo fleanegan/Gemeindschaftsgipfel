@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {RouterLink, RouterView} from 'vue-router'
 </script>
 
@@ -7,8 +7,11 @@ import {RouterLink, RouterView} from 'vue-router'
     <nav>
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/login">Login</RouterLink>
+      <RouterLink to="/topic">Vortragsthemen</RouterLink>
     </nav>
   </header>
+  <br>
   <RouterView/>
 </template>
 

@@ -11,9 +11,11 @@ public class AuthController(AuthService authService) : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<string> Login([FromBody] LoginDto loginData)
+    public async Task<IActionResult> Login([FromBody] LoginDto loginData)
     {
-        return await authService.Login(loginData);
+        var result = await authService.Login(loginData);
+        if (result == "") return new UnauthorizedResult();
+        return Ok(result);
     }
 
     [HttpPost]

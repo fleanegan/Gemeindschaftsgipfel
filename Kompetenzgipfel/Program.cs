@@ -77,7 +77,7 @@ app.MapIdentityApi<User>();
 app.MapControllerRoute(
     "default",
     "{controller=Home}/{action=Index}/{id?}");
-app.MapGet("/protected", (HttpContext httpContext) => "successfully received protected data")
+app.MapGet("/protected", (HttpContext httpContext) => "J'ai le meilleur Sab")
     .WithName("GetWeatherForecast")
     .RequireAuthorization();
 app.Run();

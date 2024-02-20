@@ -12,6 +12,7 @@
 import {ref} from 'vue';
 import axios from 'axios';
 
+
 const apiResult = ref("not fetched yet");
 
 const postData = async () => {
