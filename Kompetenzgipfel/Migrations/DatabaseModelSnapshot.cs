@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Kompetenzgipfel.Migrations
 {
-    [DbContext(typeof(Database))]
+    [DbContext(typeof(DatabaseContextDomain))]
     partial class DatabaseModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

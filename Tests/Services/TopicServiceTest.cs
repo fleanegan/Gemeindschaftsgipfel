@@ -1,7 +1,7 @@
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 
-namespace Tests;
+namespace Tests.Services;
 
 public class TopicServiceTest
 {
@@ -9,7 +9,7 @@ public class TopicServiceTest
     {
         if (topicRepository == null)
         {
-            using var dbContext = TestHelper.GetDbContext();
+            using var dbContext = TestHelper.GetDbContext<DatabaseContextDomain>();
             topicRepository = new TopicRepository(dbContext);
         }
 
@@ -19,13 +19,13 @@ public class TopicServiceTest
     [Theory]
     [InlineData("Correct title", "")]
     [InlineData("Correct title", "Non empty but also correct title")]
-    public void Test_add_GIVEN_correct_input_THEN_store_in_db(string title, string description)
+    public async void Test_add_GIVEN_correct_input_THEN_store_in_db(string title, string description)
     {
-        using var dbContext = TestHelper.GetDbContext();
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextDomain>();
         var repository = new TopicRepository(dbContext);
         var service = GetService(repository);
 
-        service.AddTopic(Topic.Create(title, description));
+        await service.AddTopic(Topic.Create(title, description));
 
         var result = repository.GetAll().FirstOrDefault(topic => topic.Title == title);
         Assert.NotNull(result);

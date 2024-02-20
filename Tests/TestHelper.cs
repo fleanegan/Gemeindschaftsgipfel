@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using Kompetenzgipfel.Models;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,19 +7,25 @@ namespace Tests;
 
 internal abstract class TestHelper
 {
-    public static Database GetDbContext()
+    public static T GetDbContext<T>() where T : DbContext
+    {
+        var options = GetDbContextOptions<T>();
+
+        var dbContext = (T)Activator.CreateInstance(typeof(T), options)!;
+        dbContext.Database.EnsureCreated();
+
+        return dbContext;
+    }
+
+    public static DbContextOptions GetDbContextOptions<T>() where T : DbContext
     {
         var connection = new SqliteConnection("DataSource=:memory:");
         connection.Open();
 
-        var options = new DbContextOptionsBuilder<Database>()
+        var options = new DbContextOptionsBuilder<T>()
             .UseSqlite(connection)
             .Options;
-
-        var dbContext = new Database(options);
-        dbContext.Database.EnsureCreated();
-
-        return dbContext;
+        return options;
     }
 
     public static StringContent encodeBody(object value)

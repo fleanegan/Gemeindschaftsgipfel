@@ -1,6 +1,6 @@
 namespace Kompetenzgipfel.Models;
 
-public class TopicRepository(Database dbContext)
+public class TopicRepository(DatabaseContextDomain dbContext)
 {
     public IEnumerable<Topic> GetAll()
     {

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Kompetenzgipfel.Migrations
 {
-    [DbContext(typeof(Database))]
+    [DbContext(typeof(DatabaseContextDomain))]
     [Migration("20240205213443_Initial")]
     partial class Initial
     {

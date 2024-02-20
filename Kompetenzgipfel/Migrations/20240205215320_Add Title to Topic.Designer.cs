@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Kompetenzgipfel.Migrations
 {
-    [DbContext(typeof(Database))]
+    [DbContext(typeof(DatabaseContextDomain))]
     [Migration("20240205215320_Add Title to Topic")]
     partial class AddTitletoTopic
     {
