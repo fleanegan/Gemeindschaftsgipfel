@@ -39,6 +39,7 @@ public class AuthService
         if (foundUser != null &&
             _passwordHasher.VerifyHashedPassword(foundUser, foundUser.PasswordHash, userInput.Password) ==
             PasswordVerificationResult.Success)
+            // todo: add username claim to claims list ClaimTypes.Name, "TestUser"
             return _jwtGenerationService.Generate(new List<Claim>());
 
         return "";

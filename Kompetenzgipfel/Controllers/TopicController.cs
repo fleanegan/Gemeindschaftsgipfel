@@ -1,5 +1,6 @@
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kompetenzgipfel.Controllers;
@@ -27,6 +28,7 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> AddNew([FromBody] TopicDto toBeAdded)
     {
         try

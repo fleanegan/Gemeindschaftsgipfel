@@ -20,7 +20,8 @@ public class AuthController(AuthService authService) : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IdentityResult> SignUp([FromBody] SignupDto signupData)
+    public async Task<IdentityResult> SignUp(
+        [FromBody] SignupDto signupData)
     {
         return await authService.SignUp(signupData);
     }

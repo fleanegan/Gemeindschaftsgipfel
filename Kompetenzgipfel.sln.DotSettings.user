@@ -300,9 +300,18 @@
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a70fffca_002D39c6_002D4921_002Db31f_002Dcaa783326eac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AuthServiceTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Services.AuthServiceTest&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
+  &lt;And&gt;
+    &lt;TestAncestor&gt;
+      &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Services.AuthServiceTest&lt;/TestId&gt;
+      &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Controllers.TopicControllerTest&lt;/TestId&gt;
+    &lt;/TestAncestor&gt;
+    &lt;Not&gt;
+      &lt;And&gt;
+        &lt;Namespace&gt;Tests.Services&lt;/Namespace&gt;
+        &lt;Project Location="/home/jeanpierre/RiderProjects/Kompetenzgipfel/Tests" Presentation="&amp;lt;Tests&amp;gt;" /&gt;
+      &lt;/And&gt;
+    &lt;/Not&gt;
+  &lt;/And&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a8883b27_002D1548_002D49a8_002D9623_002D8573af80934b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #6" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
