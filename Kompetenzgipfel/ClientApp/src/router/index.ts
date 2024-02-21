@@ -34,8 +34,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const authStore = useAuthStore(); // Move this inside the beforeEach guard
     if (to.meta.requiresAuth !== false && !authStore.token) {
-        // Redirect to login page if authentication is required but token is empty
-        next('/login');
+        next({
+                path: '/login',
+                query: {redirect: to.fullPath}
+            }
+        );
     } else {
         // Continue navigation
         next();

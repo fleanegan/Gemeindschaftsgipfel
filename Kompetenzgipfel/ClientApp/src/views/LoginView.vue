@@ -10,10 +10,6 @@
         <label for="password">Password:</label>
         <input id="password" v-model="password" type="password"/>
       </div>
-      <div>
-        <label for="result">Result:</label>
-        <textarea id="result" v-model="result" type="text"/>
-      </div>
       <button type="submit">Login</button>
     </form>
   </div>
@@ -29,7 +25,6 @@ export default defineComponent({
         return {
           username: '',
           password: '',
-          result: ''
         };
       },
       methods: {
@@ -44,14 +39,14 @@ export default defineComponent({
 
             if (response.status >= 200 && response.status < 300) {
               const responseData = response.data
-              this.result = responseData
               useAuthStore().login(responseData);
-              // Redirect or perform any other action after successful login
-              console.log('Logged in successfully!');
+              let routeToPush = {path: '/'};
+              if (this.$route.query.redirect) {
+                routeToPush = {path: this.$route.query.redirect as string};
+              }
+              this.$router.push(routeToPush);
             }
           } catch {
-            this.result = 'fail'
-            console.log('Failed!');
           }
         }
       },
