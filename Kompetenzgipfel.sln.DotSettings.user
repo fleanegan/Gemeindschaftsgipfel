@@ -2,12 +2,11 @@
 	<s:Boolean x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/ShowAdvancedOptions/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=0EC33736_002D9669_002D40A3_002D932E_002DC273C5FF7E2C/@EntryIndexedValue">E9994B44-FB61-456B-BD53-5DDFF0FA4900</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=05888842_002D8db1_002D4d76_002Da499_002D114c0a168a50/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Tests&amp;gt; #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Project Location="/home/jeanpierre/RiderProjects/Kompetenzgipfel/Tests" Presentation="&amp;lt;Tests&amp;gt;" /&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d8a343a9_002Dc945_002D4f01_002Dbee0_002D34e187da5736/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=74581f3f_002Df9db_002D4bd0_002Da6ba_002D9e185a9f17a3/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Project Location="/home/jeanpierre/RiderProjects/Kompetenzgipfel/Tests" Presentation="&amp;lt;Tests&amp;gt;" /&gt;
-&lt;/SessionState&gt;</s:String>
+	
+	
 	
 	
 	

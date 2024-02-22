@@ -23,7 +23,7 @@ public class Topic
 
     public User Presenter { get; set; }
 
-    public static Topic Create(string title, string description, User user)
+    public static Topic? Create(string title, string description, User user)
     {
         var model = new Topic { Title = title, Description = description, Presenter = user };
         Validator.ValidateObject(model, new ValidationContext(model), true);
