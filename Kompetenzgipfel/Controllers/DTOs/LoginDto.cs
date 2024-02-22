@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Kompetenzgipfel.Controllers;
 
-public class LoginDto
+public class LoginDto(string userName, string password)
 {
-    public string? UserName { get; set; }
-    public string? Password { get; set; }
+    [Required] public string UserName { get; } = userName;
+
+    [Required] public string Password { get; } = password;
 }

@@ -35,7 +35,7 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
         try
         {
             var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-            var result = await service.AddTopic(toBeAdded, userName);
+            var result = await service.AddTopic(toBeAdded, userName!);
 
             return Ok(new TopicCreationResponse(result.Title, result.Description, userName));
         }

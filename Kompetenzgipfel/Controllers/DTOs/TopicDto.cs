@@ -1,7 +1,10 @@
-namespace Kompetenzgipfel.Controllers;
+using System.ComponentModel.DataAnnotations;
 
-public class TopicDto
+namespace Kompetenzgipfel.Controllers.DTOs;
+
+public class TopicDto(string description, string title)
 {
-    public string Description { get; set; }
-    public string Title { get; set; }
+    [Required] public string Description { get; } = description;
+
+    [Required] public string Title { get; } = title;
 }

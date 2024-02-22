@@ -1,4 +1,5 @@
 using Kompetenzgipfel.Controllers;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Identity;
@@ -21,13 +22,13 @@ public class TopicServiceTest
         var userManager = await CannotInjectUserStoreDirectlySoWrappingInUserManager(userStore, userName);
         var service = new TopicService(repository, userManager.Object);
 
-        await service.AddTopic(new TopicDto { Title = title, Description = description }, userName);
+        await service.AddTopic(new TopicDto(description, title), userName);
 
         var result = repository.GetAll().FirstOrDefault(topic => topic.Title == title);
         Assert.NotNull(result);
         Assert.Equal(title, result.Title);
         Assert.Equal(description, result.Description);
-        Assert.Equal(userName, result.Creator.UserName);
+        Assert.Equal(userName, result.Presenter.UserName);
     }
 
     private static async Task<Mock<UserManager<User>>> CannotInjectUserStoreDirectlySoWrappingInUserManager(

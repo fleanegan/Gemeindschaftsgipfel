@@ -1,4 +1,5 @@
 using Kompetenzgipfel.Controllers;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Microsoft.AspNetCore.Identity;
 

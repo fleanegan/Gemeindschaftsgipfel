@@ -1,4 +1,5 @@
 using Kompetenzgipfel.Controllers;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 
 namespace Kompetenzgipfel.Services;

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Kompetenzgipfel.Controllers;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Properties;
 using Kompetenzgipfel.Services;

@@ -28,12 +28,7 @@ public class AuthServiceTest
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto
-        {
-            Passphrase = _theRightPassphrase,
-            UserName = _defaultUserName,
-            Password = _defaultPassword
-        };
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightPassphrase);
 
         await service.SignUp(userInput);
 
@@ -47,12 +42,7 @@ public class AuthServiceTest
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto
-        {
-            Passphrase = _theRightPassphrase,
-            UserName = _defaultUserName,
-            Password = _defaultPassword
-        };
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightPassphrase);
 
 
         var result = await service.SignUp(userInput);
@@ -67,12 +57,7 @@ public class AuthServiceTest
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto
-        {
-            Passphrase = "wrong passphrase",
-            UserName = _defaultUserName,
-            Password = _defaultPassword
-        };
+        var userInput = new SignupDto("wrong passphrase", _defaultUserName, _defaultPassword);
 
         var result = await service.SignUp(userInput);
 
@@ -88,31 +73,8 @@ public class AuthServiceTest
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto
-        {
-            Passphrase = Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE"),
-            UserName = "",
-            Password = _defaultPassword
-        };
-
-        var result = await service.SignUp(userInput);
-
-        Assert.Single(result.Errors);
-        Assert.Equal("InvalidUserName", result.Errors.ToArray()[0].Code);
-        Assert.Equal(0, userManager.Users.Count());
-    }
-
-    [Fact]
-    public async Task Test_SignUp_GIVEN_malformed_user_input_THEN_return_unsuccessful()
-    {
-        var userManager = TestHelper.GetIntegrationInMemoryUserManager();
-        var service = new AuthService(userManager, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto
-        {
-            Passphrase = Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE"),
-            Password = _defaultPassword
-        };
+        var userInput = new SignupDto("", _defaultPassword,
+            Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE"));
 
         var result = await service.SignUp(userInput);
 
@@ -128,10 +90,10 @@ public class AuthServiceTest
         var jwtGenerationService = TestHelper.GetJwtGenerationService();
         var service = new AuthService(userManager, new PasswordHasher<User>(), jwtGenerationService.Object);
         var userInput = new LoginDto
-        {
-            UserName = "non-existing UserName",
-            Password = "Cmplex$nough"
-        };
+        (
+            "non-existing UserName",
+            "Complex enough!1#"
+        );
 
         var result = await service.Login(userInput);
 
@@ -152,13 +114,12 @@ public class AuthServiceTest
         var expectedJwt = "expected JWT";
         var jwtGenerationService = TestHelper.GetJwtGenerationService(expectedJwt);
         var service = new AuthService(userManager, passwordHasher.Object, jwtGenerationService.Object);
-        await service.SignUp(new SignupDto
-            { Passphrase = _theRightPassphrase, UserName = _defaultUserName, Password = _defaultPassword });
+        await service.SignUp(new SignupDto(_defaultUserName, _defaultPassword, _theRightPassphrase));
         var userInput = new LoginDto
-        {
-            UserName = _defaultUserName,
-            Password = _defaultPassword
-        };
+        (
+            _defaultUserName,
+            _defaultPassword
+        );
 
         var result = await service.Login(userInput);
 
