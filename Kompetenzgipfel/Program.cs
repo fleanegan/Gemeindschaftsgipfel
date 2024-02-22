@@ -34,21 +34,17 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddControllers();
 //todo: find a way to get from .env
 var databaseName = "database";
-builder.Services.AddDbContext<DatabaseContextDomain>(options =>
-{
-    var config = builder.Configuration;
-    var connectionString = config.GetConnectionString(databaseName);
-    options.UseSqlite(connectionString);
-});
-builder.Services.AddDbContext<DatabaseContextIdentityFramework>(options =>
+builder.Services.AddDbContext<DatabaseContextApplication>(options =>
 {
     var config = builder.Configuration;
     var connectionString = config.GetConnectionString(databaseName);
     options.UseSqlite(connectionString);
 });
 builder.Services.AddAuthorization();
+// builder.Services.AddIdentity<User, IdentityRole>()
+// .AddEntityFrameworkStores<DatabaseContextApplication>();
 builder.Services.AddIdentityApiEndpoints<User>()
-    .AddEntityFrameworkStores<DatabaseContextIdentityFramework>();
+    .AddEntityFrameworkStores<DatabaseContextApplication>();
 builder.Services.AddCors();
 builder.Services.AddScoped<TopicRepository, TopicRepository>();
 builder.Services.AddScoped<ITopicService, TopicService>();

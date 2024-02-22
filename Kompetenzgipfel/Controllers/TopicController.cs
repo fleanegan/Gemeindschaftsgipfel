@@ -1,4 +1,5 @@
-using Kompetenzgipfel.Models;
+using System.Security.Claims;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,8 +34,10 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
     {
         try
         {
-            var topic = Topic.Create(toBeAdded.Title, toBeAdded.Description);
-            return Ok(await service.AddTopic(topic));
+            var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+            var result = await service.AddTopic(toBeAdded, userName);
+
+            return Ok(new TopicCreationResponse(result.Title, result.Description, userName));
         }
         catch (Exception e)
         {

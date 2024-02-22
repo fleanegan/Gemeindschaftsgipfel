@@ -8,7 +8,7 @@ public class TopicTest
     [Fact]
     public void Test_instantiation_GIVEN_empty_title_THEN_throw_error()
     {
-        Assert.Throws<ValidationException>(() => Topic.Create("", "Non-empty description"));
+        Assert.Throws<ValidationException>(() => Topic.Create("", "Non-empty description", new User { Id = "testId" }));
     }
 
     [Fact]
@@ -17,8 +17,15 @@ public class TopicTest
         Assert.Throws<ValidationException>(() =>
             Topic.Create(
                 "this title is too looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong",
-                "Non-empty description"
+                "Non-empty description",
+                new User { Id = "testId" }
             )
         );
+    }
+
+    [Fact]
+    public void Test_instantiation_GIVEN_correct_input_THEN_create_instance()
+    {
+        Topic.Create("title", "description", new User { Id = "testId" });
     }
 }

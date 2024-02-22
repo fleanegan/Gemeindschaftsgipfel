@@ -1,14 +1,21 @@
+using Kompetenzgipfel.Controllers;
 using Kompetenzgipfel.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Kompetenzgipfel.Services;
 
 public class TopicService : ITopicService
 {
     private readonly TopicRepository _repository;
+    private readonly UserManager<User> _userManager;
 
-    public TopicService(TopicRepository repository)
+    public TopicService(
+        TopicRepository repository
+        , UserManager<User> userManager
+    )
     {
         _repository = repository;
+        _userManager = userManager;
     }
 
     public async Task<string> GetTopicsByPresenterId()
@@ -16,8 +23,10 @@ public class TopicService : ITopicService
         return await Task.FromResult("original implementation");
     }
 
-    public async Task<Topic> AddTopic(Topic toBeAdded)
+    public async Task<Topic> AddTopic(TopicDto toBeAdded, string userName)
     {
-        return await _repository.Create(toBeAdded);
+        var user = await _userManager.FindByNameAsync(userName);
+        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.Description, user);
+        return await _repository.Create(newTopic);
     }
 }

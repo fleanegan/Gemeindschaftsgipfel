@@ -3,22 +3,42 @@ using System;
 using Kompetenzgipfel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Kompetenzgipfel.Migrations.DatabaseContextIdentityFrameworkMigrations
+namespace Kompetenzgipfel.Migrations
 {
-    [DbContext(typeof(DatabaseContextIdentityFramework))]
-    [Migration("20240217141309_Changed IdentityUser to custom User inheriting from Identity User")]
-    partial class ChangedIdentityUsertocustomUserinheritingfromIdentityUser
+    [DbContext(typeof(DatabaseContextApplication))]
+    partial class DatabaseContextApplicationModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
+
+            modelBuilder.Entity("Kompetenzgipfel.Models.Topic", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Topics");
+                });
 
             modelBuilder.Entity("Kompetenzgipfel.Models.User", b =>
                 {
@@ -69,6 +89,7 @@ namespace Kompetenzgipfel.Migrations.DatabaseContextIdentityFrameworkMigrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
@@ -212,6 +233,15 @@ namespace Kompetenzgipfel.Migrations.DatabaseContextIdentityFrameworkMigrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Kompetenzgipfel.Models.Topic", b =>
+                {
+                    b.HasOne("Kompetenzgipfel.Models.User", "Creator")
+                        .WithMany("Topics")
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -261,6 +291,11 @@ namespace Kompetenzgipfel.Migrations.DatabaseContextIdentityFrameworkMigrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Kompetenzgipfel.Models.User", b =>
+                {
+                    b.Navigation("Topics");
                 });
 #pragma warning restore 612, 618
         }

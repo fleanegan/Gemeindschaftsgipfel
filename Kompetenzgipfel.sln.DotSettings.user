@@ -54,6 +54,7 @@
     &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Controllers.TopicControllerTest&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=252dfee1_002D528a_002D4c75_002Db1a2_002Df7704f49cb59/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #20" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
     &lt;Or&gt;
@@ -152,6 +153,8 @@
     &lt;/Or&gt;
   &lt;/Not&gt;
 &lt;/SessionState&gt;</s:String>
+	
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6eeefbd7_002D21df_002D4db9_002Db2af_002Da9ada2d6e252/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #14" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
     &lt;Or&gt;
@@ -279,6 +282,9 @@
     &lt;/Or&gt;
   &lt;/Not&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=9652827d_002Dbfee_002D42f2_002Db5b9_002De7e1be29e527/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=9a1921f1_002D3736_002D48bf_002Dbe0f_002D41ecf24397ad/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #13" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
     &lt;Or&gt;
@@ -299,20 +305,7 @@
     &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.TopicServiceTest&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a70fffca_002D39c6_002D4921_002Db31f_002Dcaa783326eac/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AuthServiceTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;And&gt;
-    &lt;TestAncestor&gt;
-      &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Services.AuthServiceTest&lt;/TestId&gt;
-      &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Controllers.TopicControllerTest&lt;/TestId&gt;
-    &lt;/TestAncestor&gt;
-    &lt;Not&gt;
-      &lt;And&gt;
-        &lt;Namespace&gt;Tests.Services&lt;/Namespace&gt;
-        &lt;Project Location="/home/jeanpierre/RiderProjects/Kompetenzgipfel/Tests" Presentation="&amp;lt;Tests&amp;gt;" /&gt;
-      &lt;/And&gt;
-    &lt;/Not&gt;
-  &lt;/And&gt;
-&lt;/SessionState&gt;</s:String>
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a8883b27_002D1548_002D49a8_002D9623_002D8573af80934b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #6" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
     &lt;Or&gt;
@@ -326,6 +319,9 @@
       &lt;/And&gt;
     &lt;/Or&gt;
   &lt;/Not&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=af17bf1a_002Dd889_002D41ef_002D9487_002D7ebf441f6e0a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=cbb598c8_002Df193_002D4e51_002D9d6b_002Da1985fe8fa35/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #29" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
@@ -383,6 +379,9 @@
     &lt;/Or&gt;
   &lt;/Not&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=dbcc1717_002D3301_002D4178_002D9ec7_002D9011c7079ef6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=dce2a516_002D73ba_002D4770_002D8a86_002D55a1069dab38/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
     &lt;Or&gt;
@@ -430,6 +429,7 @@
     &lt;TestId&gt;E9994B44-FB61-456B-BD53-5DDFF0FA4900::net8.0::xUnit::Tests.Models.TopicTest&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f1b16bf3_002D903b_002D484c_002D9bd4_002D78e744d9b6dc/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session #5" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Not&gt;
     &lt;Or&gt;
@@ -473,5 +473,6 @@
     &lt;/Or&gt;
   &lt;/Not&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Monitoring/StartMode/@EntryValue">Disabled</s:String>
 	
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Kompetenzgipfel/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

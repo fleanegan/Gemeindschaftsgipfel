@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Kompetenzgipfel.Controllers;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Properties;
 using Kompetenzgipfel.Services;
@@ -31,8 +32,9 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
                 _mockTopicService = new Mock<ITopicService>();
                 _mockTopicService.Setup(s => s.GetTopicsByPresenterId()).ReturnsAsync(_mockedResult);
-                _mockTopicService.Setup(s => s.AddTopic(It.IsAny<Topic>()))
-                    .ReturnsAsync((Topic newTopic) => Topic.Create(newTopic.Title, newTopic.Description));
+                _mockTopicService.Setup(s => s.AddTopic(It.IsAny<TopicDto>(), It.IsAny<string>()))
+                    .ReturnsAsync((TopicDto newTopic, string userName) =>
+                        Topic.Create(newTopic.Title, newTopic.Description, new User { Id = "testId" }));
                 services.AddSingleton(_mockTopicService.Object);
 
                 //authentication: this Middleware automatically adds user 
@@ -84,13 +86,10 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.PostAsync("/topic/AddNew", TestHelper.encodeBody(newTopic));
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        _testOutputHelper.WriteLine(responseContent);
         var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
-        _mockTopicService?.Verify(x => x.AddTopic(It.IsAny<Topic>()), Times.Once);
+        _mockTopicService?.Verify(x => x.AddTopic(It.IsAny<TopicDto>(), AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(newTopic.Title, dictionary?["title"].ToString());
         Assert.Equal(newTopic.Description, dictionary?["description"].ToString());
     }
-
-    //        public async Task Test_add_GIVEN_connected_user_WHEN_posting_THEN_add_user_id_to_service_call()
 }
