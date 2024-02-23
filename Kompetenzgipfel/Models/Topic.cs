@@ -19,13 +19,14 @@ public class Topic
     public string Title { get; set; }
 
     [StringLength(Constants.MaxLengthDescription, ErrorMessage = Constants.MaxLengthDescriptionErrorMessage)]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
-    public User Presenter { get; set; }
+    [Required]
+    public User User { get; init; }
 
     public static Topic? Create(string title, string description, User user)
     {
-        var model = new Topic { Title = title, Description = description, Presenter = user };
+        var model = new Topic { Title = title, Description = description, User = user };
         Validator.ValidateObject(model, new ValidationContext(model), true);
         return model;
     }

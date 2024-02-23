@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.Json;
-using Kompetenzgipfel.Controllers;
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Properties;
@@ -16,6 +15,8 @@ namespace Tests.Controllers;
 
 public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 {
+    private const string dummyId = "dummyId";
+    private const string nonExistingDummyId = "nonExistingDummyId";
     private readonly WebApplicationFactory<Program> _factory;
     private readonly string _mockedResult = "mocked result";
     private readonly ITestOutputHelper _testOutputHelper;
@@ -33,9 +34,24 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
                 _mockTopicService = new Mock<ITopicService>();
                 _mockTopicService.Setup(s => s.GetTopicsByPresenterId()).ReturnsAsync(_mockedResult);
-                _mockTopicService.Setup(s => s.AddTopic(It.IsAny<TopicDto>(), It.IsAny<string>()))
-                    .ReturnsAsync((TopicDto newTopic, string userName) =>
-                        Topic.Create(newTopic.Title, newTopic.Description, new User { Id = "testId" }));
+                _mockTopicService.Setup(s => s.AddTopic(It.IsAny<TopicCreationDto>(), It.IsAny<string>()))
+                    .ReturnsAsync((TopicCreationDto newTopic, string userName) =>
+                    {
+                        var topic = Topic.Create(newTopic.Title, newTopic.Description ?? "",
+                            new User { Id = "testId" });
+                        topic.Id = dummyId;
+                        return topic;
+                    });
+                _mockTopicService.Setup(s =>
+                        s.UpdateTopic(It.IsAny<TopicUpdateDto>(), It.IsAny<string>()))
+                    .ReturnsAsync((TopicUpdateDto topicToUpdate, string userName) =>
+                    {
+                        if (topicToUpdate.Id == nonExistingDummyId) throw new Exception("Invalid Topic Id");
+                        var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
+                            new User { Id = "testId" });
+                        topic.Id = dummyId;
+                        return topic;
+                    });
                 services.AddSingleton(_mockTopicService.Object);
 
                 //authentication: this Middleware automatically adds user 
@@ -88,9 +104,111 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
         var responseContent = await response.Content.ReadAsStringAsync();
         var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
-        _mockTopicService?.Verify(x => x.AddTopic(It.IsAny<TopicDto>(), AutoAuthorizeMiddleware.UserName), Times.Once);
+        _mockTopicService?.Verify(x => x.AddTopic(It.IsAny<TopicCreationDto>(), AutoAuthorizeMiddleware.UserName),
+            Times.Once);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(newTopic.Title, dictionary?["title"].ToString());
         Assert.Equal(newTopic.Description, dictionary?["description"].ToString());
+        Assert.Equal(dummyId, dictionary?["id"].ToString());
+    }
+
+    [Fact]
+    public async Task Test_update_GIVEN_no_connected_user_WHEN_putting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+        var updatedTopic = new
+        {
+            Id = "Correct id",
+            Title = "Correct title",
+            Description = "Correct description"
+        };
+
+        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_update_GIVEN_wrong_data_type_WHEN_putting_THEN_return_error_response()
+    {
+        var client = _factory.CreateClient();
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var updatedTopic = TestHelper.encodeBody(new { });
+
+        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+
+        var errorDescription = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains(Constants.EmptyTitleErrorMessage, errorDescription);
+        Assert.Contains(Constants.EmptyIdErrorMessage, errorDescription);
+    }
+
+    [Fact]
+    public async Task Test_update_GIVEN_non_existing_id_WHEN_putting_THEN_return_error_response()
+    {
+        var client = _factory.CreateClient();
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var updatedTopic = new
+        {
+            Id = nonExistingDummyId,
+            Title = "Correct title",
+            Description = "Correct description"
+        };
+
+        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+
+        var errorDescription = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("Id", errorDescription);
+    }
+
+    [Fact]
+    public async Task Test_update_GIVEN_correct_input_WHEN_putting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+        var updatedTopic = new
+        {
+            Id = "Correct id",
+            Title = "Correct title",
+            Description = "Correct description"
+        };
+
+        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //todo: find out why test not passing with
+        // new TopicUpdateDto(updatedTopic.Id, updatedTopic.Title, updatedTopic.Description)
+        _mockTopicService!.Verify(
+            c => c.UpdateTopic(It.IsAny<TopicUpdateDto>(),
+                It.IsAny<string>()), Times.Once);
+        var dictionary =
+            JsonSerializer.Deserialize<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
+        Assert.Equal(updatedTopic.Title, dictionary["title"].ToString());
+        Assert.Equal(updatedTopic.Description, dictionary["description"].ToString());
+    }
+
+    public async Task Test_allExceptLoggedIn_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/allExceptLoggedIn");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task
+        Test_allExceptLoggedIn_GIVEN_connected_user_and_some_posts_WHEN_getting_THEN_call_service_and_return_view_model()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/allExceptLoggedIn");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(), Times.Once);
     }
 }

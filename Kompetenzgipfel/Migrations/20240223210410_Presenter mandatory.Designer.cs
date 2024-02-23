@@ -3,6 +3,7 @@ using System;
 using Kompetenzgipfel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kompetenzgipfel.Migrations
 {
     [DbContext(typeof(DatabaseContextApplication))]
-    partial class DatabaseContextApplicationModelSnapshot : ModelSnapshot
+    [Migration("20240223210410_Presenter mandatory")]
+    partial class Presentermandatory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -28,18 +31,18 @@ namespace Kompetenzgipfel.Migrations
                         .HasMaxLength(10000)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PresenterId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PresenterId");
 
                     b.ToTable("Topics");
                 });
@@ -239,13 +242,13 @@ namespace Kompetenzgipfel.Migrations
 
             modelBuilder.Entity("Kompetenzgipfel.Models.Topic", b =>
                 {
-                    b.HasOne("Kompetenzgipfel.Models.User", "User")
+                    b.HasOne("Kompetenzgipfel.Models.User", "Presenter")
                         .WithMany("Topics")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("PresenterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Presenter");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -13,4 +13,7 @@ public static class Constants
 
     public const string MaxLengthDescriptionErrorMessage =
         "Vortragsbeschreibungen dürfen maximal {0} Zeichen lang sein.";
+
+    public const string EmptyIdErrorMessage =
+        "Die Vortragsidentitifikationsnummer ist obligatorisch, um Vortragsthemen zu modifizieren.";
 }

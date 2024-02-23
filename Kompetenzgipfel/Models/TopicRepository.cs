@@ -1,27 +1,31 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Kompetenzgipfel.Models;
 
 public class TopicRepository(DatabaseContextApplication dbContext)
 {
     public IEnumerable<Topic?> GetAll()
     {
-        return dbContext.Topics.ToList();
+        return dbContext.Topics.Where(topic => topic.Id != "");
     }
 
-    public async Task<Topic?> Create(Topic? newTopic)
+    public async Task<Topic> Create(Topic? newTopic)
     {
-        var result = dbContext.Topics.Add(newTopic);
+        dbContext.Topics.Add(newTopic);
         await dbContext.SaveChangesAsync();
-        return result.Entity;
+        return newTopic!;
     }
 
     public async Task<Topic?> FetchBy(string topicId)
     {
-        return await dbContext.Topics.FindAsync(topicId);
+        var includableQueryable = dbContext.Topics.Include(c => c.User);
+        return await includableQueryable.FirstOrDefaultAsync(c => c.Id == topicId);
     }
 
-    public async Task Update(Topic updatedTopic)
+    public async Task<Topic> Update(Topic updatedTopic)
     {
         dbContext.Topics.Update(updatedTopic);
         await dbContext.SaveChangesAsync();
+        return updatedTopic;
     }
 }

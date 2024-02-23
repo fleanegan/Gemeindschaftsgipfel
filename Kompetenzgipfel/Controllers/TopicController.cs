@@ -30,19 +30,43 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult> AddNew([FromBody] TopicDto toBeAdded)
+    public async Task<IActionResult> AddNew([FromBody] TopicCreationDto userInput)
     {
+        var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)!.Value;
         try
         {
-            var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-            var result = await service.AddTopic(toBeAdded, userName!);
+            var result = await service.AddTopic(userInput, userName!);
 
-            return Ok(new TopicCreationResponse(result.Title, result.Description, userName));
+            return Ok(new TopicResponse(result.Id, result.Title, result.Description, userName));
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             return BadRequest(e.Message);
         }
+    }
+
+    [HttpPut]
+    [Authorize]
+    public async Task<IActionResult> Update([FromBody] TopicUpdateDto userInput)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+        try
+        {
+            var result = await service.UpdateTopic(userInput, userName);
+            return Ok(new TopicResponse(result.Id, result.Title, result.Description, userName));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> AllExceptLoggedIn()
+    {
+        return Ok(service.FetchAllExceptLoggedIn());
     }
 }
