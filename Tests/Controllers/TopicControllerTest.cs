@@ -52,6 +52,10 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                         topic.Id = dummyId;
                         return topic;
                     });
+                _mockTopicService.Setup(c => c.FetchAllExceptLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
+                [
+                    Topic.Create("title", "description", new User { UserName = AutoAuthorizeMiddleware.UserName })
+                ]);
                 services.AddSingleton(_mockTopicService.Object);
 
                 //authentication: this Middleware automatically adds user 
@@ -189,16 +193,6 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(updatedTopic.Description, dictionary["description"].ToString());
     }
 
-    public async Task Test_allExceptLoggedIn_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
-    {
-        TestHelper.ShouldAddAuthorizedDummyUser(false);
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/topic/allExceptLoggedIn");
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
     [Fact]
     public async Task
         Test_allExceptLoggedIn_GIVEN_connected_user_and_some_posts_WHEN_getting_THEN_call_service_and_return_view_model()
@@ -208,7 +202,22 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
         var response = await client.GetAsync("/topic/allExceptLoggedIn");
 
+        var dictionary =
+            JsonSerializer.Deserialize<List<Dictionary<string, string>>>(await response.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(), Times.Once);
+        _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
+        Assert.Contains("description", dictionary[0]["description"]);
+        Assert.Contains("title", dictionary[0]["title"]);
+        Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"]);
+    }
+
+    public async Task Test_allExceptLoggedIn_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/allExceptLoggedIn");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }

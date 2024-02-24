@@ -36,8 +36,8 @@ public class TopicService(TopicRepository repository, UserManager<User> userMana
         return await repository.Update(topicToChange);
     }
 
-    public async Task<IEnumerable<Topic>> FetchAllExceptLoggedIn()
+    public async Task<IEnumerable<Topic>> FetchAllExceptLoggedIn(string loggedInUserName)
     {
-        return repository.GetAll();
+        return await repository.GetAllExceptForUser(loggedInUserName);
     }
 }

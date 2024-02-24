@@ -22,7 +22,7 @@ public class TopicServiceTest
 
         await service.AddTopic(new TopicCreationDto(title, description), loggedInUserName);
 
-        var result = repository.GetAll().FirstOrDefault(topic => topic.Title == title);
+        var result = (await repository.GetAll()).ToArray()[0];
         Assert.NotNull(result);
         Assert.Equal(title, result.Title);
         Assert.Equal(description ?? "", result.Description);
@@ -82,6 +82,63 @@ public class TopicServiceTest
 
         var result = await repository.FetchBy(originalTopic.Id)!;
         Assert.Equal(updatedTopic.Title, result.Title);
+    }
+
+    [Fact]
+    public async void Test_fetchAllExceptLoggedIn_GIVEN_zero_topics_THEN_return_empty()
+    {
+        var loggedInUserName = "loggedInUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+
+        var result = await service.FetchAllExceptLoggedIn(loggedInUserName);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async void Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_them_all()
+    {
+        var otherUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [otherUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        await service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", "second description");
+        await service.AddTopic(secondTopicContent, otherUserName);
+
+        var result = await service.FetchAllExceptLoggedIn("loggedInUserName");
+
+        Assert.Equal(2, result.Count());
+        Assert.Contains(result,
+            topic => topic.Title == firstTopicContent.Title && topic.Description == firstTopicContent.Description);
+        Assert.Contains(result,
+            topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
+    }
+
+    [Fact]
+    public async void
+        Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_two_different_users_THEN_return_only_those_by_other_user()
+    {
+        var loggedInUserName = "loggedInUserName";
+        var otherUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, otherUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        await service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", "second description");
+        await service.AddTopic(secondTopicContent, loggedInUserName);
+
+        var result = await service.FetchAllExceptLoggedIn(loggedInUserName);
+
+        Assert.Equal(1, result.Count());
+        Assert.Contains(result,
+            topic => topic.Title == firstTopicContent.Title && topic.Description == firstTopicContent.Description);
+        Assert.DoesNotContain(result,
+            topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
     }
 
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,

@@ -67,6 +67,11 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
     [Authorize]
     public async Task<IActionResult> AllExceptLoggedIn()
     {
-        return Ok(service.FetchAllExceptLoggedIn());
+        var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+        var fetchAllExceptLoggedIn = await service.FetchAllExceptLoggedIn(userName!);
+        var mappedList = fetchAllExceptLoggedIn
+            .Select(topic => new TopicResponse(topic.Id, topic.Title, topic.Description, topic.User.UserName))
+            .ToList();
+        return Ok(mappedList);
     }
 }
