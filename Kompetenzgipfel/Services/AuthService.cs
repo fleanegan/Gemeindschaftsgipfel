@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Kompetenzgipfel.Controllers;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Properties;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +14,7 @@ public class AuthService(
     public async Task<IdentityResult> SignUp(SignupDto userInput)
     {
         var correctPassphrase = Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE")!;
-        if (userInput.Passphrase == null || !userInput.Passphrase.Equals(correctPassphrase))
+        if (!userInput.EntrySecret.Equals(correctPassphrase))
             return IdentityResult.Failed(new IdentityError
                 { Code = "WrongPassphrase", Description = Constants.WrongPassphraseErrorMessage });
         return await userManager.CreateAsync(new User { UserName = userInput.UserName }, userInput.Password);

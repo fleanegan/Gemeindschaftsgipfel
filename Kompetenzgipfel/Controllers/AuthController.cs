@@ -1,3 +1,4 @@
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

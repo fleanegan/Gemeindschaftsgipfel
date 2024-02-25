@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Kompetenzgipfel.Controllers;
+namespace Kompetenzgipfel.Controllers.DTOs;
 
-public class SignupDto(string userName, string password, string passphrase)
+public class SignupDto(string userName, string password, string entrySecret)
 {
     [Required] public string UserName { get; } = userName;
 
     [Required] public string Password { get; } = password;
 
-    [Required] public string Passphrase { get; } = passphrase;
+    [Required] public string EntrySecret { get; } = entrySecret;
 }

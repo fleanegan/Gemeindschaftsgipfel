@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Kompetenzgipfel.Controllers;
+using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Identity;

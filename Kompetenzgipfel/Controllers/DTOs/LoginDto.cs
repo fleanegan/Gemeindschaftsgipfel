@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Kompetenzgipfel.Controllers;
+namespace Kompetenzgipfel.Controllers.DTOs;
 
 public class LoginDto(string userName, string password)
 {
