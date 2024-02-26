@@ -26,7 +26,7 @@
         <label for="entrySecret">Eintrittsgeheimnis</label>
         <input id="entrySecret" v-model="entrySecret" class="form-input" type="password"/>
       </div>
-      <button class="submit-button" onclick="submitData()" type="submit">Abschicken</button>
+      <button class="submit-button" type="submit" @click="submitData">Abschicken</button>
     </form>
   </div>
 </template>
@@ -98,7 +98,7 @@ export default defineComponent({
 
 <style scoped>
 h1 {
-  margin: 0.75rem 1rem 2rem;
+  margin: 0.75rem 1rem 3rem;
 }
 
 html {
@@ -115,9 +115,6 @@ html {
   flex-direction: row;
   margin-bottom: 2rem;
 }
-
-/** Switch
- -------------------------------------*/
 
 .switch input {
   position: absolute;
@@ -169,7 +166,7 @@ html {
 .form-group {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .form-input {

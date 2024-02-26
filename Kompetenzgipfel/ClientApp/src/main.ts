@@ -13,6 +13,8 @@ axios.interceptors.request.use(
         const token = useAuthStore().token;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+        } else {
+            router.push('/login');
         }
         return config;
     },
