@@ -1,23 +1,45 @@
 <template>
   <div class="about">
     <h1>Vortragsthemen</h1>
+    <h2>Meine Vorschläge</h2>
     <ul class="list">
-      <li v-for="(item, index) in apiResponse" :key="index" class="topic-card">
+      <li v-for="(item, index) in myTopics" :key="index" class="topic-card">
         <div class="topic-card-header">
-          <button class="toggle-button" @click="toggleDetails(index)"><img
+          <button class="toggle-button" @click="toggleDetails(myTopics, index)"><img
               :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
           </button>
-          <h3 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h3>
+          <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
+        </div>
+        <div v-if="item.expanded" class="topic-card-details">
+          <p class="description">{{ item.description }}</p>
+        </div>
+      </li>
+      <li>
+        <hr>
+        <div class="my-topics-add-button-container">
+          <button class="submit-button">Neue Idee?</button>
+        </div>
+      </li>
+    </ul>
+    <h2>Das haben sich die Anderen ausgedacht</h2>
+    <ul class="list">
+      <li v-for="(item, index) in foreignTopics" :key="index" class="topic-card">
+        <div class="topic-card-header">
+          <button class="toggle-button" @click="toggleDetails(foreignTopics, index)"><img
+              :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
+          </button>
+          <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
           <button class="toggle-button" @click="toggleVote(index)"><img
               :src="item.voted ? '/full_heart.svg' : '/empty_heart.svg'" alt="Vote">
           </button>
         </div>
         <div v-if="item.expanded" class="topic-card-details">
           <p class="description">{{ item.description }}</p>
-          <p class="presenter">Vortragsmensch: {{ item.presenterUserName }}</p>
+          <p class="presenter">{{ item.presenterUserName }}</p>
         </div>
       </li>
-      <div class="topic-card-details">Ende der Liste. Danke fürs Abstimmen!<br></div>
+      <hr>
+      <li class="topic-card-details">Ende der Liste. Danke fürs Abstimmen!<br></li>
     </ul>
   </div>
 </template>
@@ -26,8 +48,14 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 
+interface MyTopic {
+  id: string;
+  title: string;
+  description: string;
+  expanded: boolean;
+}
 
-interface ApiResponseItem {
+interface ForeignTopic {
   id: string;
   title: string;
   description: string;
@@ -39,12 +67,27 @@ interface ApiResponseItem {
 export default defineComponent({
   data() {
     return {
-      apiResponse: [] as ApiResponseItem[],
+      foreignTopics: [] as ForeignTopic[],
+      myTopics: [] as MyTopic[],
     };
   },
   methods: {
     async fetchData() {
-      this.apiResponse = [
+      this.myTopics = false ? [] : [
+        {
+          "description": "Ganz einfach von zuhause aus. Legal!! Wer da noch arbeiten geht, ist wirklich selber schuld.",
+          "id": "da1124c6-b7f2-4b76-af2b-ec4dfad363aa",
+          "title": "In zwei Monaten 5000$ verdienen",
+          expanded: false,
+        },
+        {
+          "description": "Schluss mit den Vorurteilen. Hier erfahrst du, wie du nicht mehr allein auf der Autobahn unterwegs bist.",
+          "id": "da1124c6-b7f2-4b76-af1b-ec4dfad363aa",
+          "title": "23 gute Ideen, um leichter Mitfahrer für den weissen Van zu finden.",
+          expanded: false,
+        }
+      ];
+      this.foreignTopics = [
         {
           "description": "Es geht um die Erfindung der Mausbaumbeschlagslackierung",
           "id": "da1124c6-b7f2-4b76-af2b-ec4dfad362aa",
@@ -79,11 +122,14 @@ export default defineComponent({
         }
       ];
     },
-    toggleDetails(index: number): void {
-      this.apiResponse[index].expanded = !this.apiResponse[index].expanded;
+    toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): void {
+      topic[index].expanded = !topic[index].expanded;
     },
     toggleVote(index: number): void {
-      this.apiResponse[index].voted = !this.apiResponse[index].voted;
+      this.foreignTopics[index].voted = !this.foreignTopics[index].voted;
+    },
+    editTopic(index: number): void {
+
     }
   },
   mounted() {
@@ -123,7 +169,7 @@ export default defineComponent({
   margin: 0.5rem;
 }
 
-.topic-card-header h3 {
+.topic-card-header h4 {
   padding-left: 0;
   margin-right: auto;
 }
@@ -131,19 +177,25 @@ export default defineComponent({
 .topic-card-details {
   padding-left: 3rem;
   padding-top: 0.5rem;
-  padding-right: 1rem;
+  padding-right: 0;
   padding-bottom: 0.5rem;
-  background-color: var(--color-border-light);
+  background-color: var(--main--color-nuance-light);
 }
 
 .description {
-  padding-right: 4rem;
+  padding: 0.5rem;
+  margin-right: 3rem;
+  border: 0.1rem;
+  border-style: solid;
+  border-color: var(--main-color-border-light);
+  border-radius: 0.15rem;
   font-size: 0.85rem;
 }
 
 .presenter {
   padding-top: 0.25rem;
-  font-size: 1rem;
+  margin-right: 1rem;
+  font-size: 0.9rem;
   text-align: end;
 }
 
@@ -158,5 +210,21 @@ export default defineComponent({
   font-weight: bold;
   display: flex;
   place-items: center;
+}
+
+
+.my-topics-add-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.submit-button {
+  margin-top: 0;
+  margin-left: auto;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-right: 0;
+
 }
 </style>

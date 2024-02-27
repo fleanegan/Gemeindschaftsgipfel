@@ -178,17 +178,4 @@ html {
   margin-left: 1rem;
 }
 
-.submit-button {
-  margin-left: 1rem;
-  margin-top: 2.5rem;
-  margin-bottom: 2rem;
-  border-radius: 0.15rem;
-  width: 8rem;
-  height: 2.5rem;
-  font-size: 1.25rem;
-  background-color: var(--color-main-accent);
-  color: #ffffff;
-  border: none;
-}
-
 </style>

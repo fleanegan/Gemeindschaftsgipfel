@@ -28,9 +28,13 @@
 
     <ItemGroup>
         <None Include="wwwroot\collapse.svg"/>
+        <None Include="wwwroot\empty_add.svg"/>
+        <None Include="wwwroot\empty_edit.svg"/>
         <None Include="wwwroot\empty_heart.svg"/>
         <None Include="wwwroot\expand.svg"/>
         <None Include="wwwroot\favicon.ico"/>
+        <None Include="wwwroot\full_add.svg"/>
+        <None Include="wwwroot\full_edit.svg"/>
         <None Include="wwwroot\full_heart.svg"/>
         <None Include="wwwroot\icon.svg"/>
     </ItemGroup>
