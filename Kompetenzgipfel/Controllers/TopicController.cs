@@ -32,6 +32,7 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
     [Authorize]
     public async Task<IActionResult> AddNew([FromBody] TopicCreationDto userInput)
     {
+        Console.WriteLine("getting a new message\n\n\n\n\nfor adding a new topic");
         var userName = HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)!.Value;
         try
         {

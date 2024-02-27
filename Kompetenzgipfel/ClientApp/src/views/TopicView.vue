@@ -17,7 +17,7 @@
       <li>
         <hr>
         <div class="my-topics-add-button-container">
-          <button class="submit-button">Neue Idee?</button>
+          <button class="submit-button" @click="addNewTopic">Neue Idee?</button>
         </div>
       </li>
     </ul>
@@ -84,7 +84,7 @@ export default defineComponent({
         {
           "description": "Schluss mit den Vorurteilen. Hier erfahrst du, wie du nicht mehr allein auf der Autobahn unterwegs bist.",
           "id": "da1124c6-b7f2-4b76-af1b-ec4dfad363aa",
-          "title": "23 gute Ideen, um leichter Mitfahrer für den weissen Van zu finden.",
+          "title": "23 Ideen, um schneller Frauen kennenzulernen",
           expanded: false,
         }
       ];
@@ -99,6 +99,9 @@ export default defineComponent({
     },
     editTopic(index: number): void {
 
+    },
+    addNewTopic() {
+      this.$router.push("/topic/add");
     }
   },
   mounted() {
@@ -194,6 +197,9 @@ export default defineComponent({
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   margin-right: 0;
+}
 
+ul {
+  margin-bottom: 5rem;
 }
 </style>

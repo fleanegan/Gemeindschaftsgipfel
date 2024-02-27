@@ -27,6 +27,11 @@ const router = createRouter({
             path: '/topic',
             name: 'Vortragsthemen',
             component: () => import('../views/TopicView.vue'),
+        },
+        {
+            path: '/topic/add',
+            name: 'Neues Vortragsthema hinzufügen',
+            component: () => import('../views/AddTopicView.vue'),
         }
     ]
 });

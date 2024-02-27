@@ -1,0 +1,93 @@
+<template>
+  <h1>Neues Thema hinzufügen</h1>
+  <form @submit.prevent="submitData">
+    <div class="form-group">
+      <label for="title">Worüber möchtest du sprechen?</label>
+      <input id="title" v-model="title" class="form-input" type="text"/>
+      <p v-if="isTitleEmpty" class="title-error">Der Vortragstitel muss zwischen 1 und 100 Zeichen lang sein</p>
+    </div>
+    <div class="form-group">
+      <label for="description">Platz für Details (optional)</label>
+      <input id="description" v-model="description" class="form-input"/>
+    </div>
+    <div class="button-container">
+      <button class="abort-button" @click="abort">Verwerfen</button>
+      <button class="submit-button" @click="submitData">Abschicken</button>
+    </div>
+  </form>
+</template>
+
+
+<script lang="ts">
+import {defineComponent} from 'vue';
+import axios from "axios";
+
+export default defineComponent({
+  data() {
+    return {
+      title: '',
+      description: '',
+    };
+  },
+  methods: {
+    async submitData() {
+      if (this.isTitleEmpty) {
+        return;
+      }
+      try {
+        console.log("Sending!")
+        const title = this.title;
+        const description = this.description;
+        this.title = ''
+        this.description = ''
+        const response = await axios.post('/api/topic/addnew', {
+          "Title": title,
+          "Description": description
+        });
+
+        if (response.status >= 200 && response.status < 300) {
+          this.$router.push('/topic');
+        }
+      } catch (e) {
+        console.log("error while sending new topic: ", e)
+      }
+    },
+    async abort() {
+      this.$router.push('/topic');
+    }
+  },
+  computed: {
+    isTitleEmpty() {
+      return this.title.length === 0
+    }
+  }
+});
+</script>
+
+<style scoped>
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.title-error {
+  color: red;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.submit-button {
+  margin-left: auto;
+  margin-right: 1rem;
+}
+</style>

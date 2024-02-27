@@ -98,10 +98,6 @@ export default defineComponent({
 
 <style scoped>
 
-html {
-  background-color: #ffffff;
-}
-
 .checkbox-container {
   text-align: center;
   display: flex;
@@ -158,24 +154,25 @@ html {
   color: #adb5bd;
 }
 
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
   padding: 0 1rem 1rem 1rem;
 }
 
-.form-input {
-  margin-top: .25rem;
-  height: 2rem;
-  padding-left: 0.5rem;
-  border-radius: 0.1rem;
-  border-style: solid;
-  border-color: var(--color-main-text);
-}
-
 .password-errors {
   color: red;
   margin-left: 1rem;
+}
+
+.submit-button {
+  margin-left: auto;
+  margin-right: 1rem;
 }
 
 </style>
