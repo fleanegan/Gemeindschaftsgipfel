@@ -54,7 +54,7 @@ public class TopicServiceTest
         const string loggedInUserName = "Fake User";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new TopicRepository(dbContext);
-        ITopicService service = await GetService(dbContext, new List<string>([loggedInUserName]), repository);
+        ITopicService service = await GetService(dbContext, [loggedInUserName], repository);
         var originalTopic = await service.AddTopic(new TopicCreationDto("original title", ""), "anotherUserName");
         var updatedTopic = new TopicUpdateDto(originalTopic!.Id, "updated title", "updated description");
 
@@ -80,8 +80,8 @@ public class TopicServiceTest
 
         await service.UpdateTopic(updatedTopic, loggedInUserName);
 
-        var result = await repository.FetchBy(originalTopic.Id)!;
-        Assert.Equal(updatedTopic.Title, result.Title);
+        var result = await repository.FetchBy(originalTopic.Id);
+        Assert.Equal(updatedTopic.Title, result!.Title);
     }
 
     [Fact]
@@ -101,20 +101,21 @@ public class TopicServiceTest
     public async void Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_them_all()
     {
         var otherUserName = "otherUserName";
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        var secondTopicContent = new TopicCreationDto("second title", "second description");
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new TopicRepository(dbContext);
         var service = await GetService(dbContext, [otherUserName], repository);
-        var firstTopicContent = new TopicCreationDto("first title", "first description");
         await service.AddTopic(firstTopicContent, otherUserName);
-        var secondTopicContent = new TopicCreationDto("second title", "second description");
         await service.AddTopic(secondTopicContent, otherUserName);
 
         var result = await service.FetchAllExceptLoggedIn("loggedInUserName");
 
-        Assert.Equal(2, result.Count());
-        Assert.Contains(result,
+        var enumerable = result as Topic[] ?? result.ToArray();
+        Assert.Equal(2, enumerable.Count());
+        Assert.Contains(enumerable,
             topic => topic.Title == firstTopicContent.Title && topic.Description == firstTopicContent.Description);
-        Assert.Contains(result,
+        Assert.Contains(enumerable,
             topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
     }
 
@@ -134,12 +135,69 @@ public class TopicServiceTest
 
         var result = await service.FetchAllExceptLoggedIn(loggedInUserName);
 
-        Assert.Equal(1, result.Count());
-        Assert.Contains(result,
+        var collection = result as Topic[] ?? result.ToArray();
+        Assert.Single(collection);
+        Assert.Contains(collection,
             topic => topic.Title == firstTopicContent.Title && topic.Description == firstTopicContent.Description);
-        Assert.DoesNotContain(result,
+        Assert.DoesNotContain(collection,
             topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
     }
+
+    [Fact]
+    public async void Test_fetchAllOfLoggedIn_GIVEN_zero_topics_THEN_return_empty()
+    {
+        var loggedInUserName = "loggedInUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+
+        var result = await service.FetchAllOfLoggedIn(loggedInUserName);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async void Test_fetchAllOfLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_empty()
+    {
+        var otherUserName = "otherUserName";
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        var secondTopicContent = new TopicCreationDto("second title", "second description");
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [otherUserName], repository);
+        await service.AddTopic(firstTopicContent, otherUserName);
+        await service.AddTopic(secondTopicContent, otherUserName);
+
+        var result = await service.FetchAllOfLoggedIn("loggedInUserName");
+
+        var enumerable = result as Topic[] ?? result.ToArray();
+        Assert.Empty(enumerable);
+    }
+
+    [Fact]
+    public async void
+        Test_fetchAllOfLoggedIn_GIVEN_two_topics_by_two_different_users_THEN_return_only_those_by_current_user()
+    {
+        var loggedInUserName = "loggedInUserName";
+        var otherUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, otherUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        await service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", "second description");
+        await service.AddTopic(secondTopicContent, loggedInUserName);
+
+        var result = await service.FetchAllOfLoggedIn(loggedInUserName);
+
+        var collection = result as Topic[] ?? result.ToArray();
+        Assert.Single(collection);
+        Assert.DoesNotContain(collection,
+            topic => topic.Title == firstTopicContent.Title && topic.Description == firstTopicContent.Description);
+        Assert.Contains(collection,
+            topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
+    }
+
 
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,
         TopicRepository repository)

@@ -40,4 +40,9 @@ public class TopicService(TopicRepository repository, UserManager<User> userMana
     {
         return await repository.GetAllExceptForUser(loggedInUserName);
     }
+
+    public Task<IEnumerable<Topic>> FetchAllOfLoggedIn(string loggedInUserName)
+    {
+        return repository.GetAllForUser(loggedInUserName);
+    }
 }

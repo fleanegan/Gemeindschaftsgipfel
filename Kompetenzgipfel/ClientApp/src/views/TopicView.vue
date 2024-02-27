@@ -74,20 +74,7 @@ export default defineComponent({
   },
   methods: {
     async fetchData() {
-      this.myTopics = false ? [] : [
-        {
-          "description": "Ganz einfach von zuhause aus. Legal!! Wer da noch arbeiten geht, ist wirklich selber schuld.",
-          "id": "da1124c6-b7f2-4b76-af2b-ec4dfad363aa",
-          "title": "In zwei Monaten 5000$ verdienen",
-          expanded: false,
-        },
-        {
-          "description": "Schluss mit den Vorurteilen. Hier erfahrst du, wie du nicht mehr allein auf der Autobahn unterwegs bist.",
-          "id": "da1124c6-b7f2-4b76-af1b-ec4dfad363aa",
-          "title": "23 Ideen, um schneller Frauen kennenzulernen",
-          expanded: false,
-        }
-      ];
+      this.myTopics = (await axios.get('/api/topic/allOfLoggedIn', {})).data
       this.foreignTopics = (await axios.get('/api/topic/allExceptLoggedIn', {})).data;
 
     },

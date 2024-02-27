@@ -9,22 +9,19 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Xunit.Abstractions;
 
 namespace Tests.Controllers;
 
 public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 {
-    private const string dummyId = "dummyId";
-    private const string nonExistingDummyId = "nonExistingDummyId";
+    private const string DummyId = "dummyId";
+    private const string NonExistingDummyId = "nonExistingDummyId";
     private readonly WebApplicationFactory<Program> _factory;
     private readonly string _mockedResult = "mocked result";
-    private readonly ITestOutputHelper _testOutputHelper;
     private Mock<ITopicService>? _mockTopicService;
 
-    public TopicControllerTest(WebApplicationFactory<Program> factory, ITestOutputHelper testOutputHelper)
+    public TopicControllerTest(WebApplicationFactory<Program> factory)
     {
-        _testOutputHelper = testOutputHelper;
         _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
@@ -32,30 +29,34 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ITopicService));
                 if (descriptor != null) services.Remove(descriptor);
 
+                IEnumerable<Topic> enumerable =
+                [
+                    Topic.Create("title", "description", new User { UserName = AutoAuthorizeMiddleware.UserName })
+                ];
                 _mockTopicService = new Mock<ITopicService>();
                 _mockTopicService.Setup(s => s.GetTopicsByPresenterId()).ReturnsAsync(_mockedResult);
                 _mockTopicService.Setup(s => s.AddTopic(It.IsAny<TopicCreationDto>(), It.IsAny<string>()))
-                    .ReturnsAsync((TopicCreationDto newTopic, string userName) =>
+                    .ReturnsAsync((TopicCreationDto newTopic, string _) =>
                     {
                         var topic = Topic.Create(newTopic.Title, newTopic.Description ?? "",
                             new User { Id = "testId" });
-                        topic.Id = dummyId;
+                        topic!.Id = DummyId;
                         return topic;
                     });
                 _mockTopicService.Setup(s =>
                         s.UpdateTopic(It.IsAny<TopicUpdateDto>(), It.IsAny<string>()))
-                    .ReturnsAsync((TopicUpdateDto topicToUpdate, string userName) =>
+                    .ReturnsAsync((TopicUpdateDto topicToUpdate, string _) =>
                     {
-                        if (topicToUpdate.Id == nonExistingDummyId) throw new Exception("Invalid Topic Id");
+                        if (topicToUpdate.Id == NonExistingDummyId) throw new Exception("Invalid Topic Id");
                         var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
                             new User { Id = "testId" });
-                        topic.Id = dummyId;
+                        topic!.Id = DummyId;
                         return topic;
                     });
                 _mockTopicService.Setup(c => c.FetchAllExceptLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
-                [
-                    Topic.Create("title", "description", new User { UserName = AutoAuthorizeMiddleware.UserName })
-                ]);
+                    enumerable);
+                _mockTopicService.Setup(c => c.FetchAllOfLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
+                    enumerable);
                 services.AddSingleton(_mockTopicService.Object);
 
                 //authentication: this Middleware automatically adds user 
@@ -113,7 +114,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(newTopic.Title, dictionary?["title"].ToString());
         Assert.Equal(newTopic.Description, dictionary?["description"].ToString());
-        Assert.Equal(dummyId, dictionary?["id"].ToString());
+        Assert.Equal(DummyId, dictionary?["id"].ToString());
     }
 
     [Fact]
@@ -155,7 +156,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         TestHelper.ShouldAddAuthorizedDummyUser(true);
         var updatedTopic = new
         {
-            Id = nonExistingDummyId,
+            Id = NonExistingDummyId,
             Title = "Correct title",
             Description = "Correct description"
         };
@@ -189,6 +190,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                 It.IsAny<string>()), Times.Once);
         var dictionary =
             JsonSerializer.Deserialize<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
+        Assert.NotNull(dictionary);
         Assert.Equal(updatedTopic.Title, dictionary["title"].ToString());
         Assert.Equal(updatedTopic.Description, dictionary["description"].ToString());
     }
@@ -204,6 +206,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
         var dictionary =
             JsonSerializer.Deserialize<List<Dictionary<string, string>>>(await response.Content.ReadAsStringAsync());
+        Assert.NotNull(dictionary);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains("description", dictionary[0]["description"]);
@@ -211,6 +214,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"]);
     }
 
+    [Fact]
     public async Task Test_allExceptLoggedIn_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
     {
         TestHelper.ShouldAddAuthorizedDummyUser(false);
@@ -219,5 +223,36 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.GetAsync("/topic/allExceptLoggedIn");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_allOfLoggedIn_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/allOfLoggedIn");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task
+        Test_allOfLoggedIn_GIVEN_connected_user_and_some_posts_WHEN_getting_THEN_call_service_and_return_view_model()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/allOfLoggedIn");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var dictionary =
+            JsonSerializer.Deserialize<List<Dictionary<string, string>>>(await response.Content.ReadAsStringAsync());
+        Assert.NotNull(dictionary);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        _mockTopicService!.Verify(c => c.FetchAllOfLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
+        Assert.Contains("description", dictionary[0]["description"]);
+        Assert.Contains("title", dictionary[0]["title"]);
+        Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"]);
     }
 }

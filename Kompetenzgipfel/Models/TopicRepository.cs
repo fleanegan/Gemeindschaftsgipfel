@@ -33,4 +33,10 @@ public class TopicRepository(DatabaseContextApplication dbContext)
         return await dbContext.Topics.Include(c => c.User).Where(topic => topic.User.UserName != userName)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Topic>> GetAllForUser(string userName)
+    {
+        return await dbContext.Topics.Include(c => c.User).Where(topic => topic.User.UserName == userName)
+            .ToListAsync();
+    }
 }

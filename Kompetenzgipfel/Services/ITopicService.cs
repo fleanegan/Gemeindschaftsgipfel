@@ -9,4 +9,5 @@ public interface ITopicService
     Task<string> GetTopicsByPresenterId();
     Task<Topic> UpdateTopic(TopicUpdateDto updatedTopic, string loggedInUserName);
     Task<IEnumerable<Topic>> FetchAllExceptLoggedIn(string loggedInUserName);
+    Task<IEnumerable<Topic>> FetchAllOfLoggedIn(string loggedInUserName);
 }
