@@ -23,7 +23,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\" />
+        <Folder Include="Migrations\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="wwwroot\collapse.svg"/>
+        <None Include="wwwroot\empty_heart.svg"/>
+        <None Include="wwwroot\expand.svg"/>
+        <None Include="wwwroot\favicon.ico"/>
+        <None Include="wwwroot\full_heart.svg"/>
+        <None Include="wwwroot\icon.svg"/>
     </ItemGroup>
 
 </Project>

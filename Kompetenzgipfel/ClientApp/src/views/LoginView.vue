@@ -97,23 +97,19 @@ export default defineComponent({
 </script>
 
 <style scoped>
-h1 {
-  margin: 0.75rem 1rem 3rem;
-}
 
 html {
   background-color: #ffffff;
 }
 
 .checkbox-container {
-  margin: auto;
   text-align: center;
   display: flex;
   place-content: center;
   align-content: center;
   align-items: center;
   flex-direction: row;
-  margin-bottom: 2rem;
+  margin: auto auto 2rem;
 }
 
 .switch input {
@@ -127,7 +123,7 @@ html {
   height: 1.4rem;
   width: 2.4rem;
   border-radius: 1rem;
-  border-color: #6f6f6f;
+  border-color: var(--color-main-text);
   border-style: solid;
 }
 
@@ -135,7 +131,7 @@ html {
   height: 1rem;
   width: 1rem;
   border-radius: 1rem;
-  background-color: #6f6f6f;
+  background-color: var(--color-main-text);
   -webkit-transition: all 300ms;
   -moz-transition: all 300ms;
   transition: all 300ms;
@@ -151,12 +147,11 @@ html {
 .checkbox-container p {
   font-size: 0.85rem;
   width: 5rem;
-  margin-left: 1rem;
   margin-right: 1rem;
 }
 
 .active {
-  color: #6f6f6f;
+  color: var(--color-main-text);
 }
 
 .inactive {
@@ -175,23 +170,23 @@ html {
   padding-left: 0.5rem;
   border-radius: 0.1rem;
   border-style: solid;
-  border-color: #6f6f6f;
+  border-color: var(--color-main-text);
 }
 
 .password-errors {
-  margin-left: 1rem;
   color: red;
+  margin-left: 1rem;
 }
 
 .submit-button {
-  margin-top: 2.5rem;
   margin-left: 1rem;
+  margin-top: 2.5rem;
   margin-bottom: 2rem;
   border-radius: 0.15rem;
   width: 8rem;
   height: 2.5rem;
   font-size: 1.25rem;
-  background-color: #006f47ff;
+  background-color: var(--color-main-accent);
   color: #ffffff;
   border: none;
 }
