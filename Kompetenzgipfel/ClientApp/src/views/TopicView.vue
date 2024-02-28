@@ -112,11 +112,12 @@ export default defineComponent({
 
 .topic-card-header {
   display: flex;
+  min-height: 3rem;
   flex-direction: row;
   align-items: center;
   align-content: center;
   border: 0.15rem;
-  border-style: solid;
+  border-style: none;
   border-color: var(--color-border-light);
   border-radius: 0.1rem;
   border-bottom: none;
@@ -139,6 +140,7 @@ export default defineComponent({
   padding-right: 0;
   padding-bottom: 0.5rem;
   background-color: var(--main--color-nuance-light);
+  border-radius: 0.2rem;
 }
 
 .description {
