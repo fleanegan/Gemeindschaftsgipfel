@@ -198,13 +198,119 @@ public class TopicServiceTest
             topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
     }
 
+    [Fact]
+    public async void Test_adding_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+        const string nonExistingId = "non-existing Id";
+
+        async Task Action()
+        {
+            await service.AddTopicVote(nonExistingId, loggedInUserName);
+        }
+
+        var exception = await Assert.ThrowsAsync<Exception>(Action);
+        Assert.Equal("Invalid Topic Id", exception.Message);
+    }
+
+    [Fact]
+    public async void Test_adding_vote_GIVEN_an_existing_topic_and_two_users_THEN_add_voter_to_topic()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        const string creatorUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+
+        await service.AddTopicVote(topic.Id, loggedInUserName);
+
+        var result = await repository.FetchBy(topic.Id);
+        Assert.Equal(loggedInUserName, result!.Votes.ToArray()[0].Voter.UserName);
+    }
+
+    [Fact]
+    public async void Test_adding_vote_GIVEN_voting_twice_with_same_user_THEN_add_voter_to_topic_once()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        const string creatorUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+
+        await service.AddTopicVote(topic.Id, loggedInUserName);
+        await service.AddTopicVote(topic.Id, loggedInUserName);
+
+        var result = await repository.FetchBy(topic.Id);
+        Assert.Equal(1, result!.Votes.Count);
+    }
+
+    [Fact]
+    public async void Test_removing_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+        const string nonExistingId = "non-existing Id";
+
+        async Task Action()
+        {
+            await service.RemoveTopicVote(nonExistingId, loggedInUserName);
+        }
+
+        var exception = await Assert.ThrowsAsync<Exception>(Action);
+        Assert.Equal("Invalid Topic Id", exception.Message);
+    }
+
+    [Fact]
+    public async void Test_removing_vote_GIVEN_an_existing_vote_THEN_remove_voter_from_topic()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        const string creatorUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+        await service.AddTopicVote(topic.Id, loggedInUserName);
+
+        await service.RemoveTopicVote(topic.Id, loggedInUserName);
+
+        var result = await repository.FetchBy(topic.Id);
+        Assert.Empty(result!.Votes.ToArray());
+    }
+
+    [Fact]
+    public async void Test_removing_vote_GIVEN_removing_twice_with_same_user_THEN_do_nothing()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        const string creatorUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", "first description");
+        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+
+        await service.RemoveTopicVote(topic.Id, loggedInUserName);
+
+        var result = await repository.FetchBy(topic.Id);
+        Assert.Equal(0, result!.Votes.Count);
+    }
 
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,
         TopicRepository repository)
     {
+        var voteRepository = new VoteRepository(dbContext);
         var userStore = new UserStore<User>(dbContext);
         var userManager = await CannotInjectUserStoreDirectlySoWrappingInUserManager(userStore, userNames);
-        var service = new TopicService(repository, userManager.Object);
+        var service = new TopicService(repository, voteRepository, userManager.Object);
         return service;
     }
 

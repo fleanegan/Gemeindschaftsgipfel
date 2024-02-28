@@ -29,9 +29,11 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ITopicService));
                 if (descriptor != null) services.Remove(descriptor);
 
-                IEnumerable<Topic> enumerable =
+                IEnumerable<Topic> demoTopics =
                 [
-                    Topic.Create("title", "description", new User { UserName = AutoAuthorizeMiddleware.UserName })
+                    new Topic("description", "title",
+                        new User { UserName = AutoAuthorizeMiddleware.UserName },
+                        [new Vote(Topic.Create("asdf", "asdf", new User()), new User())])
                 ];
                 _mockTopicService = new Mock<ITopicService>();
                 _mockTopicService.Setup(s => s.GetTopicsByPresenterId()).ReturnsAsync(_mockedResult);
@@ -51,12 +53,21 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                         var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
                             new User { Id = "testId" });
                         topic!.Id = DummyId;
+                        topic.Votes = [];
                         return topic;
                     });
                 _mockTopicService.Setup(c => c.FetchAllExceptLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
-                    enumerable);
+                    demoTopics);
                 _mockTopicService.Setup(c => c.FetchAllOfLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
-                    enumerable);
+                    demoTopics);
+                _mockTopicService.Setup(c => c.AddTopicVote(It.IsAny<string>(), It.IsAny<string>())).Returns(
+                    (string topicId, string userName) =>
+                    {
+                        return Task.Run(() =>
+                        {
+                            if (topicId == NonExistingDummyId) throw new Exception("Invalid Topic Id");
+                        });
+                    });
                 services.AddSingleton(_mockTopicService.Object);
 
                 //authentication: this Middleware automatically adds user 
@@ -253,6 +264,68 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         _mockTopicService!.Verify(c => c.FetchAllOfLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains("description", dictionary[0]["description"]);
         Assert.Contains("title", dictionary[0]["title"]);
+        Assert.Contains("1", dictionary[0]["votes"]);
         Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"]);
+    }
+
+    [Theory]
+    [InlineData("add")]
+    [InlineData("remove")]
+    public async Task Test_addVote_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response(string urlExtension)
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+        var voteBody = new
+        {
+            TopicId = "some id"
+        };
+
+        var response = await client.PostAsync("/topic/" + urlExtension + "Vote", TestHelper.encodeBody(voteBody));
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("add")]
+    [InlineData("remove")]
+    public async Task Test_addVote_GIVEN_wrong_user_input_WHEN_posting_THEN_return_error_response(string urlExtension)
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+        var voteBody = new
+        {
+            Manana = "dip di bidibi"
+        };
+
+        var response = await client.PostAsync("/topic/" + urlExtension + "Vote", TestHelper.encodeBody(voteBody));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        _mockTopicService!.Verify(c => c.AddTopicVote(It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
+        _mockTopicService!.Verify(c => c.RemoveTopicVote(It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
+    }
+
+    [Theory]
+    [InlineData("add")]
+    [InlineData("remove")]
+    public async Task Test_addVote_GIVEN_correct_input_WHEN_posting_THEN_return_ok_response(string urlExtension)
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+        var voteBody = new
+        {
+            TopicId = DummyId
+        };
+
+        var response = await client.PostAsync("/topic/" + urlExtension + "Vote", TestHelper.encodeBody(voteBody));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        if (urlExtension == "add")
+            _mockTopicService!.Verify(c => c.AddTopicVote(DummyId, AutoAuthorizeMiddleware.UserName),
+                Times.Once);
+        if (urlExtension == "remove")
+            _mockTopicService!.Verify(c => c.RemoveTopicVote(DummyId, AutoAuthorizeMiddleware.UserName),
+                Times.Once);
     }
 }

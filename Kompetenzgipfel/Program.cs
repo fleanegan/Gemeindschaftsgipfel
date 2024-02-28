@@ -47,6 +47,7 @@ builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DatabaseContextApplication>();
 builder.Services.AddCors();
 builder.Services.AddScoped<TopicRepository, TopicRepository>();
+builder.Services.AddScoped<VoteRepository, VoteRepository>();
 builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<JwtGenerationService>();

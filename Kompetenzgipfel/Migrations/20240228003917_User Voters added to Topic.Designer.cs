@@ -3,6 +3,7 @@ using System;
 using Kompetenzgipfel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kompetenzgipfel.Migrations
 {
     [DbContext(typeof(DatabaseContextApplication))]
-    partial class DatabaseContextApplicationModelSnapshot : ModelSnapshot
+    [Migration("20240228003917_User Voters added to Topic")]
+    partial class UserVotersaddedtoTopic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -129,7 +132,7 @@ namespace Kompetenzgipfel.Migrations
 
                     b.HasIndex("VoterId");
 
-                    b.ToTable("Votes");
+                    b.ToTable("Vote");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

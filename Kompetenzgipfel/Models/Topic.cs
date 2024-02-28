@@ -10,6 +10,14 @@ public class Topic
     {
     }
 
+    public Topic(string description, string title, User user, ICollection<Vote> votes)
+    {
+        Description = description;
+        Title = title;
+        User = user;
+        Votes = votes;
+    }
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string Id { get; set; }
@@ -21,8 +29,9 @@ public class Topic
     [StringLength(Constants.MaxLengthDescription, ErrorMessage = Constants.MaxLengthDescriptionErrorMessage)]
     public string Description { get; set; }
 
-    [Required]
-    public User User { get; init; }
+    [Required] public User User { get; init; }
+
+    public ICollection<Vote> Votes { get; set; }
 
     public static Topic? Create(string title, string description, User user)
     {

@@ -18,25 +18,34 @@ public class TopicRepository(DatabaseContextApplication dbContext)
 
     public async Task<Topic?> FetchBy(string topicId)
     {
-        return await dbContext.Topics.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == topicId);
+        return await dbContext.Topics
+            .Include(c => c.User)
+            .Include(c => c.Votes)
+            .FirstOrDefaultAsync(c => c.Id == topicId);
     }
 
     public async Task<Topic> Update(Topic updatedTopic)
     {
         dbContext.Topics.Update(updatedTopic);
         await dbContext.SaveChangesAsync();
-        return updatedTopic;
+        return await FetchBy(updatedTopic.Id);
     }
 
     public async Task<IEnumerable<Topic>> GetAllExceptForUser(string userName)
     {
-        return await dbContext.Topics.Include(c => c.User).Where(topic => topic.User.UserName != userName)
+        return await dbContext.Topics
+            .Include(c => c.User)
+            .Include(c => c.Votes)
+            .Where(topic => topic.User.UserName != userName)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Topic>> GetAllForUser(string userName)
     {
-        return await dbContext.Topics.Include(c => c.User).Where(topic => topic.User.UserName == userName)
+        return await dbContext.Topics
+            .Include(c => c.User)
+            .Include(c => c.Votes)
+            .Where(topic => topic.User.UserName == userName)
             .ToListAsync();
     }
 }

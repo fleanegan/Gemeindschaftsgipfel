@@ -115,7 +115,7 @@ export default defineComponent({
   flex-direction: row;
   align-items: center;
   align-content: center;
-  border: 0.1rem;
+  border: 0.15rem;
   border-style: solid;
   border-color: var(--color-border-light);
   border-radius: 0.1rem;

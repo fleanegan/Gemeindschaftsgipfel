@@ -1,34 +1,14 @@
 using System.Security.Claims;
 using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Models;
+using Kompetenzgipfel.Controllers.Helpers;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kompetenzgipfel.Controllers;
 
-public class TopicController(ILogger<TopicController> logger, ITopicService service) : Controller
+public class TopicController(ITopicService service) : Controller
 {
-    private readonly ILogger<TopicController> _logger = logger;
-
-    [HttpGet]
-    public string All()
-    {
-        return "get response";
-    }
-
-    [HttpPost]
-    public string One()
-    {
-        return "post response";
-    }
-
-    [HttpGet]
-    public async Task<string> GetById()
-    {
-        return await service.GetTopicsByPresenterId();
-    }
-
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> AddNew([FromBody] TopicCreationDto userInput)
@@ -39,7 +19,7 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
         {
             var result = await service.AddTopic(userInput, userName!);
 
-            return Ok(new TopicResponse(result.Id, result.Title, result.Description, userName));
+            return Ok(new OwnTopicResponseModel(result.Id, result.Title, result.Description, userName, 0));
         }
         catch (Exception e)
         {
@@ -57,7 +37,8 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
         try
         {
             var result = await service.UpdateTopic(userInput, userName);
-            return Ok(new TopicResponse(result.Id, result.Title, result.Description, userName));
+            return Ok(new OwnTopicResponseModel(result.Id, result.Title, result.Description, userName,
+                result.Votes.Count));
         }
         catch (Exception e)
         {
@@ -71,7 +52,7 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
     {
         var userName = GetUserNameFromAuthorization();
         var result = await service.FetchAllExceptLoggedIn(userName!);
-        var response = GenerateTopicResponses(result);
+        var response = ResponseGenerator.GenerateForeignTopicResponses(result);
         return Ok(response);
     }
 
@@ -80,15 +61,29 @@ public class TopicController(ILogger<TopicController> logger, ITopicService serv
     {
         var userName = GetUserNameFromAuthorization()!;
         var result = await service.FetchAllOfLoggedIn(userName);
-        var response = GenerateTopicResponses(result);
+        var response = ResponseGenerator.GenerateOwnTopicResponses(result);
         return Ok(response);
     }
 
-    private static List<TopicResponse> GenerateTopicResponses(IEnumerable<Topic> fetchAllExceptLoggedIn)
+    [Authorize]
+    public async Task<IActionResult> AddVote([FromBody] TopicVoteDto userInput)
     {
-        return fetchAllExceptLoggedIn
-            .Select(topic => new TopicResponse(topic.Id, topic.Title, topic.Description, topic.User.UserName))
-            .ToList();
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var userName = GetUserNameFromAuthorization();
+        await service.AddTopicVote(userInput.topicId, userName);
+        return Ok();
+    }
+
+
+    [Authorize]
+    public async Task<IActionResult> RemoveVote([FromBody] TopicVoteDto userInput)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+        var userName = GetUserNameFromAuthorization();
+        await service.RemoveTopicVote(userInput.topicId, userName);
+        return Ok();
     }
 
     private string GetUserNameFromAuthorization()

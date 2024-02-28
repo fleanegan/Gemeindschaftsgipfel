@@ -14,7 +14,6 @@ axios.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         } else {
-            router.push('/login');
         }
         return config;
     },
