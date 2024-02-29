@@ -184,26 +184,25 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     {
         TestHelper.ShouldAddAuthorizedDummyUser(true);
         var client = _factory.CreateClient();
-        var updatedTopic = new
-        {
-            Id = "Correct id",
-            Title = "Correct title",
-            Description = "Correct description"
-        };
+        var payload = new TopicUpdateDto(
+            "Correct id",
+            "Correct title",
+            "Correct description"
+        );
 
-        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(payload));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //todo: find out why test not passing with
-        // new TopicUpdateDto(updatedTopic.Id, updatedTopic.Title, updatedTopic.Description)
         _mockTopicService!.Verify(
-            c => c.UpdateTopic(It.IsAny<TopicUpdateDto>(),
+            c => c.UpdateTopic(
+                It.Is<TopicUpdateDto>(dto =>
+                    dto.Description == payload.Description && dto.Id == payload.Id && dto.Title == payload.Title),
                 It.IsAny<string>()), Times.Once);
         var dictionary =
             JsonSerializer.Deserialize<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
         Assert.NotNull(dictionary);
-        Assert.Equal(updatedTopic.Title, dictionary["title"].ToString());
-        Assert.Equal(updatedTopic.Description, dictionary["description"].ToString());
+        Assert.Equal(payload.Title, dictionary["title"].ToString());
+        Assert.Equal(payload.Description, dictionary["description"].ToString());
     }
 
     [Fact]
@@ -216,13 +215,14 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.GetAsync("/topic/allExceptLoggedIn");
 
         var dictionary =
-            JsonSerializer.Deserialize<List<Dictionary<string, string>>>(await response.Content.ReadAsStringAsync());
+            JsonSerializer.Deserialize<List<Dictionary<string, object>>>(await response.Content.ReadAsStringAsync());
         Assert.NotNull(dictionary);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
-        Assert.Contains("description", dictionary[0]["description"]);
-        Assert.Contains("title", dictionary[0]["title"]);
-        Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"]);
+        Assert.Contains("description", dictionary[0]["description"].ToString());
+        Assert.Contains("title", dictionary[0]["title"].ToString());
+        Assert.Equal("False", dictionary[0]["didIVoteForThis"].ToString());
+        Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"].ToString());
     }
 
     [Fact]
@@ -258,14 +258,14 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var dictionary =
-            JsonSerializer.Deserialize<List<Dictionary<string, string>>>(await response.Content.ReadAsStringAsync());
+            JsonSerializer.Deserialize<List<Dictionary<string, object>>>(await response.Content.ReadAsStringAsync());
         Assert.NotNull(dictionary);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(c => c.FetchAllOfLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
-        Assert.Contains("description", dictionary[0]["description"]);
-        Assert.Contains("title", dictionary[0]["title"]);
-        Assert.Contains("1", dictionary[0]["votes"]);
-        Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"]);
+        Assert.Contains("description", dictionary[0]["description"].ToString());
+        Assert.Contains("title", dictionary[0]["title"].ToString());
+        Assert.Contains("1", dictionary[0]["votes"].ToString());
+        Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"].ToString());
     }
 
     [Theory]

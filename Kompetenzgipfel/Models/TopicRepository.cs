@@ -21,6 +21,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
         return await dbContext.Topics
             .Include(c => c.User)
             .Include(c => c.Votes)
+            .ThenInclude(c => c.Voter)
             .FirstOrDefaultAsync(c => c.Id == topicId);
     }
 
@@ -36,6 +37,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
         return await dbContext.Topics
             .Include(c => c.User)
             .Include(c => c.Votes)
+            .ThenInclude(c => c.Voter)
             .Where(topic => topic.User.UserName != userName)
             .ToListAsync();
     }
@@ -45,6 +47,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
         return await dbContext.Topics
             .Include(c => c.User)
             .Include(c => c.Votes)
+            .ThenInclude(c => c.Voter)
             .Where(topic => topic.User.UserName == userName)
             .ToListAsync();
     }

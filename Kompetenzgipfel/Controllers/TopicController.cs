@@ -52,7 +52,7 @@ public class TopicController(ITopicService service) : Controller
     {
         var userName = GetUserNameFromAuthorization();
         var result = await service.FetchAllExceptLoggedIn(userName!);
-        var response = ResponseGenerator.GenerateForeignTopicResponses(result);
+        var response = ResponseGenerator.GenerateForeignTopicResponses(result, userName);
         return Ok(response);
     }
 
@@ -68,6 +68,7 @@ public class TopicController(ITopicService service) : Controller
     [Authorize]
     public async Task<IActionResult> AddVote([FromBody] TopicVoteDto userInput)
     {
+        Console.WriteLine("adding vote");
         if (!ModelState.IsValid)
             return BadRequest();
         var userName = GetUserNameFromAuthorization();
@@ -79,6 +80,7 @@ public class TopicController(ITopicService service) : Controller
     [Authorize]
     public async Task<IActionResult> RemoveVote([FromBody] TopicVoteDto userInput)
     {
+        Console.WriteLine("removing vote");
         if (!ModelState.IsValid)
             return BadRequest();
         var userName = GetUserNameFromAuthorization();

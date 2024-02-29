@@ -14,11 +14,18 @@ public abstract class ResponseGenerator
     }
 
     public static List<ForeignTopicResponseModel> GenerateForeignTopicResponses(
-        IEnumerable<Topic> fetchAllExceptLoggedIn)
+        IEnumerable<Topic> fetchAllExceptLoggedIn, string loggedInUserName)
     {
         return fetchAllExceptLoggedIn
             .Select(topic =>
-                new ForeignTopicResponseModel(topic.Id, topic.Title, topic.Description, topic.User.UserName))
+                new ForeignTopicResponseModel(
+                    topic.Id,
+                    topic.Title,
+                    topic.Description,
+                    topic.User.UserName,
+                    topic.Votes.Count(vote => vote.Voter.UserName == loggedInUserName) == 1
+                )
+            )
             .ToList();
     }
 }

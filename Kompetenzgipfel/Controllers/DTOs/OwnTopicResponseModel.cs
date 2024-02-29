@@ -11,5 +11,5 @@ public class OwnTopicResponseModel(
     public string Title { get; set; } = title;
     public string? Description { get; set; } = description;
     public string PresenterUserName { get; set; } = presenterUserName;
-    public string Votes { get; set; } = voteCount.ToString();
+    public int Votes { get; set; } = voteCount;
 }

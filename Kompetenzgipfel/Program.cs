@@ -32,12 +32,10 @@ builder.Services.AddAuthentication(opt =>
         };
     });
 builder.Services.AddControllers();
-//todo: find a way to get from .env
-var databaseName = "database";
 builder.Services.AddDbContext<DatabaseContextApplication>(options =>
 {
     var config = builder.Configuration;
-    var connectionString = config.GetConnectionString(databaseName);
+    var connectionString = config.GetConnectionString(Environment.GetEnvironmentVariable("DB_NAME")!);
     options.UseSqlite(connectionString);
 });
 builder.Services.AddAuthorization();

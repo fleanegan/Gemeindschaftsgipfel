@@ -3,10 +3,10 @@
     <h1>Vortragsthemen</h1>
     <h2>Meine Vorschläge</h2>
     <ul class="list">
-      <li v-for="(item, index) in myTopics" :key="index" class="topic-card">
-        <div class="topic-card-header">
-          <button class="toggle-button" @click="toggleDetails(myTopics, index)"><img
-              :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
+      <li v-for="(item, index) in myTopics" :key="item.votes" class="topic-card">
+        <div :class="{topic_card_header:true, most_liked_highlight:item==mostLikedTopic}">
+          <button class="toggle-button" @click="toggleDetails(myTopics, index)">
+            <img :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
           </button>
           <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
         </div>
@@ -24,13 +24,13 @@
     <h2>Das haben sich die Anderen ausgedacht</h2>
     <ul class="list">
       <li v-for="(item, index) in foreignTopics" :key="index" class="topic-card">
-        <div class="topic-card-header">
+        <div class="topic_card_header">
           <button class="toggle-button" @click="toggleDetails(foreignTopics, index)"><img
               :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
           </button>
           <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
           <button class="toggle-button" @click="toggleVote(index)"><img
-              :src="item.voted ? '/full_heart.svg' : '/empty_heart.svg'" alt="Vote">
+              :src="item.didIVoteForThis ? '/full_heart.svg' : '/empty_heart.svg'" alt="Vote">
           </button>
         </div>
         <div v-if="item.expanded" class="topic-card-details">
@@ -53,6 +53,7 @@ interface MyTopic {
   id: string;
   title: string;
   description: string;
+  votes: number;
   expanded: boolean;
 }
 
@@ -60,9 +61,9 @@ interface ForeignTopic {
   id: string;
   title: string;
   description: string;
-  presenterUserName: string
+  presenterUserName: string;
+  didIVoteForThis: boolean;
   expanded: boolean;
-  voted: boolean;
 }
 
 export default defineComponent({
@@ -81,14 +82,30 @@ export default defineComponent({
     toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): void {
       topic[index].expanded = !topic[index].expanded;
     },
-    toggleVote(index: number): void {
-      this.foreignTopics[index].voted = !this.foreignTopics[index].voted;
+    async toggleVote(index: number): Promise<void> {
+      if (!this.foreignTopics[index].didIVoteForThis)
+        await axios.post('/api/topic/addVote', {"TopicId": this.foreignTopics[index].id})
+      else
+        await axios.post('/api/topic/removeVote', {"TopicId": this.foreignTopics[index].id})
+      this.foreignTopics[index].didIVoteForThis = !this.foreignTopics[index].didIVoteForThis;
     },
     editTopic(index: number): void {
 
     },
     addNewTopic() {
       this.$router.push("/topic/add");
+    }
+  },
+  computed: {
+    mostLikedTopic() {
+      if (!this.myTopics.length)
+        return null;
+      let result = this.myTopics[0]
+      for (const topic of this.myTopics) {
+        if (topic.votes > result.votes)
+          result = topic;
+      }
+      return result;
     }
   },
   mounted() {
@@ -110,26 +127,27 @@ export default defineComponent({
   flex-direction: column;
 }
 
-.topic-card-header {
+.most_liked_highlight {
+  background: mediumvioletred;
+  border-radius: 1rem;
+  border: .3rem solid mediumvioletred;
+}
+
+.topic_card_header {
   display: flex;
   min-height: 3rem;
   flex-direction: row;
   align-items: center;
   align-content: center;
-  border: 0.15rem;
-  border-style: none;
-  border-color: var(--color-border-light);
-  border-radius: 0.1rem;
-  border-bottom: none;
 }
 
-.topic-card-header button img {
+.topic_card_header button img {
   width: 1.35rem;
   height: 1.35rem;
   margin: 0.5rem;
 }
 
-.topic-card-header h4 {
+.topic_card_header h4 {
   padding-left: 0;
   margin-right: auto;
 }
@@ -163,9 +181,7 @@ export default defineComponent({
 .toggle-button {
   cursor: pointer;
   background: none;
-  border: 0.01rem;
-  border-style: solid;
-  border-color: var(--color-background);
+  border-style: none;
   color: var(--main-color-text-light);
   border-radius: 0.2rem;
   font-weight: bold;
