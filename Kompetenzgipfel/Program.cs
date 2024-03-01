@@ -38,7 +38,8 @@ builder.Services.AddDbContext<DatabaseContextApplication>(options =>
     var connectionString = config.GetConnectionString(Environment.GetEnvironmentVariable("DB_NAME")!);
     options.UseSqlite(connectionString);
 });
-builder.Services.AddAuthorization();
+//todo: find a way to replace by these lines without breaking the IEmailSender dependency
+// builder.Services.AddAuthorization();
 // builder.Services.AddIdentity<User, IdentityRole>()
 // .AddEntityFrameworkStores<DatabaseContextApplication>();
 builder.Services.AddIdentityApiEndpoints<User>()

@@ -24,6 +24,9 @@ public class AuthController(AuthService authService) : Controller
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        return Ok(await authService.SignUp(signupData));
+        var identityResult = await authService.SignUp(signupData);
+        if (identityResult.Succeeded)
+            return Ok(identityResult);
+        return BadRequest(identityResult.Errors);
     }
 }

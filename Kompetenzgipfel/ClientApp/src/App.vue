@@ -78,11 +78,8 @@ export default defineComponent({
 
 .routed-elements {
   margin-top: 5rem;
-  width: 512px;
+  width: 500px;
   max-width: 900px;
-  /*
-  background-color: aliceblue;  
-   */
   height: 100vh;
   display: flex;
   flex-direction: column;

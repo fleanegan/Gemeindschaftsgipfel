@@ -27,7 +27,8 @@ own variables
     --main-color-text: #6f6f6f;
     --main-color-text-light: #e8e8e8;
     --main-color-border-light: #e9e9e9ff;
-    --main--color-nuance-light: #f8f8f8;
+    --main-color-nuance-light: #f8f8f8;
+    --main-color-highlight: #87cdec;
 }
 
 /* semantic color variables for this project */
@@ -49,8 +50,8 @@ own variables
     --color-main-accent: var(--main-color-accent);
     --color-main-text: var(--main-color-text);
     --color-border-light: var(--main-color-border-light);
-    --color-nuance-light: var(--main--color-nuance-light);
-
+    --color-nuance-light: var(--main-color-nuance-light);
+    --color-highlight: var(--main-color-highlight)
 }
 
 *,

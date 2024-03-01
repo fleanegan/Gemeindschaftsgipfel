@@ -4,6 +4,7 @@
     <h2>Meine Vorschläge</h2>
     <ul class="list">
       <li v-for="(item, index) in myTopics" :key="item.votes" class="topic-card">
+        <p v-if="item==mostLikedTopic" class="most_liked_hint">Publikumsliebling</p>
         <div :class="{topic_card_header:true, most_liked_highlight:item==mostLikedTopic}">
           <button class="toggle-button" @click="toggleDetails(myTopics, index)">
             <img :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
@@ -127,11 +128,17 @@ export default defineComponent({
   flex-direction: column;
 }
 
-.most_liked_highlight {
-  background: mediumvioletred;
-  border-radius: 1rem;
-  border: .3rem solid mediumvioletred;
+.most_liked_hint {
+  margin-left: 1.5rem;
+  background-color: var(--color-highlight);
+  border-top-left-radius: 0.2rem;
+  border-top-right-radius: 0.2rem;
+  width: 12rem;
+  height: 2rem;
+  text-align: center;
+  color: var(--color-background);
 }
+
 
 .topic_card_header {
   display: flex;
@@ -139,6 +146,12 @@ export default defineComponent({
   flex-direction: row;
   align-items: center;
   align-content: center;
+  border-left: .25rem solid var(--color-background);
+}
+
+.most_liked_highlight {
+  border-radius: 1rem;
+  border: .25rem solid var(--color-highlight);
 }
 
 .topic_card_header button img {
