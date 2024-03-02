@@ -16,10 +16,10 @@
             <p class="description">{{ item.description }}</p>
             <div class="topic_card_details_owner_actions">
               <button class="action_button" style="margin-bottom: 0.25rem;" @click="removeTopic(item.id)">
-                <img alt="Expand" src='/empty_edit.svg'>
+                <img alt="Expand" src='/empty_delete.svg'>
               </button>
-              <button class="action_button" @click="toggleDetails(myTopics, index)">
-                <img alt="Expand" src='/empty_edit.svg'>
+              <button class="action_button" @click="editTopic(item.id)">
+                <img alt="Expand" src='/empty_edit_no_border.svg'>
               </button>
             </div>
           </div>
@@ -99,8 +99,13 @@ export default defineComponent({
         await axios.delete('/api/topic/removeVote/' + this.foreignTopics[index].id)
       this.foreignTopics[index].didIVoteForThis = !this.foreignTopics[index].didIVoteForThis;
     },
-    editTopic(index: number): void {
-
+    editTopic(topicId: string): void {
+      this.$router.push({
+        name: 'Vortragsthema bearbeiten',
+        params: {
+          'topicId': topicId,
+        }
+      });
     },
     async removeTopic(topicId: string) {
       await axios.delete('api/topic/delete/' + topicId);
@@ -189,7 +194,6 @@ export default defineComponent({
   padding-right: 0.5rem;
   padding-bottom: 0.5rem;
   background-color: var(--main--color-nuance-light);
-  background-color: aliceblue;
   border-radius: 0.2rem;
 }
 

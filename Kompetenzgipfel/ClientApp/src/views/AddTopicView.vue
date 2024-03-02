@@ -1,5 +1,5 @@
 <template>
-  <h1>Neues Thema hinzufügen</h1>
+  <h1>{{ isEditing ? 'Neues Thema hinzufügen' : 'Thema bearbeiten' }}</h1>
   <form @submit.prevent="submitData">
     <div class="form-group">
       <label for="title">Worüber möchtest du sprechen?</label>
@@ -40,16 +40,22 @@ export default defineComponent({
         const description = this.description;
         this.title = ''
         this.description = ''
-        const response = await axios.post('/api/topic/addnew', {
-          "Title": title,
-          "Description": description
-        });
-
-        if (response.status >= 200 && response.status < 300) {
-          this.$router.push('/topic');
+        if (this.isEditing) {
+          await axios.post('/api/topic/addnew', {
+            "Title": title,
+            "Description": description
+          });
+        } else {
+          await axios.put('/api/topic/update', {
+            "Title": title,
+            "Description": description,
+            "Id": this.$props["topicId"],
+          });
         }
+
+        this.$router.push('/topic');
       } catch (e) {
-        console.log("error while sending new topic: ", e)
+        console.log("error while sending topic: ", e)
       }
     },
     async abort() {
@@ -59,8 +65,15 @@ export default defineComponent({
   computed: {
     isTitleEmpty() {
       return this.title.length === 0
+    },
+    isEditing() {
+      return this.$props['topicId'] === undefined;
     }
-  }
+  },
+  mounted() {
+
+  },
+  props: ['topicId'],
 });
 </script>
 
