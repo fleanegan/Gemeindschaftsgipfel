@@ -5,14 +5,24 @@
     <ul class="list">
       <li v-for="(item, index) in myTopics" :key="item.votes" class="topic-card">
         <p v-if="item==mostLikedTopic" class="most_liked_hint">Publikumsliebling</p>
-        <div :class="{topic_card_header:true, most_liked_highlight:item==mostLikedTopic}">
-          <button class="toggle-button" @click="toggleDetails(myTopics, index)">
+        <div :class="{topic_card_header:true, most_liked_highlight:item===mostLikedTopic}">
+          <button class="action_button" @click="toggleDetails(myTopics, index)">
             <img :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
           </button>
           <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
         </div>
         <div v-if="item.expanded" class="topic-card-details">
-          <p class="description">{{ item.description }}</p>
+          <div class="topic_card_details_owner">
+            <p class="description">{{ item.description }}</p>
+            <div class="topic_card_details_owner_actions">
+              <button class="action_button" style="margin-bottom: 0.25rem;" @click="removeTopic(item.id)">
+                <img alt="Expand" src='/empty_edit.svg'>
+              </button>
+              <button class="action_button" @click="toggleDetails(myTopics, index)">
+                <img alt="Expand" src='/empty_edit.svg'>
+              </button>
+            </div>
+          </div>
         </div>
       </li>
       <li>
@@ -26,11 +36,11 @@
     <ul class="list">
       <li v-for="(item, index) in foreignTopics" :key="index" class="topic-card">
         <div class="topic_card_header">
-          <button class="toggle-button" @click="toggleDetails(foreignTopics, index)"><img
+          <button class="action_button" @click="toggleDetails(foreignTopics, index)"><img
               :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
           </button>
           <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
-          <button class="toggle-button" @click="toggleVote(index)"><img
+          <button class="action_button" @click="toggleVote(index)"><img
               :src="item.didIVoteForThis ? '/full_heart.svg' : '/empty_heart.svg'" alt="Vote">
           </button>
         </div>
@@ -78,7 +88,6 @@ export default defineComponent({
     async fetchData() {
       this.myTopics = (await axios.get('/api/topic/allOfLoggedIn', {})).data
       this.foreignTopics = (await axios.get('/api/topic/allExceptLoggedIn', {})).data;
-
     },
     toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): void {
       topic[index].expanded = !topic[index].expanded;
@@ -92,6 +101,10 @@ export default defineComponent({
     },
     editTopic(index: number): void {
 
+    },
+    async removeTopic(topicId: string) {
+      await axios.delete('api/topic/delete/' + topicId);
+      await this.fetchData();
     },
     addNewTopic() {
       this.$router.push("/topic/add");
@@ -153,6 +166,7 @@ export default defineComponent({
   border-left: .25rem solid var(--color-background);
 }
 
+/*do not delete*/
 .most_liked_highlight {
   border-radius: 1rem;
   border: .25rem solid var(--color-highlight);
@@ -172,15 +186,33 @@ export default defineComponent({
 .topic-card-details {
   padding-left: 3rem;
   padding-top: 0.5rem;
-  padding-right: 0;
+  padding-right: 0.5rem;
   padding-bottom: 0.5rem;
   background-color: var(--main--color-nuance-light);
+  background-color: aliceblue;
   border-radius: 0.2rem;
+}
+
+.topic_card_details_owner {
+  display: flex;
+  flex-direction: row;
+}
+
+.topic_card_details_owner_actions {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+}
+
+.topic_card_details_owner_actions button {
+  margin-left: 0.5rem;
 }
 
 .description {
   padding: 0.5rem;
-  margin-right: 3rem;
+  margin-right: 0;
+  width: 100%;
   border: 0.1rem;
   border-style: solid;
   border-color: var(--main-color-border-light);
@@ -195,11 +227,10 @@ export default defineComponent({
   text-align: end;
 }
 
-.toggle-button {
+.action_button {
   cursor: pointer;
   background: none;
   border-style: none;
-  color: var(--main-color-text-light);
   border-radius: 0.2rem;
   font-weight: bold;
   display: flex;
