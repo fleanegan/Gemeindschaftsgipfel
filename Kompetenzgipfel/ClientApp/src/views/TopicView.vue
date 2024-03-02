@@ -22,7 +22,7 @@
         </div>
       </li>
     </ul>
-    <h2>Das haben sich die Anderen ausgedacht</h2>
+    <h2>Ideen der Anderen</h2>
     <ul class="list">
       <li v-for="(item, index) in foreignTopics" :key="index" class="topic-card">
         <div class="topic_card_header">
@@ -87,7 +87,7 @@ export default defineComponent({
       if (!this.foreignTopics[index].didIVoteForThis)
         await axios.post('/api/topic/addVote', {"TopicId": this.foreignTopics[index].id})
       else
-        await axios.post('/api/topic/removeVote', {"TopicId": this.foreignTopics[index].id})
+        await axios.delete('/api/topic/removeVote/' + this.foreignTopics[index].id)
       this.foreignTopics[index].didIVoteForThis = !this.foreignTopics[index].didIVoteForThis;
     },
     editTopic(index: number): void {
@@ -120,7 +120,10 @@ export default defineComponent({
 .list {
   list-style: none;
   margin-right: 2rem;
-  padding: 1rem;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .topic-card {
@@ -130,6 +133,7 @@ export default defineComponent({
 
 .most_liked_hint {
   margin-left: 1.5rem;
+  margin-top: 0.5rem;
   background-color: var(--color-highlight);
   border-top-left-radius: 0.2rem;
   border-top-right-radius: 0.2rem;

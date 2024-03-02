@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Kompetenzgipfel.Controllers.DTOs;
+using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Properties;
 using Kompetenzgipfel.Services;
@@ -14,8 +15,9 @@ namespace Tests.Controllers;
 
 public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 {
-    private const string DummyId = "dummyId";
+    private const string HappyPathDummyId = "happyPathDummyId";
     private const string NonExistingDummyId = "nonExistingDummyId";
+    private const string ConflictingDummyId = "conflictingDummyId";
     private readonly WebApplicationFactory<Program> _factory;
     private readonly string _mockedResult = "mocked result";
     private Mock<ITopicService>? _mockTopicService;
@@ -42,17 +44,20 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                     {
                         var topic = Topic.Create(newTopic.Title, newTopic.Description ?? "",
                             new User { Id = "testId" });
-                        topic!.Id = DummyId;
+                        topic!.Id = HappyPathDummyId;
                         return topic;
                     });
                 _mockTopicService.Setup(s =>
                         s.UpdateTopic(It.IsAny<TopicUpdateDto>(), It.IsAny<string>()))
                     .ReturnsAsync((TopicUpdateDto topicToUpdate, string _) =>
                     {
-                        if (topicToUpdate.Id == NonExistingDummyId) throw new Exception("Invalid Topic Id");
+                        if (topicToUpdate.Id == NonExistingDummyId)
+                            throw new TopicNotFoundException(topicToUpdate.Id);
+                        if (topicToUpdate.Id == ConflictingDummyId)
+                            throw new BatschungaException(topicToUpdate.Id);
                         var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
                             new User { Id = "testId" });
-                        topic!.Id = DummyId;
+                        topic!.Id = HappyPathDummyId;
                         topic.Votes = [];
                         return topic;
                     });
@@ -61,16 +66,41 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                 _mockTopicService.Setup(c => c.FetchAllOfLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
                     demoTopics);
                 _mockTopicService.Setup(c => c.AddTopicVote(It.IsAny<string>(), It.IsAny<string>())).Returns(
-                    (string topicId, string userName) =>
+                    async (string topicId, string _) =>
                     {
-                        return Task.Run(() =>
+                        await Task.Run(() =>
                         {
-                            if (topicId == NonExistingDummyId) throw new Exception("Invalid Topic Id");
+                            if (topicId == NonExistingDummyId)
+                                throw new TopicNotFoundException(topicId);
+                            if (topicId == ConflictingDummyId)
+                                throw new VoteImpossibleException(topicId);
+                        });
+                    });
+                _mockTopicService.Setup(c => c.RemoveTopicVote(It.IsAny<string>(), It.IsAny<string>())).Returns(
+                    async (string topicId, string _) =>
+                    {
+                        await Task.Run(() =>
+                        {
+                            if (topicId == NonExistingDummyId)
+                                throw new TopicNotFoundException(topicId);
+                            if (topicId == ConflictingDummyId)
+                                throw new VoteImpossibleException(topicId);
+                        });
+                    });
+                _mockTopicService.Setup(c => c.RemoveTopic(It.IsAny<string>(), It.IsAny<string>())).Returns(
+                    async (string topicId, string _) =>
+                    {
+                        await Task.Run(() =>
+                        {
+                            if (topicId == NonExistingDummyId)
+                                throw new TopicNotFoundException(topicId);
+                            if (topicId == ConflictingDummyId)
+                                throw new BatschungaException(topicId);
                         });
                     });
                 services.AddSingleton(_mockTopicService.Object);
 
-                //authentication: this Middleware automatically adds user 
+                //authentication: this Middleware automatically adds user "FakeAuthUser"
                 services.AddSingleton<IStartupFilter>(new AutoAuthorizeStartupFilter());
             });
         });
@@ -125,7 +155,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(newTopic.Title, dictionary?["title"].ToString());
         Assert.Equal(newTopic.Description, dictionary?["description"].ToString());
-        Assert.Equal(DummyId, dictionary?["id"].ToString());
+        Assert.Equal(HappyPathDummyId, dictionary?["id"].ToString());
     }
 
     [Fact]
@@ -175,12 +205,30 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
 
         var errorDescription = await response.Content.ReadAsStringAsync();
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Contains("Id", errorDescription);
     }
 
     [Fact]
-    public async Task Test_update_GIVEN_correct_input_WHEN_putting_THEN_return_error_response()
+    public async Task Test_update_GIVEN_id_of_someone_else_s_topic_WHEN_putting_THEN_return_error_response()
+    {
+        var client = _factory.CreateClient();
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var updatedTopic = new
+        {
+            Id = ConflictingDummyId,
+            Title = "Correct title",
+            Description = "Correct description"
+        };
+
+        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+
+        var errorDescription = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_update_GIVEN_correct_input_WHEN_putting_THEN_success_response()
     {
         TestHelper.ShouldAddAuthorizedDummyUser(true);
         var client = _factory.CreateClient();
@@ -268,64 +316,143 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"].ToString());
     }
 
-    [Theory]
-    [InlineData("add")]
-    [InlineData("remove")]
-    public async Task Test_addVote_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response(string urlExtension)
+    [Fact]
+    public async Task Test_removeTopic_GIVEN_no_connected_user_WHEN_deleting_THEN_return_error_response()
     {
         TestHelper.ShouldAddAuthorizedDummyUser(false);
         var client = _factory.CreateClient();
-        var voteBody = new
-        {
-            TopicId = "some id"
-        };
 
-        var response = await client.PostAsync("/topic/" + urlExtension + "Vote", TestHelper.encodeBody(voteBody));
+        var response = await client.DeleteAsync("/topic/Delete/" + HappyPathDummyId);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    [Theory]
-    [InlineData("add")]
-    [InlineData("remove")]
-    public async Task Test_addVote_GIVEN_wrong_user_input_WHEN_posting_THEN_return_error_response(string urlExtension)
+    [Fact]
+    public async Task Test_removeTopic_GIVEN_non_existing_id_WHEN_deleting_THEN_return_error_response()
     {
         TestHelper.ShouldAddAuthorizedDummyUser(true);
         var client = _factory.CreateClient();
-        var voteBody = new
-        {
-            Manana = "dip di bidibi"
-        };
 
-        var response = await client.PostAsync("/topic/" + urlExtension + "Vote", TestHelper.encodeBody(voteBody));
+        var response = await client.DeleteAsync("/topic/Delete/" + NonExistingDummyId);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_removeTopic_GIVEN_forbidden_topic_id_WHEN_deleting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.DeleteAsync("/topic/Delete/" + ConflictingDummyId);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_addVote_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+        var voteBody = new TopicVoteDto { topicId = "some id" };
+
+        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_addVote_GIVEN_wrong_user_input_WHEN_posting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+        var voteBody = new { Manamana = "dip di bidibi" };
+
+        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         _mockTopicService!.Verify(c => c.AddTopicVote(It.IsAny<string>(), It.IsAny<string>()),
             Times.Never);
-        _mockTopicService!.Verify(c => c.RemoveTopicVote(It.IsAny<string>(), It.IsAny<string>()),
-            Times.Never);
     }
 
-    [Theory]
-    [InlineData("add")]
-    [InlineData("remove")]
-    public async Task Test_addVote_GIVEN_correct_input_WHEN_posting_THEN_return_ok_response(string urlExtension)
+    [Fact]
+    public async Task Test_addVote_GIVEN_non_existing_topic_WHEN_posting_THEN_return_error_response()
     {
         TestHelper.ShouldAddAuthorizedDummyUser(true);
         var client = _factory.CreateClient();
-        var voteBody = new
-        {
-            TopicId = DummyId
-        };
+        var voteBody = new TopicVoteDto { topicId = NonExistingDummyId };
 
-        var response = await client.PostAsync("/topic/" + urlExtension + "Vote", TestHelper.encodeBody(voteBody));
+        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        _mockTopicService!.Verify(c => c.AddTopicVote(NonExistingDummyId, AutoAuthorizeMiddleware.UserName),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Test_addVote_GIVEN_conflicting_topic_state_WHEN_posting_THEN_return_error_response(
+    )
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+        var voteBody = new TopicVoteDto { topicId = ConflictingDummyId };
+
+        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        _mockTopicService!.Verify(c => c.AddTopicVote(ConflictingDummyId, AutoAuthorizeMiddleware.UserName),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Test_removeVote_GIVEN_no_connected_user_WHEN_deleting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+
+        var response = await client.DeleteAsync("/topic/removeVote/" + HappyPathDummyId);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_removeVote_GIVEN_non_existing_topic_WHEN_deleting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.DeleteAsync("/topic/removeVote/" + NonExistingDummyId);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        _mockTopicService!.Verify(c => c.RemoveTopicVote(NonExistingDummyId, AutoAuthorizeMiddleware.UserName),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Test_removeVote_GIVEN_conflicting_topic_state_WHEN_deleting_THEN_return_error_response(
+    )
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.DeleteAsync("/topic/removeVote/" + ConflictingDummyId);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        _mockTopicService!.Verify(c => c.RemoveTopicVote(ConflictingDummyId, AutoAuthorizeMiddleware.UserName),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Test_removeVote_GIVEN_valid_topic_id_WHEN_deleting_THEN_return_success_response(
+    )
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.DeleteAsync("/topic/removeVote/" + HappyPathDummyId);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        if (urlExtension == "add")
-            _mockTopicService!.Verify(c => c.AddTopicVote(DummyId, AutoAuthorizeMiddleware.UserName),
-                Times.Once);
-        if (urlExtension == "remove")
-            _mockTopicService!.Verify(c => c.RemoveTopicVote(DummyId, AutoAuthorizeMiddleware.UserName),
-                Times.Once);
+        _mockTopicService!.Verify(c => c.RemoveTopicVote(HappyPathDummyId, AutoAuthorizeMiddleware.UserName),
+            Times.Once);
     }
 }

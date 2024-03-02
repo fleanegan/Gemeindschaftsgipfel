@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Controllers.Helpers;
+using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +29,27 @@ public class TopicController(ITopicService service) : Controller
         }
     }
 
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var userName = GetUserNameFromAuthorization();
+        try
+        {
+            await service.RemoveTopic(id, userName);
+        }
+        catch (TopicNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (BatschungaException e)
+        {
+            return Forbid(new AuthenticationProperties());
+        }
+
+        return Ok();
+    }
+
     [HttpPut]
     [Authorize]
     public async Task<IActionResult> Update([FromBody] TopicUpdateDto userInput)
@@ -40,9 +63,13 @@ public class TopicController(ITopicService service) : Controller
             return Ok(new OwnTopicResponseModel(result.Id, result.Title, result.Description, userName,
                 result.Votes.Count));
         }
-        catch (Exception e)
+        catch (TopicNotFoundException e)
         {
-            return BadRequest(e.Message);
+            return NotFound(e.Message);
+        }
+        catch (BatschungaException e)
+        {
+            return Forbid(new AuthenticationProperties());
         }
     }
 
@@ -72,20 +99,41 @@ public class TopicController(ITopicService service) : Controller
         if (!ModelState.IsValid)
             return BadRequest();
         var userName = GetUserNameFromAuthorization();
-        await service.AddTopicVote(userInput.topicId, userName);
-        return Ok();
+        try
+        {
+            await service.AddTopicVote(userInput.topicId, userName);
+            return Ok();
+        }
+        catch (VoteImpossibleException e)
+        {
+            return Conflict(e.Message);
+        }
+        catch (TopicNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
 
     [Authorize]
-    public async Task<IActionResult> RemoveVote([FromBody] TopicVoteDto userInput)
+    [HttpDelete]
+    public async Task<IActionResult> RemoveVote(string id)
     {
         Console.WriteLine("removing vote");
-        if (!ModelState.IsValid)
-            return BadRequest();
         var userName = GetUserNameFromAuthorization();
-        await service.RemoveTopicVote(userInput.topicId, userName);
-        return Ok();
+        try
+        {
+            await service.RemoveTopicVote(id, userName);
+            return Ok();
+        }
+        catch (VoteImpossibleException e)
+        {
+            return Conflict(e.Message);
+        }
+        catch (TopicNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     private string GetUserNameFromAuthorization()

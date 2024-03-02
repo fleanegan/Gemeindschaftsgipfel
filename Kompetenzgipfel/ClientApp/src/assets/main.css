@@ -13,11 +13,14 @@
 
 h1 {
     margin: 0.75rem 1rem 3rem;
+    letter-spacing: 0.1rem;
 }
 
 h2 {
     margin-left: 1rem;
     margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.1rem;
 }
 
 hr {

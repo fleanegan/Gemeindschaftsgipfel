@@ -1,4 +1,5 @@
 using Kompetenzgipfel.Controllers.DTOs;
+using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -28,9 +29,9 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     {
         var topicToChange = await topicRepository.FetchBy(updatedTopicCreationContent.Id);
         if (topicToChange == null)
-            throw new Exception("Invalid Topic Id");
+            throw new TopicNotFoundException(updatedTopicCreationContent.Id);
         if (userName != topicToChange.User.UserName)
-            throw new Exception("This Topic does not belong to you. Not allowed to update");
+            throw new BatschungaException(topicToChange.Id);
         topicToChange.Title = updatedTopicCreationContent.Title;
         topicToChange.Description = updatedTopicCreationContent.Description;
         return await topicRepository.Update(topicToChange);
@@ -49,7 +50,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     public async Task AddTopicVote(string topicId, string loggedInUserName)
     {
         var topicToVote = await topicRepository.FetchBy(topicId);
-        if (topicToVote == null) throw new Exception("Invalid Topic Id");
+        if (topicToVote == null) throw new TopicNotFoundException(topicId);
         var voter = await userManager.FindByNameAsync(loggedInUserName);
         var newVote = new Vote(topicToVote, voter!);
         if (topicToVote.Votes.Any(vote => vote.Voter.UserName == voter!.UserName))
@@ -60,8 +61,18 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     public async Task RemoveTopicVote(string topicId, string loggedInUserName)
     {
         var topicToVote = await topicRepository.FetchBy(topicId);
-        if (topicToVote == null) throw new Exception("Invalid Topic Id");
+        if (topicToVote == null) throw new TopicNotFoundException(topicId);
         var first = topicToVote.Votes.FirstOrDefault(vote => vote.Voter.UserName == loggedInUserName);
         if (first != null) await voteRepository.Remove(first);
+    }
+
+    public async Task RemoveTopic(string topicId, string loggedInUserName)
+    {
+        var topic = await topicRepository.FetchBy(topicId);
+        if (topic == null)
+            throw new TopicNotFoundException(topicId);
+        if (topic.User.UserName != loggedInUserName)
+            throw new Exception("Not your Topic");
+        await topicRepository.Remove(topic);
     }
 }

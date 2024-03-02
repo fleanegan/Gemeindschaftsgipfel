@@ -1,7 +1,7 @@
 <template>
   <header :class="{'nav_header': true, 'nav_header_sticky': isSticky}">
     <nav class="nav-links">
-      <router-link class="router-link" to="/"><img alt="Home" src="/public/icon.svg" style="width: 3rem; height: 3rem;">
+      <router-link class="router-link" to="/"><img alt="Home" src="/public/icon.svg" style="width: 6rem; height: 6rem;">
       </router-link>
       <div class="transparent-header-area"></div>
       <router-link class="router-link" to="/about">About</router-link>

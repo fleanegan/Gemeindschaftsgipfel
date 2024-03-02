@@ -1,4 +1,5 @@
 using Kompetenzgipfel.Controllers.DTOs;
+using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Identity;
@@ -44,8 +45,7 @@ public class TopicServiceTest
             await service.UpdateTopic(updatedTopic, loggedInUserName);
         }
 
-        var exception = await Assert.ThrowsAsync<Exception>(Action);
-        Assert.Equal("Invalid Topic Id", exception.Message);
+        await Assert.ThrowsAsync<TopicNotFoundException>(Action);
     }
 
     [Fact]
@@ -63,8 +63,7 @@ public class TopicServiceTest
             await service.UpdateTopic(updatedTopic, loggedInUserName);
         }
 
-        var exception = await Assert.ThrowsAsync<Exception>(Action);
-        Assert.Equal("This Topic does not belong to you. Not allowed to update", exception.Message);
+        await Assert.ThrowsAsync<BatschungaException>(Action);
     }
 
 
@@ -199,6 +198,58 @@ public class TopicServiceTest
     }
 
     [Fact]
+    public async void Test_removing_topic_GIVEN_non_existing_topic_THEN_throw_error()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        const string nonExistingId = "nonExistingId";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+
+        async Task Action()
+        {
+            await service.RemoveTopic(nonExistingId, loggedInUserName);
+        }
+
+        await Assert.ThrowsAsync<TopicNotFoundException>(Action);
+    }
+
+    [Fact]
+    public async void Test_removing_topic_GIVEN_someone_else_s_topic_THEN_throw_error()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        const string creatorUserName = "creatorUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
+        var topicToDelete = await service.AddTopic(new TopicCreationDto("title", "description"), creatorUserName);
+
+
+        async Task Action()
+        {
+            await service.RemoveTopic(topicToDelete.Id, loggedInUserName);
+        }
+
+        var exception = await Assert.ThrowsAsync<Exception>(Action);
+        Assert.Equal("Not your Topic", exception.Message);
+    }
+
+    [Fact]
+    public async void Test_removing_topic_GIVEN_one_s_own_topic_THEN_remove_topic()
+    {
+        const string loggedInUserName = "loggedInUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var topicToDelete = await service.AddTopic(new TopicCreationDto("title", "description"), loggedInUserName);
+
+
+        await service.RemoveTopic(topicToDelete.Id, loggedInUserName);
+
+        Assert.Empty(await new TopicRepository(dbContext).GetAll());
+    }
+
+    [Fact]
     public async void Test_adding_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
@@ -212,8 +263,8 @@ public class TopicServiceTest
             await service.AddTopicVote(nonExistingId, loggedInUserName);
         }
 
-        var exception = await Assert.ThrowsAsync<Exception>(Action);
-        Assert.Equal("Invalid Topic Id", exception.Message);
+        await Assert.ThrowsAsync<TopicNotFoundException>(Action);
+        Assert.Empty(await new VoteRepository(dbContext).FetchAll());
     }
 
     [Fact]
@@ -265,8 +316,7 @@ public class TopicServiceTest
             await service.RemoveTopicVote(nonExistingId, loggedInUserName);
         }
 
-        var exception = await Assert.ThrowsAsync<Exception>(Action);
-        Assert.Equal("Invalid Topic Id", exception.Message);
+        await Assert.ThrowsAsync<TopicNotFoundException>(Action);
     }
 
     [Fact]

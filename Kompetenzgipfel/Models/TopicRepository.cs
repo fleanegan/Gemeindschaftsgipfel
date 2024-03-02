@@ -51,4 +51,10 @@ public class TopicRepository(DatabaseContextApplication dbContext)
             .Where(topic => topic.User.UserName == userName)
             .ToListAsync();
     }
+
+    public async Task Remove(Topic topicToDelete)
+    {
+        dbContext.Remove(topicToDelete);
+        await dbContext.SaveChangesAsync();
+    }
 }
