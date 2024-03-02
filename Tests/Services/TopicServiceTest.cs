@@ -31,6 +31,40 @@ public class TopicServiceTest
     }
 
     [Fact]
+    public async Task Test_getById_GIVEN_non_existing_id_THEN_throw_exception()
+    {
+        const string nonExistingId = "nonExistingId";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [], repository);
+
+        async Task Action()
+        {
+            await service.GetTopicById(nonExistingId);
+        }
+
+        await Assert.ThrowsAsync<TopicNotFoundException>(Action);
+    }
+
+
+    [Fact]
+    public async Task Test_getById_GIVEN_existing_id_THEN_return_result()
+    {
+        const string loggedInUserName = "Fake User";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var topicCreationDto = new TopicCreationDto("title", "description");
+        var expectedResult = await service.AddTopic(topicCreationDto, loggedInUserName);
+
+        var actualResult = await service.GetTopicById(expectedResult.Id);
+
+        Assert.Equal(expectedResult.Id, actualResult.Id);
+        Assert.Equal(expectedResult.Description, actualResult.Description);
+        Assert.Equal(expectedResult.Title, actualResult.Title);
+    }
+
+    [Fact]
     public async void Test_update_GIVEN_non_existing_id_THEN_throw_exception()
     {
         const string loggedInUserName = "Fake User";
@@ -67,15 +101,19 @@ public class TopicServiceTest
     }
 
 
-    [Fact]
-    public async void Test_update_GIVEN_authorized_user_and_existing_topic_WHEN_passing_with_new_values_THEN_update()
+    [Theory]
+    [InlineData("Correct title", "")]
+    [InlineData("Correct title", null)]
+    [InlineData("Correct title", "Non empty but also correct title")]
+    public async void Test_update_GIVEN_authorized_user_and_existing_topic_WHEN_passing_with_new_values_THEN_update(
+        string newTitle, string newDescription)
     {
         const string loggedInUserName = "Fake User";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new TopicRepository(dbContext);
         var service = await GetService(dbContext, [loggedInUserName], repository);
         var originalTopic = await service.AddTopic(new TopicCreationDto("original title", ""), loggedInUserName);
-        var updatedTopic = new TopicUpdateDto(originalTopic.Id, "updated title", "updated description");
+        var updatedTopic = new TopicUpdateDto(originalTopic.Id, newTitle, newDescription);
 
         await service.UpdateTopic(updatedTopic, loggedInUserName);
 

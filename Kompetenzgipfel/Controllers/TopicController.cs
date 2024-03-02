@@ -29,6 +29,21 @@ public class TopicController(ITopicService service) : Controller
         }
     }
 
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetOne(string id)
+    {
+        try
+        {
+            var topicById = await service.GetTopicById(id);
+            return Ok(new ForeignTopicResponseModel(topicById.Id, topicById.Title, topicById.Description, topicById.User.UserName, false));
+        }
+        catch (TopicNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
     [HttpDelete]
     [Authorize]
     public async Task<IActionResult> Delete(string id)

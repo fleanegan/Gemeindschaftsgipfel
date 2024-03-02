@@ -5,9 +5,9 @@ namespace Kompetenzgipfel.Services;
 
 public interface ITopicService
 {
-    Task<Topic?> AddTopic(TopicCreationDto toBeAdded, string userName);
+    Task<Topic> AddTopic(TopicCreationDto toBeAdded, string userName);
     Task RemoveTopic(string topicId, string loggedInUserName);
-    Task<string> GetTopicsByPresenterId();
+    Task<Topic> GetTopicById(string topicId);
     Task<Topic> UpdateTopic(TopicUpdateDto updatedTopic, string loggedInUserName);
     Task<IEnumerable<Topic>> FetchAllExceptLoggedIn(string loggedInUserName);
     Task<IEnumerable<Topic>> FetchAllOfLoggedIn(string loggedInUserName);

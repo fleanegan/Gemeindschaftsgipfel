@@ -1,7 +1,8 @@
 <template>
   <header :class="{'nav_header': true, 'nav_header_sticky': isSticky}">
     <nav class="nav-links">
-      <router-link class="router-link" to="/"><img alt="Home" src="/public/icon.svg" style="width: 6rem; height: 6rem;">
+      <router-link class="router-link" to="/"><img alt="Home" src="/public/icon.svg"
+                                                   style="width: 6rem; height: 6rem; max-height: 32px; max-width: 32px;">
       </router-link>
       <div class="transparent-header-area"></div>
       <router-link class="router-link" to="/about">About</router-link>
@@ -47,6 +48,7 @@ export default defineComponent({
   z-index: 999;
   background-color: rgba(255, 255, 255, 0);
   pointer-events: none;
+  max-height: 10px;
 }
 
 @media (max-width: 900px) {

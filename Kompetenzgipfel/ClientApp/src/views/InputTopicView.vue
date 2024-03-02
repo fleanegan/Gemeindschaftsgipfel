@@ -1,5 +1,5 @@
 <template>
-  <h1>{{ isEditing ? 'Neues Thema hinzufügen' : 'Thema bearbeiten' }}</h1>
+  <h1>{{ isEditing ? 'Thema bearbeiten' : 'Neues Thema hinzufügen' }}</h1>
   <form @submit.prevent="submitData">
     <div class="form-group">
       <label for="title">Worüber möchtest du sprechen?</label>
@@ -17,7 +17,6 @@
   </form>
 </template>
 
-
 <script lang="ts">
 import {defineComponent} from 'vue';
 import axios from "axios";
@@ -30,6 +29,9 @@ export default defineComponent({
     };
   },
   methods: {
+    isTopicIdSet(): boolean {
+      return this.$props['topicId'] !== undefined && this.$props['topicId'] !== null;
+    },
     async submitData() {
       if (this.isTitleEmpty) {
         return;
@@ -41,15 +43,15 @@ export default defineComponent({
         this.title = ''
         this.description = ''
         if (this.isEditing) {
-          await axios.post('/api/topic/addnew', {
-            "Title": title,
-            "Description": description
-          });
-        } else {
           await axios.put('/api/topic/update', {
             "Title": title,
             "Description": description,
             "Id": this.$props["topicId"],
+          });
+        } else {
+          await axios.post('/api/topic/addnew', {
+            "Title": title,
+            "Description": description
           });
         }
 
@@ -67,11 +69,20 @@ export default defineComponent({
       return this.title.length === 0
     },
     isEditing() {
-      return this.$props['topicId'] === undefined;
+      return this.isTopicIdSet();
     }
   },
-  mounted() {
-
+  async beforeCreate() {
+    // why is this.isEditing not working?
+    if (this.$props['topicId'] !== undefined && this.$props['topicId'] !== null) {
+      try {
+        var existingTopic = await axios.get('/api/topic/getone/' + this.$props["topicId"]);
+        this.title = existingTopic.data["title"];
+        this.description = existingTopic.data["description"];
+      } catch (e) {
+        console.log("edit: could not get existing topic")
+      }
+    }
   },
   props: ['topicId'],
 });

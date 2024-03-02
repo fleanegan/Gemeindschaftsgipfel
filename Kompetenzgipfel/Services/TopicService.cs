@@ -8,20 +8,18 @@ namespace Kompetenzgipfel.Services;
 public class TopicService(TopicRepository topicRepository, VoteRepository voteRepository, UserManager<User> userManager)
     : ITopicService
 {
-    public async Task<string> GetTopicsByPresenterId()
+    public async Task<Topic> GetTopicById(string topicId)
     {
-        return await Task.FromResult("original implementation");
+        var result = await topicRepository.FetchBy(topicId);
+        if (result == null) throw new TopicNotFoundException(topicId);
+        return result;
     }
 
     public async Task<Topic> AddTopic(TopicCreationDto toBeAdded, string userName)
     {
         var user = await userManager.FindByNameAsync(userName);
-        if (user == null)
-        {
-        }
-
-        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.Description ?? "", user);
-        return await topicRepository.Create(newTopic);
+        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.Description ?? "", user!);
+        return await topicRepository.Create(newTopic!);
     }
 
     public async Task<Topic> UpdateTopic(TopicUpdateDto updatedTopicCreationContent,
@@ -33,7 +31,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
         if (userName != topicToChange.User.UserName)
             throw new BatschungaException(topicToChange.Id);
         topicToChange.Title = updatedTopicCreationContent.Title;
-        topicToChange.Description = updatedTopicCreationContent.Description;
+        topicToChange.Description = updatedTopicCreationContent.Description ?? "";
         return await topicRepository.Update(topicToChange);
     }
 

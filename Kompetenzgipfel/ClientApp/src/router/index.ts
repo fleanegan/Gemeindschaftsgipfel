@@ -31,13 +31,13 @@ const router = createRouter({
         {
             path: '/topic/add',
             name: 'Neues Vortragsthema hinzufügen',
-            component: () => import('../views/AddTopicView.vue'),
+            component: () => import('../views/InputTopicView.vue'),
             props: false
         },
         {
             path: '/topic/edit:topicId',
             name: 'Vortragsthema bearbeiten',
-            component: () => import('../views/AddTopicView.vue'),
+            component: () => import('../views/InputTopicView.vue'),
             props: true
         }
     ]

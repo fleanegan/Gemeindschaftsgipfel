@@ -9,11 +9,11 @@ public class TopicRepository(DatabaseContextApplication dbContext)
         return await dbContext.Topics.Include(topic => topic.User).Where(topic => topic.Id != "").ToListAsync();
     }
 
-    public async Task<Topic> Create(Topic? newTopic)
+    public async Task<Topic> Create(Topic newTopic)
     {
-        dbContext.Topics.Add(newTopic);
+        dbContext.Topics.Add(newTopic!);
         await dbContext.SaveChangesAsync();
-        return newTopic!;
+        return newTopic;
     }
 
     public async Task<Topic?> FetchBy(string topicId)

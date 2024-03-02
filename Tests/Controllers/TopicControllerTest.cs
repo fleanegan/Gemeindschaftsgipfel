@@ -18,8 +18,16 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     private const string HappyPathDummyId = "happyPathDummyId";
     private const string NonExistingDummyId = "nonExistingDummyId";
     private const string ConflictingDummyId = "conflictingDummyId";
+
+    private readonly IEnumerable<Topic> _demoTopics =
+    [
+        new Topic("description", "title",
+            new User { UserName = AutoAuthorizeMiddleware.UserName },
+            [new Vote(Topic.Create("asdf", "asdf", new User()), new User())])
+    ];
+
     private readonly WebApplicationFactory<Program> _factory;
-    private readonly string _mockedResult = "mocked result";
+
     private Mock<ITopicService>? _mockTopicService;
 
     public TopicControllerTest(WebApplicationFactory<Program> factory)
@@ -31,14 +39,19 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ITopicService));
                 if (descriptor != null) services.Remove(descriptor);
 
-                IEnumerable<Topic> demoTopics =
-                [
-                    new Topic("description", "title",
-                        new User { UserName = AutoAuthorizeMiddleware.UserName },
-                        [new Vote(Topic.Create("asdf", "asdf", new User()), new User())])
-                ];
                 _mockTopicService = new Mock<ITopicService>();
-                _mockTopicService.Setup(s => s.GetTopicsByPresenterId()).ReturnsAsync(_mockedResult);
+                _mockTopicService.Setup(s => s.GetTopicById(It.IsAny<string>())).Returns(
+                    async (string topicId) =>
+                    {
+                        return await Task.Run(() =>
+                        {
+                            if (topicId == NonExistingDummyId)
+                                throw new TopicNotFoundException(topicId);
+                            var topic = _demoTopics.ToArray()[0];
+                            topic.Id = HappyPathDummyId;
+                            return topic;
+                        });
+                    });
                 _mockTopicService.Setup(s => s.AddTopic(It.IsAny<TopicCreationDto>(), It.IsAny<string>()))
                     .ReturnsAsync((TopicCreationDto newTopic, string _) =>
                     {
@@ -62,9 +75,9 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                         return topic;
                     });
                 _mockTopicService.Setup(c => c.FetchAllExceptLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
-                    demoTopics);
+                    _demoTopics);
                 _mockTopicService.Setup(c => c.FetchAllOfLoggedIn(It.IsAny<string>())).ReturnsAsync(() =>
-                    demoTopics);
+                    _demoTopics);
                 _mockTopicService.Setup(c => c.AddTopicVote(It.IsAny<string>(), It.IsAny<string>())).Returns(
                     async (string topicId, string _) =>
                     {
@@ -155,6 +168,46 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(newTopic.Title, dictionary?["title"].ToString());
         Assert.Equal(newTopic.Description, dictionary?["description"].ToString());
+        Assert.Equal(HappyPathDummyId, dictionary?["id"].ToString());
+    }
+
+    [Fact]
+    public async Task Test_getOne_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(false);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/GetOne/" + HappyPathDummyId);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_getOne_GIVEN_non_existing_id_WHEN_getting_THEN_return_error_response()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/GetOne/" + NonExistingDummyId);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_getOne_GIVEN_existing_id_WHEN_getting_THEN_return_topic()
+    {
+        TestHelper.ShouldAddAuthorizedDummyUser(true);
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/topic/GetOne/" + HappyPathDummyId);
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
+        _mockTopicService?.Verify(x => x.GetTopicById(HappyPathDummyId),
+            Times.Once);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(_demoTopics.ToArray()[0].Title, dictionary?["title"].ToString());
+        Assert.Equal(_demoTopics.ToArray()[0].Description, dictionary?["description"].ToString());
         Assert.Equal(HappyPathDummyId, dictionary?["id"].ToString());
     }
 
