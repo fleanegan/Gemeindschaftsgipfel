@@ -24,8 +24,10 @@ builder.Services.AddAuthentication(opt =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:" + Environment.GetEnvironmentVariable("SERVER_PORT"),
-            ValidAudience = "https://localhost:" + Environment.GetEnvironmentVariable("CLIENT_PORT"),
+            ValidIssuer = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+                          Environment.GetEnvironmentVariable("SERVER_PORT"),
+            ValidAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+                            Environment.GetEnvironmentVariable("CLIENT_PORT"),
             IssuerSigningKey =
                 new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_KEY_JWT_PRIVATE")))

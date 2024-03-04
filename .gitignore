@@ -8,3 +8,4 @@ riderModule.iml
 *.db-wal
 *.db-shm
 .env
+wwwroot/

@@ -2,13 +2,9 @@ import {fileURLToPath, URL} from 'node:url';
 import process from 'node:process';
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
+import dotenv from 'dotenv';
 
-// Match the URI your web application is being hosted at
-const proxyTarget = process.env.ASPNETCORE_HTTPS_PORT
-    ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
-    : process.env.ASPNETCORE_URLS
-        ? process.env.ASPNETCORE_URLS.split(';')[0]
-        : 'https://localhost:7298';
+dotenv.config({path: '../.env'});
 
 export default defineConfig({
     plugins: [vue()],
@@ -22,15 +18,15 @@ export default defineConfig({
         proxy: {
             // Proxy requests prefixed with '/api' to your backend server
             '/api': {
-                target: 'https://localhost:7298', // Your backend server URL
+                target: 'https://' + process.env.IP_ADDRESS + ':' + process.env.SERVER_PORT, // Your backend server URL
                 changeOrigin: true,
                 secure: false,
                 rewrite: (path) => path.replace(/^\/api/, '') // Remove '/api' prefix when forwarding requests
             }
         },
     },
-    // build: {
-    //   outDir: '../wwwroot',
-    //   emptyOutDir: true,
-    // },
+    build: {
+        outDir: '../wwwroot',
+        emptyOutDir: true,
+    },
 });

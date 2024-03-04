@@ -15,8 +15,10 @@ public class JwtGenerationService
                                        string.Empty));
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
         var tokenOptions = new JwtSecurityToken(
-            "https://localhost:" + Environment.GetEnvironmentVariable("SERVER_PORT"),
-            "https://localhost:" + Environment.GetEnvironmentVariable("CLIENT_PORT"),
+            "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+            Environment.GetEnvironmentVariable("SERVER_PORT"),
+            "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+            Environment.GetEnvironmentVariable("CLIENT_PORT"),
             claims,
             expires: DateTime.Now.AddMinutes(5),
             signingCredentials: signinCredentials
