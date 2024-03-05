@@ -14,9 +14,8 @@ export default defineConfig({
         },
     },
     server: {
-        port: 3001,
+        port: Number(process.env.CLIENT_PORT),
         proxy: {
-            // Proxy requests prefixed with '/api' to your backend server
             '/api': {
                 target: 'https://' + process.env.IP_ADDRESS + ':' + process.env.SERVER_PORT, // Your backend server URL
                 changeOrigin: true,
