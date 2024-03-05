@@ -13,14 +13,14 @@ COPY --from=node_base . .
 # this is not the same as our project's /app
 WORKDIR /App
 
-# Copy everything - both /app and /server
+COPY ["Kompetenzgipfel.csproj", "."]
+RUN dotnet restore "Kompetenzgipfel.csproj"
+
+# Copy everything - both frontend and backend
 COPY . ./
 
 # change into the server directory we need to run a few commands
 WORKDIR .
-
-# Restore as distinct layers
-RUN dotnet restore
 
 # Build and publish a release
 RUN dotnet publish -c Release -o out

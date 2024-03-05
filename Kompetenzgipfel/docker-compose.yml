@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  backend:
+    build: ./
+    ports:
+      - "8080:8080"
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl/my-site.crt /etc/ssl/certs/my-site.crt
+      - ./ssl/my-site.key /etc/ssl/private/my-site.key
+    depends_on:
+      - backend
+    ports:
+      - "4000:4000"
+      - "443:443"

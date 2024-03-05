@@ -7,10 +7,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-// read variables from .env file
-// todo: make sure that this is the only configuration source. Needs to set the configuration provider for builder but don't know how to do that right know
+// todo: make sure that .env is the only configuration source. Needs to set the configuration provider for builder but don't know how to do that right know
 DotEnv.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
-// Add jwt support
+builder.WebHost.ConfigureKestrel(options =>
+{
+    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT"));
+    if (builder.Environment.IsDevelopment())
+        options.ListenLocalhost(serverPort, listenOptions => listenOptions.UseHttps());
+    else
+        options.ListenAnyIP(serverPort);
+});
+Console.WriteLine("this is in production");
 builder.Services.AddAuthentication(opt =>
     {
         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -18,15 +25,16 @@ builder.Services.AddAuthentication(opt =>
     })
     .AddJwtBearer(options =>
     {
+        var httpPrefix = builder.Environment.IsDevelopment() ? "https://" : "http//";
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+            ValidIssuer = httpPrefix + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
                           Environment.GetEnvironmentVariable("SERVER_PORT"),
-            ValidAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+            ValidAudience = httpPrefix + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
                             Environment.GetEnvironmentVariable("CLIENT_PORT"),
             IssuerSigningKey =
                 new SymmetricSecurityKey(
@@ -66,7 +74,7 @@ app.UseCors(builder => builder
     .AllowAnyMethod()
     .AllowAnyHeader()
 );
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
@@ -75,9 +83,6 @@ app.MapIdentityApi<User>();
 app.MapControllerRoute(
     "default",
     "{controller=Home}/{action=Index}/{id?}");
-app.MapGet("/protected", (HttpContext httpContext) => "J'ai le meilleur Sab")
-    .WithName("GetWeatherForecast")
-    .RequireAuthorization();
 app.Run();
 
 public partial class Program

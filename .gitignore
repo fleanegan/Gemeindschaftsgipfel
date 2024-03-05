@@ -9,3 +9,5 @@ riderModule.iml
 *.db-shm
 .env
 wwwroot/
+ssl/
+out/
