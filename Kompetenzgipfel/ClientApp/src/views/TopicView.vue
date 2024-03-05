@@ -1,6 +1,40 @@
 <template>
   <div class="topic">
     <h1>Vortragsthemen</h1>
+    <div class="instruction_container">
+      <div class="instruction_card">
+        <div class="instruction_card_content">
+          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Inhalt</p>
+          <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
+            ausdenken</p>
+          <p>Reite dein Steckenpferd und erzaehle uns, was dich begeistert! Ob
+            Trick
+            17, dein Promotionsthema oder Haekeltipps, wir sind gespannt.</p>
+        </div>
+        <div class="instruction_card_enumerator">1.</div>
+      </div>
+      <div class="instruction_card">
+        <div class="instruction_card_content">
+          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Entscheidung</p>
+          <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
+            treffen</p>
+          <p>Geht es dir wie uns, du kannst dich kaum entscheiden, welches deiner vielen Herzensthemen du praesentieren
+            sollst? Trag alle Themen ein, lass die Gemeindschaft waehlen und hilf selbst mit deiner Stimme!</p>
+        </div>
+        <div class="instruction_card_enumerator">2.</div>
+      </div>
+      <div class="instruction_card">
+        <div class="instruction_card_content">
+          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Gemeinsam</p>
+          <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
+            staunen</p>
+          <p>Das Ziel ist es, zusammen unsere Vielfalt zu geniessen. Lass Leistungsdruck und Lampenfieber zuhause, denn
+            es
+            erwartet dich ein wohlwollendes Publikum :)</p>
+        </div>
+        <div class="instruction_card_enumerator">3.</div>
+      </div>
+    </div>
     <h2>Meine Vorschläge</h2>
     <ul class="list">
       <li v-for="(item, index) in myTopics" :key="item.votes" class="topic-card">
@@ -133,130 +167,5 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-
-.list {
-  list-style: none;
-  margin-right: 2rem;
-  margin-bottom: 0;
-  margin-top: 0;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.topic-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.most_liked_hint {
-  margin-left: 1.5rem;
-  margin-top: 0.5rem;
-  background-color: var(--color-highlight);
-  border-top-left-radius: 0.2rem;
-  border-top-right-radius: 0.2rem;
-  width: 12rem;
-  height: 2rem;
-  text-align: center;
-  color: var(--color-background);
-}
-
-
-.topic_card_header {
-  display: flex;
-  min-height: 3rem;
-  flex-direction: row;
-  align-items: center;
-  align-content: center;
-  border-left: .25rem solid var(--color-background);
-}
-
-/*do not delete*/
-.most_liked_highlight {
-  border-radius: 1rem;
-  border: .25rem solid var(--color-highlight);
-}
-
-.topic_card_header button img {
-  width: 1.35rem;
-  height: 1.35rem;
-  margin: 0.5rem;
-}
-
-.topic_card_header h4 {
-  padding-left: 0;
-  margin-right: auto;
-}
-
-.topic-card-details {
-  padding-left: 3rem;
-  padding-top: 0.5rem;
-  padding-right: 0.5rem;
-  padding-bottom: 0.5rem;
-  background-color: var(--main--color-nuance-light);
-  border-radius: 0.2rem;
-}
-
-.topic_card_details_owner {
-  display: flex;
-  flex-direction: row;
-}
-
-.topic_card_details_owner_actions {
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
-}
-
-.topic_card_details_owner_actions button {
-  margin-left: 0.5rem;
-}
-
-.description {
-  padding: 0.5rem;
-  margin-right: 0;
-  width: 100%;
-  border: 0.1rem;
-  border-style: solid;
-  border-color: var(--main-color-border-light);
-  border-radius: 0.15rem;
-  font-size: 0.85rem;
-}
-
-.presenter {
-  padding-top: 0.25rem;
-  margin-right: 1rem;
-  font-size: 0.9rem;
-  text-align: end;
-}
-
-.action_button {
-  cursor: pointer;
-  background: none;
-  border-style: none;
-  border-radius: 0.2rem;
-  font-weight: bold;
-  display: flex;
-  place-items: center;
-}
-
-
-.my-topics-add-button-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.submit-button {
-  margin-top: 0;
-  margin-left: auto;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  margin-right: 0;
-}
-
-ul {
-  margin-bottom: 5rem;
-}
-</style>
+<style scoped src="src/assets/topics.css"></style>
+<style scoped src="src/assets/instructions.css"></style>

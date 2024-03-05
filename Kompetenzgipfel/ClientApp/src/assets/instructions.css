@@ -1,0 +1,49 @@
+.instruction_container {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: row;
+    justify-items: center;
+    margin-right: 1rem;
+    margin-bottom: 5rem;
+}
+
+.instruction_card {
+    position: relative;
+    margin-right: 0.25rem;
+}
+
+.instruction_card_content_header_title {
+    font-size: 0.75rem;
+    font-stretch: extra-expanded;
+    font-weight: bolder;
+}
+
+.instruction_card_content {
+    margin-left: 0.25rem;
+    margin-top: 1rem;
+    padding-right: 0.25rem;
+    padding-left: 0.5rem;
+    border-style: solid;
+    border-radius: 0.2rem;
+    font-size: 0.6rem;
+    height: 100%;
+    border-color: var(--color-main-accent);
+}
+
+.instruction_card_enumerator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 3rem;
+    width: 3rem;
+    background-color: var(--color-main-accent);
+    border: 0.2rem;
+    border-radius: 3rem;
+    border-style: solid;
+    border-color: var(--color-background);
+    color: var(--color-background);
+    font-size: 1.5rem;
+    font-weight: normal;
+    text-align: center;
+}
+
