@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 DotEnv.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
 builder.WebHost.ConfigureKestrel(options =>
 {
-    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT"));
+    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT")??"8080");
     if (builder.Environment.IsDevelopment())
         options.ListenLocalhost(serverPort, listenOptions => listenOptions.UseHttps());
     else

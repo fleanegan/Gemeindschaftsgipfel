@@ -43,20 +43,18 @@
 
     </Target>
 
-        <!-- Include the newly-built files in the publish output -->
-        <ItemGroup>
-            <DistFiles Include="$(SpaRoot)dist/**"/>
-            <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-                <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-                <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-        </ItemGroup>
+    <!-- Include the newly-built files in the publish output -->
+    <ItemGroup>
+        <DistFiles Include="$(SpaRoot)dist/**"/>
+        <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+            <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </ResolvedFileToPublish>
+    </ItemGroup>
 
-    </Target>
+    <!--    <Target Name="PostPublishScripts" AfterTargets="Publish">-->
+    <!--        <Exec Command="dotnet ef migrations script &#45;&#45;output $(PublishDir)/migrations.sql &#45;&#45;project $(ProjectDir) &#45;&#45;context YourDbContextName"/>-->
+    <!--    </Target>-->
 
-    <Target Name="PostPublishScripts" AfterTargets="Publish">
-        <Exec Command="dotnet ef migrations script --output $(PublishDir)/migrations.sql --project $(ProjectDir) --context YourDbContextName" />
-    </Target>
-    
 </Project>
