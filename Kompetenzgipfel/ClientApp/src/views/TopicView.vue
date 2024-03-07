@@ -168,4 +168,5 @@ export default defineComponent({
 </script>
 
 <style scoped src="src/assets/topics.css"></style>
-<style scoped src="src/assets/instructions.css"></style>
+<style scoped src="src/assets/instructions.css">
+</style>

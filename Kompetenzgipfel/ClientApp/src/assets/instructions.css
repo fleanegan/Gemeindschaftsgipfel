@@ -1,15 +1,19 @@
 .instruction_container {
     display: flex;
-    box-sizing: border-box;
     flex-direction: row;
     justify-items: center;
     margin-right: 1rem;
     margin-bottom: 5rem;
+    height: fit-content;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scrollbar-width: none;
 }
 
 .instruction_card {
     position: relative;
     margin-right: 0.25rem;
+    margin-bottom: 1rem;
 }
 
 .instruction_card_content_header_title {
@@ -27,7 +31,7 @@
     border-radius: 0.2rem;
     font-size: 0.6rem;
     height: 100%;
-    border-color: var(--color-main-accent);
+    border-color: var(--color-primary);
 }
 
 .instruction_card_enumerator {
@@ -36,7 +40,7 @@
     top: 0;
     height: 3rem;
     width: 3rem;
-    background-color: var(--color-main-accent);
+    background-color: var(--color-primary);
     border: 0.2rem;
     border-radius: 3rem;
     border-style: solid;
@@ -46,4 +50,3 @@
     font-weight: normal;
     text-align: center;
 }
-

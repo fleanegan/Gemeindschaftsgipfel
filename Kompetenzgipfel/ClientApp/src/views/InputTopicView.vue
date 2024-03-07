@@ -12,7 +12,7 @@
     </div>
     <div class="button-container">
       <button class="abort-button" @click="abort">Verwerfen</button>
-      <button class="submit-button" @click="submitData">Abschicken</button>
+      <button class="submit-button" type="submit">Abschicken</button>
     </div>
   </form>
 </template>
@@ -37,21 +37,16 @@ export default defineComponent({
         return;
       }
       try {
-        console.log("Sending!")
-        const title = this.title;
-        const description = this.description;
-        this.title = ''
-        this.description = ''
         if (this.isEditing) {
           await axios.put('/api/topic/update', {
-            "Title": title,
-            "Description": description,
+            "Title": this.title,
+            "Description": this.description,
             "Id": this.$props["topicId"],
           });
         } else {
           await axios.post('/api/topic/addnew', {
-            "Title": title,
-            "Description": description
+            "Title": this.title,
+            "Description": this.description
           });
         }
 

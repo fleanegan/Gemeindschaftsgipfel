@@ -27,7 +27,7 @@
         <input id="entrySecret" v-model="entrySecret" class="form-input" type="password"/>
       </div>
       <textarea v-if="errors!=''" class="errors" inputmode="none">{{ errors }}</textarea>
-      <button class="submit-button" type="submit" @click="submitData">Abschicken</button>
+      <button class="submit-button" type="submit">Abschicken</button>
     </form>
   </div>
 </template>

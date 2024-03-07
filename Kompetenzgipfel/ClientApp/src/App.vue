@@ -48,7 +48,6 @@ export default defineComponent({
   z-index: 999;
   background-color: rgba(255, 255, 255, 0);
   pointer-events: none;
-  max-height: 10px;
 }
 
 @media (max-width: 900px) {
