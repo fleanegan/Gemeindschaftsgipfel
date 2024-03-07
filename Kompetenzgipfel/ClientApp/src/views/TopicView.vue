@@ -1,5 +1,10 @@
 <template>
   <div class="topic">
+    <div :class="{'floating_scroll_to_top_hidden': true, 'floating_scroll_to_top_shown': isSticky}">
+      <button class="action_button" style="margin-right: 1rem;" @click="scrollToTop">
+        <img :src="'/expand.svg'" alt="Expand">
+      </button>
+    </div>
     <h1>Vortragsthemen</h1>
     <div class="instruction_container">
       <div class="instruction_card">
@@ -116,6 +121,7 @@ export default defineComponent({
     return {
       foreignTopics: [] as ForeignTopic[],
       myTopics: [] as MyTopic[],
+      isSticky: true,
     };
   },
   methods: {
@@ -147,6 +153,12 @@ export default defineComponent({
     },
     addNewTopic() {
       this.$router.push("/topic/add");
+    },
+    handleScroll: function () {
+      this.isSticky = window.scrollY > 0;
+    },
+    scrollToTop() {
+      scrollTo(0, 0);
     }
   },
   computed: {
@@ -163,10 +175,34 @@ export default defineComponent({
   },
   mounted() {
     this.fetchData()
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
 });
 </script>
 
+<style scoped>
+.floating_scroll_to_top_hidden {
+  margin-left: auto;
+  height: 3.3rem;
+  width: 75%;
+  background-color: var(--color-background);
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  display: none;
+}
+
+.floating_scroll_to_top_shown {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: right;
+}
+</style>
 <style scoped src="src/assets/topics.css"></style>
 <style scoped src="src/assets/instructions.css">
 </style>
