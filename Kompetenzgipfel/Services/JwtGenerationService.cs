@@ -15,6 +15,7 @@ public class JwtGenerationService
                                        string.Empty));
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
         var tokenOptions = new JwtSecurityToken(
+            //todo: modify to match the Part in the Program.cs JWT setup!
             "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
             Environment.GetEnvironmentVariable("SERVER_PORT"),
             "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +

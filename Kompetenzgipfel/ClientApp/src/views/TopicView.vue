@@ -66,7 +66,7 @@
       </li>
       <li>
         <hr>
-        <div class="my-topics-add-button-container">
+        <div id="owner_action" class="my-topics-add-button-container">
           <button class="submit-button" @click="addNewTopic">Neue Idee?</button>
         </div>
       </li>
@@ -89,7 +89,9 @@
         </div>
       </li>
       <hr>
-      <li class="topic-card-details">Ende der Liste. Danke fürs Abstimmen!<br></li>
+      <li class="topic-card-details">Ende der Liste. Danke fürs Abstimmen!
+        <br style="margin-bottom: 25rem">
+      </li>
     </ul>
   </div>
 </template>
@@ -121,7 +123,7 @@ export default defineComponent({
     return {
       foreignTopics: [] as ForeignTopic[],
       myTopics: [] as MyTopic[],
-      isSticky: true,
+      isSticky: false,
     };
   },
   methods: {
@@ -155,7 +157,7 @@ export default defineComponent({
       this.$router.push("/topic/add");
     },
     handleScroll: function () {
-      this.isSticky = window.scrollY > 0;
+      this.isSticky = window.scrollY > 750;
     },
     scrollToTop() {
       scrollTo(0, 0);
@@ -188,7 +190,6 @@ export default defineComponent({
   margin-left: auto;
   height: 3.3rem;
   width: 75%;
-  background-color: var(--color-background);
   position: sticky;
   top: 0;
   left: 0;
@@ -201,7 +202,15 @@ export default defineComponent({
   flex-direction: row;
   align-content: center;
   justify-content: right;
+  background-color: transparent;
 }
+
+@media (max-width: 900px) {
+  .floating_scroll_to_top_shown {
+    background-color: var(--color-background);
+  }
+}
+
 </style>
 <style scoped src="src/assets/topics.css"></style>
 <style scoped src="src/assets/instructions.css">

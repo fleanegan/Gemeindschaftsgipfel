@@ -78,13 +78,11 @@ export default defineComponent({
 
 
 .routed-elements {
-  margin-top: 5rem;
   width: 500px;
   max-width: 900px;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-left: 0.5rem;
 }
 
 @media (max-width: 900px) {

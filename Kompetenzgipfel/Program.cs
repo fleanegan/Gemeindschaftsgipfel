@@ -31,10 +31,12 @@ builder.Services.AddAuthentication(opt =>
     })
     .AddJwtBearer(options =>
     {
+        //todo: replace with a valid issuer string and a valid audience string varying on the environment
         var httpPrefix = builder.Environment.IsDevelopment() ? "https://" : "http//";
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
+            //todo: turn back on with internet
+            ValidateIssuer = false,
             //todo: when internet is back, set to true and make release + development pass
             ValidateAudience = false,
             ValidateLifetime = true,
