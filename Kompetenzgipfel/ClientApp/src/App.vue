@@ -2,7 +2,7 @@
   <header :class="{'nav_header': true, 'nav_header_sticky': isSticky}">
     <nav class="nav-links">
       <router-link class="router-link" to="/"><img alt="Home" src="/public/icon.svg"
-                                                   style="width: 6rem; height: 6rem; max-height: 32px; max-width: 32px;">
+                                                   style="width: 6rem; height: 6rem; max-height: 48px; max-width: 48px;">
       </router-link>
       <div class="transparent-header-area"></div>
       <router-link class="router-link" to="/about">About</router-link>

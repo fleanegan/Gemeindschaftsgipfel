@@ -17,7 +17,12 @@ axios.interceptors.request.use(
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            router.push('/login');
+        }
+        Promise.reject(error)
+    }
 );
 
 createApp(App).use(pinia).use(router).mount('#app');
