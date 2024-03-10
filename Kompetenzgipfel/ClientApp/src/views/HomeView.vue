@@ -1,19 +1,51 @@
 <template>
-  <div class="header"></div>
+  <div style="min-height: 90vh"></div>
   <div id="action_container" class="action_container">
     <img alt="Icon" src="/icon.svg" style="width: 100%; height:100%;"></img>
   </div>
-  <div v-if="currentScreen < -.25" class="info_tile">
+  <div v-show="currentScreen < 0" class="info_tile">
     <p class="info_tile_header">Gemeindschaftsgipfel</p>
   </div>
-  <div v-if="currentScreen > 0 && currentScreen < 0.5" class="info_tile">
+  <div v-show="currentScreen > 0 && currentScreen < 1" class="info_tile">
     <div class="info_tile_content">
+      <div class="key_information">
+        <h2>Das Wichtigste auf einen Blick</h2>
+        <div class="key_information_detail">
+          <img alt="map" class="key_information_detail_image" src="/map.svg">
+          <p>Koordinaten</p>
+        </div>
+        <div class="key_information_detail">
+          <img alt="calendar" class="key_information_detail_image" src="/calendar.svg">
+          <p>28.06.2024 - 30.06.2024</p>
+        </div>
+        <div class="key_information_detail">
+          <img alt="housing" class="key_information_detail_image" src="/housing.svg">
+          <p>Bring dein Zelt mit!</p>
+        </div>
+        <div class="key_information_detail">
+          <img alt="wifi" class="key_information_detail_image" src="/wifi.svg">
+          <table>
+            <tr>
+              <td>SSID:</td>
+              <td>sich3rh4it</td>
+            </tr>
+            <tr>
+              <td>Password:</td>
+              <td>123456</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-show="currentScreen > 1 && currentScreen < 1.5" :class="{'info_tile':true}">
+    <div :class="{'info_tile_content':true, 'slide-in':true}">
       <h2>Geimeindschaft</h2>
       <p>Alle in einem Boot, aber ohne Boot. Alle an einem Strang ziehen, ohne jemandem einen Strick draus zu
         drehen. </p>
     </div>
   </div>
-  <div v-if="currentScreen > 1 && currentScreen < 1.5" class="info_tile">
+  <div v-show="currentScreen > 2 && currentScreen < 2.5" class="info_tile">
     <div class="info_tile_content">
       <h2>Gipfel</h2>
       "Das ist ja die Hoehe!"
@@ -26,31 +58,23 @@
       </p>
     </div>
   </div>
-  <div v-if="currentScreen > 2 && currentScreen < 2.5" class="info_tile">
-    <div class="info_tile_content">
-      <h2>Alle wichtigen Informationen</h2>
-      <h3>Wann findet statt?</h3>
-      <h3>Wo findet statt?</h3>
-      <h3>Wen anrufen, wenn Problem?</h3>
-    </div>
-  </div>
-  <div v-if="currentScreen > 3" class="info_tile">
+  <div v-show="currentScreen > 3" class="info_tile">
     <div class="info_tile_content">
       <h2>Da will ich mitmachen!</h2>
       <h1></h1>
-      <router-link class="router-link" to="/topic">Jetzt Thema einreichen</router-link>
+      <router-link class="animated" to="/topic">Jetzt Thema einreichen</router-link>
     </div>
   </div>
   <br>
-  <div class="header" style="background-color: #f66900"></div>
-  <div class="header" style="background-color: #6f6f6f"></div>
-  <div class="header" style="background-color: #13b7fe"></div>
-  <div class="header" style="background-color: #f1e5b6"></div>
-  <div class="header" style="background-color: #c5b57b"></div>
-  <div class="header" style="background-color: #d8c680"></div>
-  <div class="header" style="background-color: #f8e7a3"></div>
-  <div class="header" style="background-color: #fae490"></div>
-  <div class="header" style="background-color: #ddca7c"></div>
+  <div :class="{'slider':true, 'key_information_slider': true}"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
+  <div class="slider"></div>
 </template>
 
 
@@ -124,12 +148,36 @@ export default defineComponent({
   height: 5rem;
   position: fixed;
   left: 0.575rem;
-  z-index: 9999;
+  z-index: 99999;
 }
 
-.header {
+.slider {
   min-height: 100vh;
-  max-width: 10px;
+  min-width: 100%;
+}
+
+.key_information {
+  color: var(--color-background);
+  border: 0.2rem solid var(--color-background);
+  padding: 1rem;
+}
+
+.key_information_detail {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 1rem;
+  align-items: center;
+}
+
+.key_information_detail p {
+  margin-right: auto;
+}
+
+.key_information_detail_image {
+  margin-right: 1rem;
+  width: 3rem;
+  height: 3rem;
 }
 
 .info_tile {
@@ -146,6 +194,12 @@ export default defineComponent({
   padding: 2rem;
 }
 
+.key_information_slider {
+  background-color: var(--main-color-primary);
+  min-height: 105vh;
+}
+
+
 .info_tile_header {
   font-size: 2rem;
   position: relative;
@@ -155,7 +209,7 @@ export default defineComponent({
 .info_tile_content {
   font-size: 1rem;
   position: relative;
-  top: 10rem;
+  top: 25%;
   margin-left: 2rem;
   width: 25rem;
   min-width: 350px;
@@ -165,4 +219,50 @@ export default defineComponent({
   margin: 0 0 2rem;
 }
 
+.animated {
+  /* Define your animation using CSS keyframes */
+  animation: bounce 1s ease infinite; /* Adjust the duration and easing as needed */
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-right: 2rem;
+  margin-left: -0.5rem;
+}
+
+th, td {
+  border: none;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Apply specific width to the first column */
+th:first-child, td:first-child {
+  width: 70%;
+}
+
+
+.show-enter-active,
+.show-leave-enter {
+  transform: translateX(-20%);
+  transition: all 3s linear;
+}
+
+.show-enter-to {
+  transform: translateX(0%);
+  transition: all .3s linear;
+}
 </style>

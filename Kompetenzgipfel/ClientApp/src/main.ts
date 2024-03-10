@@ -13,7 +13,6 @@ axios.interceptors.request.use(
         const token = useAuthStore().token;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-        } else {
         }
         return config;
     },
@@ -21,7 +20,7 @@ axios.interceptors.request.use(
         if (error.response && error.response.status === 401) {
             router.push('/login');
         }
-        Promise.reject(error)
+        return Promise.reject(error); // Return the rejected promise
     }
 );
 
