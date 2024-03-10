@@ -32,21 +32,20 @@ builder.Services.AddAuthentication(opt =>
     .AddJwtBearer(options =>
     {
         //todo: replace with a valid issuer string and a valid audience string varying on the environment
-        var httpPrefix = builder.Environment.IsDevelopment() ? "https://" : "http//";
+        var productionAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+                                 Environment.GetEnvironmentVariable("SERVER_PORT");
+        var developmentAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+                                  Environment.GetEnvironmentVariable("CLIENT_PORT");
+        var audiences = new List<string> { productionAudience, developmentAudience };
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            //todo: turn back on with internet
-            ValidateIssuer = false,
-            //todo: when internet is back, set to true and make release + development pass
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = httpPrefix + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+            ValidIssuer = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
                           Environment.GetEnvironmentVariable("SERVER_PORT"),
-            // todo: not working with reverse proxy! Will always be https?? + also got different ports. Wildcard? Should not be a security issue
-            // ValidAudience = httpPrefix + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
-            // Environment.GetEnvironmentVariable("CLIENT_PORT")
-            // ,
+            ValidAudiences = audiences,
             IssuerSigningKey =
                 new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_KEY_JWT_PRIVATE")))

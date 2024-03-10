@@ -14,12 +14,16 @@ public class JwtGenerationService
                 Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_KEY_JWT_PRIVATE") ??
                                        string.Empty));
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+        var productionAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+                                 Environment.GetEnvironmentVariable("SERVER_PORT");
+        var developmentAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
+                                  Environment.GetEnvironmentVariable("CLIENT_PORT");
+        claims = claims.Append(new Claim("aud", developmentAudience));
         var tokenOptions = new JwtSecurityToken(
             //todo: modify to match the Part in the Program.cs JWT setup!
             "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
             Environment.GetEnvironmentVariable("SERVER_PORT"),
-            "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
-            Environment.GetEnvironmentVariable("CLIENT_PORT"),
+            productionAudience,
             claims,
             expires: DateTime.Now.AddMinutes(5),
             signingCredentials: signinCredentials
@@ -27,5 +31,3 @@ public class JwtGenerationService
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
     }
 }
-// this is how to generate claims:
-// new List<Claim>([new Claim("username", userInput.UserName)])
