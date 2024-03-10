@@ -26,7 +26,7 @@ WORKDIR .
 
 # Build and publish a release
 WORKDIR ./ClientApp
-RUN npm run build
+RUN npm install && npm run build
 WORKDIR ..
 RUN dotnet publish -c Release -o out
 
