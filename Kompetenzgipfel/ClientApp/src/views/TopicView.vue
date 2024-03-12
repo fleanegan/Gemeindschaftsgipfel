@@ -43,8 +43,8 @@
     <h2>Meine Vorschläge</h2>
     <ul class="list">
       <li v-for="(item, index) in myTopics" :key="item.votes" class="topic-card">
-        <p v-if="item==mostLikedTopic" class="most_liked_hint">Publikumsliebling</p>
-        <div :class="{topic_card_header:true, most_liked_highlight:item===mostLikedTopic}">
+        <p v-if="item===mostLikedTopic && mostLikedTopic.votes > 0" class="most_liked_hint">Publikumsliebling</p>
+        <div :class="{topic_card_header:true, most_liked_highlight:item===mostLikedTopic && mostLikedTopic.votes > 0}">
           <button class="action_button" @click="toggleDetails(myTopics, index)">
             <img :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
           </button>

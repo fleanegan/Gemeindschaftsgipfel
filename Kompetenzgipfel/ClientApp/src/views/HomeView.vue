@@ -1,12 +1,12 @@
 <template>
-  <div style="min-height: 90vh"></div>
+  <div class="title">
+    <p>Gemeindschaftsgipfel</p>
+    <img v-if="isNotScrolled" alt="arrow" class="animate_scroll_down_motivator" src="/down.svg" style="width: 2rem">
+  </div>
   <div id="action_container" class="action_container">
     <img alt="Icon" src="/icon.svg" style="width: 100%; height:100%;"></img>
   </div>
-  <div v-show="currentScreen < 0" class="info_tile">
-    <p class="info_tile_header">Gemeindschaftsgipfel</p>
-  </div>
-  <div v-show="currentScreen > 0 && currentScreen < 1" class="info_tile">
+  <div :style="{opacity: keyInformationOpacity}" class="info_tile">
     <div class="info_tile_content">
       <div class="key_information">
         <h2>Das Wichtigste auf einen Blick</h2>
@@ -88,6 +88,7 @@ export default defineComponent({
       actionLimits: {xMin: 0, yMin: 0, xMax: 0, yMax: 0, maxLength: 0, minLength: 0, scrollPixelForAnimation: 0},
       currentScreen: 0,
       px2rem: 1 / 16,
+      isNotScrolled: true,
     };
   },
   methods: {
@@ -101,6 +102,7 @@ export default defineComponent({
       const s = scrollY > this.actionLimits.scrollPixelForAnimation ? 1 : scrollY / this.actionLimits.scrollPixelForAnimation;
       this.updateCurrentScreenNumber()
       this.moveTransformActionContainer(s);
+      this.isNotScrolled = scrollY < 1;
     },
     updateCurrentScreenNumber() {
       this.currentScreen = scrollY / window.screen.availHeight - 0.5
@@ -124,7 +126,13 @@ export default defineComponent({
       this.actionLimits.yMax = 175 * this.px2rem;
     }
   },
-  computed: {},
+  computed: {
+    keyInformationOpacity() {
+      if (this.currentScreen < 0.5)
+        return 1;
+      return 1 - this.currentScreen;
+    }
+  },
   mounted() {
     this.px2rem = 1 / parseFloat(getComputedStyle(document.documentElement).fontSize)
     this.setUpActionContainer();
@@ -143,12 +151,31 @@ export default defineComponent({
 
 <style scoped>
 
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  height: 100vh;
+  z-index: 9999;
+}
+
+.title p {
+  margin-top: 25rem;
+  font-size: 2rem;
+}
+
+.title img {
+  margin-top: auto;
+  margin-bottom: 0.5rem;
+}
+
 .action_container {
   width: 5rem;
   height: 5rem;
   position: fixed;
   left: 0.575rem;
-  z-index: 99999;
+  z-index: 9999;
 }
 
 .slider {
@@ -264,5 +291,20 @@ th:first-child, td:first-child {
 .show-enter-to {
   transform: translateX(0%);
   transition: all .3s linear;
+}
+
+.animate_scroll_down_motivator {
+  animation: fadeInOut 1s infinite alternate ease-in-out; /* Animation name, duration, iteration count, and direction */
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 1; /* Start with opacity 0 */
+    transform: translateY(0.25rem);
+  }
+  100% {
+    opacity: 0.6; /* Fade in to opacity 1 */
+    transform: translateY(-0.25rem);
+  }
 }
 </style>

@@ -7,7 +7,7 @@
       <div class="transparent-header-area"></div>
       <router-link v-if="isStandardPage" class="router-link" to="/about">About</router-link>
       <router-link v-if="isStandardPage" class="router-link" to="/login">+</router-link>
-      <router-link class="router-link" to="/topic">Vortragsthemen</router-link>
+      <router-link v-if="isStandardPage" class="router-link" to="/topic">Vortragsthemen</router-link>
     </nav>
   </header>
   <div :class="{'routed-elements': isStandardPage, 'home_page_routed_elements': !isStandardPage}">
@@ -23,20 +23,22 @@ export default defineComponent({
   data() {
     return {
       isSticky: false,
-      isStandardPage: true
+      isStandardPage: true,
+      backgroundGradient: ''
     };
   },
   methods: {
     handleScroll: function () {
       this.isSticky = window.scrollY > 0;
     },
-    updateHeader: function () {
-      console.log("manamana dip di bi dibi")
-      const route = useRoute();
-    },
+    updateBackgroundGradient() {
+      const contentHeight = document.documentElement.scrollHeight + 'px';
+      this.backgroundGradient = `linear-gradient(to bottom, #ffffff, #000000) 0% 0% / 100% ${contentHeight}`;
+    }
   },
   mounted() {
     window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('resize', this.updateBackgroundGradient);
 
     const currentRoute = useRoute();
     watch(currentRoute, (to, from) => {
@@ -45,6 +47,7 @@ export default defineComponent({
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('resize', this.updateBackgroundGradient);
   },
 });
 </script>
