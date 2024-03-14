@@ -10,8 +10,8 @@
   <info-box :globalProgress="progress.infoScreen"></info-box>
   <div class="routed-elements" style="margin-right: auto; margin-left: auto">
     <h2>Geimeinschaft</h2>
-    <p>Alle in einem Boot, aber ohne Boot. Alle an einem Strang ziehen, ohne jemandem einen Strick draus zu
-      drehen. </p>
+    <p>Alle im selben Boot sein, aber kein Boot brauchen. Alle an einem Strang ziehen, ohne jemandem einen Strick draus
+      zu drehen. </p>
     <h2>Gipfel</h2>
     <p>"Das ist ja die Hoehe!"
       <br>

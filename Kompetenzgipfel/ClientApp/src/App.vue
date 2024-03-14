@@ -42,7 +42,7 @@ export default defineComponent({
     window.addEventListener('resize', this.updateBackgroundGradient);
 
     const currentRoute = useRoute();
-    watch(currentRoute, (to, from) => {
+    watch(currentRoute, (to, _) => {
       this.isStandardPage = to.path !== '/';
     });
   },
