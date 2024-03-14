@@ -24,7 +24,7 @@
           <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
             treffen</p>
           <p>Geht es dir wie uns, du kannst dich kaum entscheiden, welches deiner vielen Herzensthemen du praesentieren
-            sollst? Trag alle Themen ein, lass die Gemeindschaft waehlen und hilf selbst mit deiner Stimme!</p>
+            sollst? Trag alle Themen ein, lass die Gemeinschaft waehlen und hilf selbst mit deiner Stimme!</p>
         </div>
         <div class="instruction_card_enumerator">2.</div>
       </div>

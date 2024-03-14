@@ -15,7 +15,6 @@ public class TopicController(ITopicService service) : Controller
     [Authorize]
     public async Task<IActionResult> AddNew([FromBody] TopicCreationDto userInput)
     {
-        Console.WriteLine("getting a new message\n\n\n\n\nfor adding a new topic");
         var userName = GetUserNameFromAuthorization();
         try
         {
@@ -36,7 +35,8 @@ public class TopicController(ITopicService service) : Controller
         try
         {
             var topicById = await service.GetTopicById(id);
-            return Ok(new ForeignTopicResponseModel(topicById.Id, topicById.Title, topicById.Description, topicById.User.UserName, false));
+            return Ok(new ForeignTopicResponseModel(topicById.Id, topicById.Title, topicById.Description,
+                topicById.User.UserName, false));
         }
         catch (TopicNotFoundException e)
         {
@@ -110,7 +110,6 @@ public class TopicController(ITopicService service) : Controller
     [Authorize]
     public async Task<IActionResult> AddVote([FromBody] TopicVoteDto userInput)
     {
-        Console.WriteLine("adding vote");
         if (!ModelState.IsValid)
             return BadRequest();
         var userName = GetUserNameFromAuthorization();
@@ -134,7 +133,6 @@ public class TopicController(ITopicService service) : Controller
     [HttpDelete]
     public async Task<IActionResult> RemoveVote(string id)
     {
-        Console.WriteLine("removing vote");
         var userName = GetUserNameFromAuthorization();
         try
         {

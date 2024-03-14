@@ -66,7 +66,6 @@ export default defineComponent({
         },
         async handleLogin() {
           try {
-            console.log("handling login")
             const response = await axios.post('/api/auth/login', {
               "UserName": this.username,
               "Password": this.password
@@ -89,7 +88,6 @@ export default defineComponent({
         }
         , async handleSignup() {
           try {
-            console.log("handling signup")
             const response = await axios.post('/api/auth/signup', {
               "UserName": this.username,
               "Password": this.password,

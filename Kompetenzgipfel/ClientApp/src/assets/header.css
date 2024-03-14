@@ -20,6 +20,10 @@
     pointer-events: auto;
 }
 
+.headerless {
+    margin-top: 0.5rem;
+}
+
 .transparent-header-area {
     margin-left: auto;
     margin-right: auto;

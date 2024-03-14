@@ -87,6 +87,7 @@ a,
     height: 100vh;
     display: flex;
     flex-direction: column;
+    z-index: 4;
 }
 
 @media (max-width: 900px) {
