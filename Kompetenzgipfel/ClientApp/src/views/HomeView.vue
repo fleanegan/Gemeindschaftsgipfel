@@ -59,13 +59,14 @@ export default defineComponent({
       this.progress.secondScreen = this.updateInfoScreenProgress(1.4, 1.5)
       this.progress.thirdScreen = this.updateInfoScreenProgress(1.5, 1.6)
       this.progress.fourthScreen = this.updateInfoScreenProgress(1.7, 1.8)
+      this.updateActionLimits()
     },
     updateCurrentScreenNumber() {
       this.currentScreen = scrollY / window.screen.availHeight
     },
     handleResize() {
-      this.handleScroll()
       this.updateActionLimits()
+      this.handleScroll()
     },
     updateActionLimits() {
       this.actionLimits.xMax = (window.innerWidth - this.actionContainer!.offsetWidth) / 2 * this.px2rem;
