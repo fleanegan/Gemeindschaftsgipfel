@@ -14,9 +14,14 @@ COPY --from=node_base . .
 # The default app directory for Linux and .NET
 # this is not the same as our project's /app
 WORKDIR /App
+RUN mkdir ./ClientApp
 
 COPY ["Kompetenzgipfel.csproj", "."]
-RUN dotnet restore "Kompetenzgipfel.csproj"
+COPY ["ClientApp/package.json", "./ClientApp/"]
+RUN dotnet restore "Kompetenzgipfel.csproj" 
+WORKDIR ./ClientApp
+RUN npm install
+WORKDIR ..
 
 # Copy everything - both frontend and backend
 COPY . ./
@@ -26,7 +31,7 @@ WORKDIR .
 
 # Build and publish a release
 WORKDIR ./ClientApp
-RUN npm install && npm run build
+RUN npm run build
 WORKDIR ..
 RUN dotnet publish -c Release -o out
 
@@ -39,6 +44,6 @@ WORKDIR /App
 COPY --from=build-env /App/out .
 COPY ./.env .
 EXPOSE 8080
-RUN sqlite3 database.db < migrations.sql
 
+RUN sqlite3 database.db < migrations.sql
 ENTRYPOINT ["dotnet", "Kompetenzgipfel.dll"]

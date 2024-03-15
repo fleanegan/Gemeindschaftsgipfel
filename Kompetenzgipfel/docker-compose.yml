@@ -2,6 +2,8 @@ version: "3.9"
 services:
   backend:
     build: ./
+    volumes:
+      - ./database.db:/App/database.db:rw
     ports:
       - "8080"
   frontend:
