@@ -8,4 +8,6 @@ public class DatabaseContextApplication(DbContextOptions<DatabaseContextApplicat
 {
     public DbSet<Topic> Topics => Set<Topic>();
     public DbSet<Vote> Votes => Set<Vote>();
+    public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
+    public DbSet<SupportPromise> SupportPromises => Set<SupportPromise>();
 }

@@ -6,7 +6,11 @@ public class TopicRepository(DatabaseContextApplication dbContext)
 {
     public async Task<IEnumerable<Topic>> GetAll()
     {
-        return await dbContext.Topics.Include(topic => topic.User).Where(topic => topic.Id != "").ToListAsync();
+        return await dbContext
+            .Topics
+            .Include(topic => topic.User)
+            .Where(topic => topic.Id != "")
+            .ToListAsync();
     }
 
     public async Task<Topic> Create(Topic newTopic)
