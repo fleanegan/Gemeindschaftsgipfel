@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Controllers.Helpers;
 using Kompetenzgipfel.Exceptions;
@@ -148,10 +147,5 @@ public class TopicController(ITopicService service) : AbstractController
         {
             return NotFound(e.Message);
         }
-    }
-
-    private string GetUserNameFromAuthorization()
-    {
-        return HttpContext.User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value!;
     }
 }

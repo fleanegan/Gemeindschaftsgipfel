@@ -63,4 +63,12 @@ public class SupportTaskController(ISupportTaskService service) : AbstractContro
 
         return Ok();
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await service.GetAll();
+        return Ok(ResponseGenerator.GenerateSupportTaskResponses(result));
+    }
 }

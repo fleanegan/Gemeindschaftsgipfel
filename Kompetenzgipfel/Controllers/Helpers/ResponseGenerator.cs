@@ -28,4 +28,17 @@ public abstract class ResponseGenerator
             )
             .ToList();
     }
+
+    public static List<SupportTaskResponseModel> GenerateSupportTaskResponses(IEnumerable<SupportTask> supportTasks)
+    {
+        return supportTasks
+            .Select(task => new SupportTaskResponseModel(task.Id, task.Title, task.Description, task.RequiredSupporters,
+                SupporterUserNames(task)))
+            .ToList();
+    }
+
+    private static List<string> SupporterUserNames(SupportTask task)
+    {
+        return task.SupportPromises.Select(supporter => supporter.Supporter.UserName).ToList();
+    }
 }

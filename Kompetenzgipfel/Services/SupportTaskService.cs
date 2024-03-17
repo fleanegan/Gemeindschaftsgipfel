@@ -43,4 +43,9 @@ public class SupportTaskService(
             throw new SupportPromiseImpossibleException(supportTaskId);
         await supportPromiseRepository.Remove(supportPromise);
     }
+
+    public async Task<IEnumerable<SupportTask>> GetAll()
+    {
+        return await supportTaskRepository.FetchAll();
+    }
 }

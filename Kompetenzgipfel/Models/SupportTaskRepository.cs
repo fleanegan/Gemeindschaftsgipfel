@@ -8,7 +8,8 @@ public class SupportTaskRepository(DatabaseContextApplication dbContext)
     {
         return await dbContext.SupportTasks
             .Include(supportTask => supportTask.SupportPromises)
-            .Where(topic => topic.Id != "")
+            .ThenInclude(promise => promise.Supporter)
+            .Select(task => task)
             .ToListAsync();
     }
 

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
@@ -64,12 +65,15 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
             if (supportTopicId == ConflictingDummyId)
                 throw new SupportPromiseImpossibleException(supportTopicId);
         };
+        var demoTask = new SupportTask("description", "title", new List<SupportPromise>([]), 2);
+        IEnumerable<SupportTask> demoTasks = [demoTask, demoTask];
         _mockSupportTaskService.Setup(s =>
                 s.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(dummySupportTaskCommitmentAction);
         _mockSupportTaskService.Setup(s =>
                 s.ResignFromSupportTask(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(dummySupportTaskCommitmentAction);
+        _mockSupportTaskService.Setup(s => s.GetAll()).Returns(() => Task.Run(() => demoTasks));
         services.AddSingleton(_mockSupportTaskService.Object);
     }
 
@@ -196,7 +200,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task Test_resignFromSupportTask_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response()
+    public async Task Test_resignFromSupportTask_GIVEN_no_connected_user_WHEN_deleting_THEN_return_error_response()
     {
         var client = _factoryWithoutAuthorization.CreateClient();
 
@@ -208,7 +212,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
 
     [Fact]
     public async Task
-        Test_resignFromSupportTask_GIVEN_connected_user_WHEN_impossible_exception_while_posting_THEN_return_error_response()
+        Test_resignFromSupportTask_GIVEN_connected_user_WHEN_impossible_exception_while_deleting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
 
@@ -222,7 +226,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
 
     [Fact]
     public async Task
-        Test_resignFromSupportTask_GIVEN_connected_user_WHEN_not_found_exception_while_posting_THEN_return_error_response()
+        Test_resignFromSupportTask_GIVEN_connected_user_WHEN_not_found_exception_while_deleting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
 
@@ -236,7 +240,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
 
     [Fact]
     public async Task
-        Test_resignFromSupportTask_GIVEN_correct_input_WHEN_posting_THEN_return_success_response()
+        Test_resignFromSupportTask_GIVEN_correct_input_WHEN_getting_THEN_return_success_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
 
@@ -245,5 +249,30 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockSupportTaskService.Verify(c => c.ResignFromSupportTask(HappyPathDummyId, AutoAuthorizeMiddleware.UserName),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task Test_getAll_GIVEN_no_connected_user_WHEN_getting_THEN_return_error_response()
+    {
+        var client = _factoryWithoutAuthorization.CreateClient();
+
+        var response = await client.GetAsync("/SupportTask/GetAll");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.GetAll(), Times.Never);
+    }
+
+    [Fact]
+    public async Task
+        Test_getAll_GIVEN_connected_user_with_some_SupportTasks_WHEN_getting_THEN_return_success_response_AND_list_with_SupportTasks()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+
+        var response = await client.GetAsync("/SupportTask/GetAll");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.GetAll(), Times.Once);
+        var result = JsonSerializer.Deserialize<List<object>>(await response.Content.ReadAsStringAsync());
+        Assert.Equal(2, result.Count);
     }
 }

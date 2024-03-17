@@ -161,6 +161,33 @@ public class SupportTaskServiceTest
         Assert.Equal(0, supportTasks.First().SupportPromises.Count);
     }
 
+    [Fact]
+    private async Task Test_getAll_GIVEN_no_SupportTasks_THEN_return_empty_Collection()
+    {
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new SupportTaskRepository(dbContext);
+        ISupportTaskService service = await GetService(dbContext, [], repository);
+
+        var result = await service.GetAll();
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    private async Task Test_getAll_GIVEN_two_SupportTasks_THEN_return_Collection_with_two_entries()
+    {
+        const string loggedInUserName = "Fake User";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new SupportTaskRepository(dbContext);
+        ISupportTaskService service = await GetService(dbContext, [loggedInUserName], repository);
+        var firstSupportTaskId = await GivenAddedSupportTask(service);
+        var secondSupportTaskId = await GivenAddedSupportTask(service);
+
+        var result = (await service.GetAll()).ToArray();
+
+        Assert.Equal(2, result.Length);
+    }
+
     private async Task<string> GivenAddedSupportTask(ISupportTaskService service)
     {
         var dummyadmin = "dummyAdmin";
