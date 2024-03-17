@@ -1,9 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Kompetenzgipfel.Controllers.DTOs;
 
 public class SupportTaskCreationDto(string title, string description, string duration, int requiredSupporters)
 {
-    public string Description { get; } = description;
-    public string Title { get; } = title;
-    public string Duration { get; } = duration;
-    public int RequiredSupporters { get; } = requiredSupporters;
+    [Required] public string Description { get; } = description;
+
+    [Required] public string Title { get; } = title;
+
+    [Required] public string Duration { get; } = duration;
+
+    [Required] public int RequiredSupporters { get; } = requiredSupporters;
 }

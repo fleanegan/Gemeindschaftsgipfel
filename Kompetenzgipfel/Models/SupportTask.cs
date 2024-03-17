@@ -10,6 +10,15 @@ public class SupportTask
     {
     }
 
+    public SupportTask(string description, string title, ICollection<SupportPromise> supportPromises,
+        int requiredSupporters)
+    {
+        Description = description;
+        Title = title;
+        SupportPromises = supportPromises;
+        RequiredSupporters = requiredSupporters;
+    }
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string Id { get; set; }

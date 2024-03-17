@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kompetenzgipfel.Controllers;
 
-public class TopicController(ITopicService service) : Controller
+public class TopicController(ITopicService service) : AbstractController
 {
     [HttpPost]
     [Authorize]
@@ -108,6 +108,7 @@ public class TopicController(ITopicService service) : Controller
     }
 
     [Authorize]
+    [HttpPost]
     public async Task<IActionResult> AddVote([FromBody] TopicVoteDto userInput)
     {
         if (!ModelState.IsValid)
