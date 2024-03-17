@@ -131,6 +131,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
@@ -143,6 +144,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains(userInput.SupportTaskId, await response.Content.ReadAsStringAsync());
     }
 
@@ -156,6 +158,33 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains(userInput.SupportTaskId, await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task
+        Test_commitToSupportTask_GIVEN_malformed_input_WHEN_posting_THEN_return_error_response()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+        var userInput = new { SupportTaskId = 123 };
+
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task
+        Test_commitToSupportTask_GIVEN_correct_input_WHEN_posting_THEN_return_success_response()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+        var userInput = new { SupportTaskId = HappyPathDummyId };
+
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
     }
 }

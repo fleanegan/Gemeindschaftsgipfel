@@ -24,6 +24,8 @@ public class SupportTaskController(ISupportTaskService service) : AbstractContro
     [Authorize]
     public async Task<IActionResult> Help([FromBody] SupportPromiseDto userInput)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         var userName = GetUserNameFromAuthorization();
         try
         {
