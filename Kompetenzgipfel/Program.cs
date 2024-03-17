@@ -67,7 +67,10 @@ builder.Services.AddIdentityApiEndpoints<User>()
 builder.Services.AddCors();
 builder.Services.AddScoped<TopicRepository, TopicRepository>();
 builder.Services.AddScoped<VoteRepository, VoteRepository>();
+builder.Services.AddScoped<SupportPromiseRepository, SupportPromiseRepository>();
+builder.Services.AddScoped<SupportTaskRepository, SupportTaskRepository>();
 builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<ISupportTaskService, SupportTaskService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<JwtGenerationService>();
 var app = builder.Build();

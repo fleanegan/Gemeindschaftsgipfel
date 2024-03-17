@@ -42,4 +42,25 @@ public class SupportTaskController(ISupportTaskService service) : AbstractContro
 
         return Ok();
     }
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<IActionResult> Help(string id)
+    {
+        var userName = GetUserNameFromAuthorization();
+        try
+        {
+            await service.ResignFromSupportTask(id, userName);
+        }
+        catch (SupportPromiseImpossibleException e)
+        {
+            return Conflict(e.Message);
+        }
+        catch (SupportTaskNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+
+        return Ok();
+    }
 }

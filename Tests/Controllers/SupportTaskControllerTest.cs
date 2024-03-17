@@ -57,15 +57,19 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
             .ReturnsAsync(
                 (SupportTaskCreationDto _, string _) => new SupportTask(title: "title",
                     description: "description", supportPromises: [], requiredSupporters: 5));
+        var dummySupportTaskCommitmentAction = (string supportTopicId, string _) =>
+        {
+            if (supportTopicId == NonExistingDummyId)
+                throw new SupportTaskNotFoundException(supportTopicId);
+            if (supportTopicId == ConflictingDummyId)
+                throw new SupportPromiseImpossibleException(supportTopicId);
+        };
         _mockSupportTaskService.Setup(s =>
                 s.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback((string supportTopicId, string _) =>
-            {
-                if (supportTopicId == NonExistingDummyId)
-                    throw new SupportTaskNotFoundException(supportTopicId);
-                if (supportTopicId == ConflictingDummyId)
-                    throw new SupportPromiseImpossibleException(supportTopicId);
-            });
+            .Callback(dummySupportTaskCommitmentAction);
+        _mockSupportTaskService.Setup(s =>
+                s.ResignFromSupportTask(It.IsAny<string>(), It.IsAny<string>()))
+            .Callback(dummySupportTaskCommitmentAction);
         services.AddSingleton(_mockSupportTaskService.Object);
     }
 
@@ -144,7 +148,8 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
-        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
+        _mockSupportTaskService.Verify(
+            c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains(userInput.SupportTaskId, await response.Content.ReadAsStringAsync());
     }
 
@@ -158,7 +163,8 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
+        _mockSupportTaskService.Verify(
+            c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains(userInput.SupportTaskId, await response.Content.ReadAsStringAsync());
     }
 
@@ -185,6 +191,59 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
+        _mockSupportTaskService.Verify(
+            c => c.CommitToSupportTask(userInput.SupportTaskId, AutoAuthorizeMiddleware.UserName), Times.Once);
+    }
+
+    [Fact]
+    public async Task Test_resignFromSupportTask_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response()
+    {
+        var client = _factoryWithoutAuthorization.CreateClient();
+
+        var response = await client.DeleteAsync("/SupportTask/help/" + HappyPathDummyId);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task
+        Test_resignFromSupportTask_GIVEN_connected_user_WHEN_impossible_exception_while_posting_THEN_return_error_response()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+
+        var response = await client.DeleteAsync("/SupportTask/help/" + ConflictingDummyId);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        _mockSupportTaskService.Verify(
+            c => c.ResignFromSupportTask(ConflictingDummyId, AutoAuthorizeMiddleware.UserName), Times.Once);
+        Assert.Contains(ConflictingDummyId, await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task
+        Test_resignFromSupportTask_GIVEN_connected_user_WHEN_not_found_exception_while_posting_THEN_return_error_response()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+
+        var response = await client.DeleteAsync("/SupportTask/help/" + NonExistingDummyId);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        _mockSupportTaskService.Verify(
+            c => c.ResignFromSupportTask(NonExistingDummyId, AutoAuthorizeMiddleware.UserName), Times.Once);
+        Assert.Contains(NonExistingDummyId, await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task
+        Test_resignFromSupportTask_GIVEN_correct_input_WHEN_posting_THEN_return_success_response()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+
+        var response = await client.DeleteAsync("/SupportTask/help/" + HappyPathDummyId);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        _mockSupportTaskService.Verify(c => c.ResignFromSupportTask(HappyPathDummyId, AutoAuthorizeMiddleware.UserName),
+            Times.Once);
     }
 }
