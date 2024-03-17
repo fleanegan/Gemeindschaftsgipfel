@@ -31,13 +31,12 @@ public class SupportTaskController(ISupportTaskService service) : AbstractContro
         }
         catch (SupportPromiseImpossibleException e)
         {
-            return Conflict();
+            return Conflict(e.Message);
         }
         catch (SupportTaskNotFoundException e)
         {
-            return NotFound();
+            return NotFound(e.Message);
         }
-
 
         return Ok();
     }

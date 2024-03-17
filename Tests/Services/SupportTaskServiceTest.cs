@@ -96,8 +96,13 @@ public class SupportTaskServiceTest
         var supportTaskId = await GivenAddedSupportTask(service);
 
         await service.CommitToSupportTask(supportTaskId, loggedInUserName);
-        await service.CommitToSupportTask(supportTaskId, loggedInUserName);
 
+        async Task Action()
+        {
+            await service.CommitToSupportTask(supportTaskId, loggedInUserName);
+        }
+
+        await Assert.ThrowsAsync<SupportPromiseImpossibleException>(Action);
         var supportTasks = (await repository.FetchAll()).ToArray();
         Assert.Equal(1, supportTasks.First().SupportPromises.Count);
     }
@@ -138,7 +143,7 @@ public class SupportTaskServiceTest
 
     [Fact]
     public async Task
-        Test_resignFromSupportTask_GIVEN_no_SupportPromise_for_given_SupportTask_THEN_remove_SupportPromise()
+        Test_resignFromSupportTask_GIVEN_no_SupportPromise_for_given_SupportTask_THEN_throw_exception()
     {
         const string loggedInUserName = "Fake User";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -146,8 +151,12 @@ public class SupportTaskServiceTest
         ISupportTaskService service = await GetService(dbContext, [loggedInUserName], repository);
         var supportTaskId = await GivenAddedSupportTask(service);
 
-        await service.ResignFromSupportTask(supportTaskId, loggedInUserName);
+        async Task Action()
+        {
+            await service.ResignFromSupportTask(supportTaskId, loggedInUserName);
+        }
 
+        await Assert.ThrowsAsync<SupportPromiseImpossibleException>(Action);
         var supportTasks = (await repository.FetchAll()).ToArray();
         Assert.Equal(0, supportTasks.First().SupportPromises.Count);
     }

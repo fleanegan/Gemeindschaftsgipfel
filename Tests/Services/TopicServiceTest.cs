@@ -334,8 +334,13 @@ public class TopicServiceTest
         var topic = await service.AddTopic(firstTopicContent, creatorUserName);
 
         await service.AddTopicVote(topic.Id, loggedInUserName);
-        await service.AddTopicVote(topic.Id, loggedInUserName);
 
+        async Task Action()
+        {
+            await service.AddTopicVote(topic.Id, loggedInUserName);
+        }
+
+        await Assert.ThrowsAsync<VoteImpossibleException>(Action);
         var result = await repository.FetchBy(topic.Id);
         Assert.Equal(1, result!.Votes.Count);
     }

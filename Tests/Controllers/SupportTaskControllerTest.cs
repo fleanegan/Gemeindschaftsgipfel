@@ -143,8 +143,9 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.Contains(userInput.SupportTaskId, await response.Content.ReadAsStringAsync());
     }
-    
+
     [Fact]
     public async Task
         Test_commitToSupportTask_GIVEN_connected_user_WHEN_not_found_exception_while_posting_THEN_return_error_response()
@@ -155,5 +156,6 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Contains(userInput.SupportTaskId, await response.Content.ReadAsStringAsync());
     }
 }

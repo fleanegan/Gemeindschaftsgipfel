@@ -29,7 +29,7 @@ public class SupportTaskService(
         var supporter = await userManager.FindByNameAsync(loggedInUserName);
         var supportPromise = new SupportPromise(supportTask, supporter!);
         if (supportTask.SupportPromises.Any(s => s.Supporter.UserName == supporter!.UserName))
-            return;
+            throw new SupportPromiseImpossibleException(supportTaskId);
         await supportPromiseRepository.Create(supportPromise);
     }
 
@@ -39,7 +39,8 @@ public class SupportTaskService(
         if (supportTask == null)
             throw new SupportTaskNotFoundException(supportTaskId);
         var supportPromise = supportTask.SupportPromises.FirstOrDefault(s => s.Supporter.UserName == loggedInUserName);
-        if (supportPromise != null)
-            await supportPromiseRepository.Remove(supportPromise);
+        if (supportPromise == null)
+            throw new SupportPromiseImpossibleException(supportTaskId);
+        await supportPromiseRepository.Remove(supportPromise);
     }
 }

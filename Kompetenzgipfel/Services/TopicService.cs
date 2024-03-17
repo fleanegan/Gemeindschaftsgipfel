@@ -52,7 +52,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
         var voter = await userManager.FindByNameAsync(loggedInUserName);
         var newVote = new Vote(topicToVote, voter!);
         if (topicToVote.Votes.Any(vote => vote.Voter.UserName == voter!.UserName))
-            return;
+            throw new VoteImpossibleException(topicId);
         await voteRepository.Create(newVote);
     }
 
