@@ -10,11 +10,12 @@ public class SupportTask
     {
     }
 
-    public SupportTask(string description, string title, ICollection<SupportPromise> supportPromises,
-        int requiredSupporters)
+    public SupportTask(string description, string title, string duration,
+        int requiredSupporters, ICollection<SupportPromise> supportPromises)
     {
         Description = description;
         Title = title;
+        Duration = duration;
         SupportPromises = supportPromises;
         RequiredSupporters = requiredSupporters;
     }

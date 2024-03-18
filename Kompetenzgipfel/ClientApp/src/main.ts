@@ -18,6 +18,7 @@ axios.interceptors.request.use(
     },
     (error) => {
         if (error.response && error.response.status === 401) {
+            console.log("atah\n\n\n\n\nowneogwurg");
             router.push('/login');
         }
         return Promise.reject(error); // Return the rejected promise

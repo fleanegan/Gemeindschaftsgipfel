@@ -18,22 +18,25 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
     private const string NonExistingDummyId = "nonExistingDummyId";
     private const string ConflictingDummyId = "conflictingDummyId";
 
+
     private readonly WebApplicationFactory<Program> _factoryWithAuthorization;
     private readonly WebApplicationFactory<Program> _factoryWithoutAuthorization;
 
     private Mock<ISupportTaskService> _mockSupportTaskService;
+    private readonly SupportTask demoTask;
+    private readonly IEnumerable<SupportTask> demoTasks;
 
     public SupportTaskControllerTest(WebApplicationFactory<Program> factory)
     {
+        demoTask = new SupportTask("description", "title", "duration", 2, []);
+        demoTasks = [demoTask, demoTask];
         _factoryWithAuthorization = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ISupportTaskService));
                 if (descriptor != null) services.Remove(descriptor);
-
                 SetupMock(services);
-
                 //authentication: this Middleware automatically adds user "FakeAuthUser"
                 services.AddSingleton<IStartupFilter>(new AutoAuthorizeStartupFilter());
             });
@@ -45,7 +48,6 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
             {
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ISupportTaskService));
                 if (descriptor != null) services.Remove(descriptor);
-
                 SetupMock(services);
             });
         });
@@ -56,8 +58,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         _mockSupportTaskService = new Mock<ISupportTaskService>();
         _mockSupportTaskService.Setup(c => c.AddTask(It.IsAny<SupportTaskCreationDto>(), It.IsAny<string>()))
             .ReturnsAsync(
-                (SupportTaskCreationDto _, string _) => new SupportTask(title: "title",
-                    description: "description", supportPromises: [], requiredSupporters: 5));
+                (SupportTaskCreationDto _, string _) => new SupportTask("description", "title", "duration", 5, []));
         var dummySupportTaskCommitmentAction = (string SupportTaskId, string _) =>
         {
             if (SupportTaskId == NonExistingDummyId)
@@ -65,8 +66,6 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
             if (SupportTaskId == ConflictingDummyId)
                 throw new SupportPromiseImpossibleException(SupportTaskId);
         };
-        var demoTask = new SupportTask("description", "title", new List<SupportPromise>([]), 2);
-        IEnumerable<SupportTask> demoTasks = [demoTask, demoTask];
         _mockSupportTaskService.Setup(s =>
                 s.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(dummySupportTaskCommitmentAction);
@@ -272,7 +271,11 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockSupportTaskService.Verify(c => c.GetAll(), Times.Once);
-        var result = JsonSerializer.Deserialize<List<object>>(await response.Content.ReadAsStringAsync());
-        Assert.Equal(2, result.Count);
+        var dictionary =
+            JsonSerializer.Deserialize<List<Dictionary<string, object>>>(await response.Content.ReadAsStringAsync());
+        Assert.Equal(demoTask.Title, dictionary![0]["title"].ToString());
+        Assert.Equal(demoTask.Description, dictionary![0]["description"].ToString());
+        Assert.Equal(demoTask.Duration, dictionary![0]["duration"].ToString());
+        Assert.Equal(2, dictionary.Count);
     }
 }

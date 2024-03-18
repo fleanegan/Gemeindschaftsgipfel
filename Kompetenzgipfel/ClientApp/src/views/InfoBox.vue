@@ -145,7 +145,8 @@ th:first-child, td:first-child {
 .info_tile_content {
   font-size: 1rem;
   position: relative;
-  top: 25%;
+  margin-bottom: auto;
+  margin-top: auto;
   width: 25rem;
   min-width: 350px;
   z-index: 6;

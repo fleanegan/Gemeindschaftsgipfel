@@ -29,4 +29,11 @@ public class AuthController(AuthService authService) : Controller
             return Ok(identityResult);
         return BadRequest(identityResult.Errors);
     }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult rejectme()
+    {
+        return Unauthorized();
+    }
 }

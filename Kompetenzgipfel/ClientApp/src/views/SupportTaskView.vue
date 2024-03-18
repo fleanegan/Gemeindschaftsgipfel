@@ -1,16 +1,20 @@
 <template>
   <div class="topic">
     <h1>Helfende Hände</h1>
+    <p class="descriptiona">Bittebitte, hilfehilfe. Hier kannst du dich eintragen, um bei Aufgaben mitzuhelfen, bei denen wir Tatkraft
+      brauchen!</p>
     <ul class="list">
       <li v-for="(item, index) in supportTasks" :key="item.title" class="card_scroll_container">
         <div :class="{card_success: item.supporterUserNames.length === item.requiredSupporters}" class="card">
           <div class="card_content">
-            <h3 :class="{}">{{ item.title }}</h3>
+            <h3 class="support_task_header">{{ item.title }}</h3>
             <p class="">{{ item.description }}</p>
-            <p class="">{{ item.duration + "no" }}</p>
+            <p class="support_task_duration">{{ item.duration }}</p>
+          </div>
+          <div class="card_action_button_container">
             <div class="progress_bar">
               <div class="progress_bar_shell">
-                <span :style="{width: 100 * item.supporterUserNames.length / item.requiredSupporters + '%'}"
+                <span :style="{width: calcProgressBarWidth(item)}"
                       class="progress_bar_progress">
                   <p :class="{progress_bar_progress_empty: item.supporterUserNames.length === 0}">{{
                       "" + item.supporterUserNames.length.toString() + "/" + item.requiredSupporters.toString()
@@ -18,8 +22,6 @@
                 </span>
               </div>
             </div>
-          </div>
-          <div class="card_action_button_container">
             <button
                 :class="{card_action_button: true, card_action_button_active: item.supporterUserNames.includes(userName!), card_action_button_inactive: !item.supporterUserNames.includes(userName!)}"
                 @click="toggleSupporting(index)">
@@ -77,9 +79,22 @@ export default defineComponent({
         this.supportTasks[index].supporterUserNames.push(this.userName!)
       }
     },
+    calcProgressBarWidth(item: SupportTask) {
+      if (item.requiredSupporters === 0)
+        return 0;
+      const normalWidth = item.supporterUserNames.length / item.requiredSupporters;
+      let result = '';
+      if (normalWidth < 0.075 && item.supporterUserNames.includes(this.userName!)) {
+        result = "10%";
+      } else {
+        result = 100 * normalWidth + "%";
+      }
+      return result;
+    },
     handleScroll: function () {
       this.isSticky = window.scrollY > 750;
-    },
+    }
+    ,
   },
   computed: {
     userName() {
@@ -99,15 +114,15 @@ export default defineComponent({
 <style scoped>
 .card {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   min-height: 3rem;
   padding-left: 0.5rem;
   padding-top: 0.5rem;
   margin-bottom: 0.5rem;
-  border: 0.1rem solid var(--main-color-primary);
-  border-radius: 0.1rem;
+  border-radius: 0.2rem;
+  border: 0.1rem solid rgba(179, 76, 76, 0.1);
 }
 
 .card_success {
@@ -118,7 +133,6 @@ export default defineComponent({
   flex-direction: column;
   align-items: flex-start;
   align-content: center;
-  border-left: .25rem solid var(--color-background);
   margin-right: auto;
   flex-basis: 75%;
   width: 100%;
@@ -126,18 +140,21 @@ export default defineComponent({
 }
 
 .card_action_button_container {
-  height: 100%;
+  width: 100%;
   margin-right: 0.25rem;
   margin-bottom: 0.25rem;
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
 }
 
 .card_action_button {
   padding: 0.25rem;
-  width: 100%;
+  margin-left: auto;
+  margin-right: 0;
   min-width: 5rem;
-  height: 100%;
-  border: none;
+  height: 1.5rem;
   border-radius: 0.2rem;
   border: 0.1rem solid var(--main-color-primary);
 }
@@ -155,14 +172,13 @@ export default defineComponent({
 
 .progress_bar {
   width: 100%;
-  height: 2rem;
+  height: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-shrink: 4;
   position: relative;
-  padding: 0.5rem;
-
+  margin-bottom: 0.75rem;
 }
 
 .progress_bar_shell {
@@ -187,7 +203,25 @@ export default defineComponent({
 .progress_bar_progress_empty {
   position: relative;
   color: var(--main-color-primary);
-  left: 2rem;
+  left: 3rem;
+}
+
+.support_task_header {
+  font-stretch: extra-expanded;
+  font-size: large;
+}
+
+.support_task_duration {
+  margin-left: auto;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.descriptiona {
+  font-size: 1.25rem;
+  margin: 1rem;
+  margin-right: 2rem;
+  margin-bottom: 5rem;
 }
 
 </style>

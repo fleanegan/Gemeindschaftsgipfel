@@ -21,7 +21,11 @@
     <h2>Da will ich mitmachen!</h2>
     <h1></h1>
     <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation': currentScreen > 1.5}"
-                 to="/topic">Jetzt Thema einreichen
+                 to="/topic">Thema einreichen
+    </router-link>
+    <p></p>
+    <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation1': currentScreen > 1.5}"
+                 to="/supporttask">Arbeitsgruppe beitreten
     </router-link>
   </div>
   <div :class="{'slider':true, 'key_information_slider': false}"></div>
@@ -166,6 +170,9 @@ export default defineComponent({
   margin-right: auto;
   border: 0.1rem solid var(--main-color-primary);
   border-radius: 0.2rem;
+  width: 15rem;
+  display: flex;
+  place-content: center;
 }
 
 .topic_call_to_action_animation {
@@ -181,6 +188,23 @@ export default defineComponent({
   }
   60% {
     transform: translateY(-5px);
+  }
+}
+
+.topic_call_to_action_animation1 {
+  animation: bounceDown 1s ease infinite;
+}
+
+@keyframes bounceDown {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(5px);
+    
+  }
+  60% {    transform: translateY(10px);
+
   }
 }
 

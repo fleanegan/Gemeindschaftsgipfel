@@ -32,7 +32,8 @@ public abstract class ResponseGenerator
     public static List<SupportTaskResponseModel> GenerateSupportTaskResponses(IEnumerable<SupportTask> supportTasks)
     {
         return supportTasks
-            .Select(task => new SupportTaskResponseModel(task.Id, task.Title, task.Description, task.RequiredSupporters,
+            .Select(task => new SupportTaskResponseModel(task.Id, task.Title, task.Description, task.Duration,
+                task.RequiredSupporters,
                 task.SupportPromises.Select(supporter => supporter.Supporter.UserName).ToList()))
             .ToList();
     }
