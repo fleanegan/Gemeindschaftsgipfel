@@ -25,6 +25,7 @@ public class SupportTaskRepository(DatabaseContextApplication dbContext)
         return await dbContext.SupportTasks
             .Select(supportTask => supportTask)
             .Include(supportTask => supportTask.SupportPromises)
+            .ThenInclude(promise => promise.Supporter)
             .FirstOrDefaultAsync(c => c.Id == supportTaskId);
     }
 }

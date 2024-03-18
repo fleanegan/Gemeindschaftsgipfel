@@ -73,7 +73,7 @@ export default defineComponent({
 
             if (response.status >= 200 && response.status < 300) {
               const responseData = response.data
-              useAuthStore().login(responseData);
+              useAuthStore().login(responseData, this.username);
               let routeToPush = {path: '/'};
               if (this.$route.query.redirect) {
                 routeToPush = {path: this.$route.query.redirect as string};

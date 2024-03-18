@@ -33,12 +33,7 @@ public abstract class ResponseGenerator
     {
         return supportTasks
             .Select(task => new SupportTaskResponseModel(task.Id, task.Title, task.Description, task.RequiredSupporters,
-                SupporterUserNames(task)))
+                task.SupportPromises.Select(supporter => supporter.Supporter.UserName).ToList()))
             .ToList();
-    }
-
-    private static List<string> SupporterUserNames(SupportTask task)
-    {
-        return task.SupportPromises.Select(supporter => supporter.Supporter.UserName).ToList();
     }
 }

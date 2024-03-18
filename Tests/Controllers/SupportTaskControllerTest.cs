@@ -58,12 +58,12 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
             .ReturnsAsync(
                 (SupportTaskCreationDto _, string _) => new SupportTask(title: "title",
                     description: "description", supportPromises: [], requiredSupporters: 5));
-        var dummySupportTaskCommitmentAction = (string supportTopicId, string _) =>
+        var dummySupportTaskCommitmentAction = (string SupportTaskId, string _) =>
         {
-            if (supportTopicId == NonExistingDummyId)
-                throw new SupportTaskNotFoundException(supportTopicId);
-            if (supportTopicId == ConflictingDummyId)
-                throw new SupportPromiseImpossibleException(supportTopicId);
+            if (SupportTaskId == NonExistingDummyId)
+                throw new SupportTaskNotFoundException(SupportTaskId);
+            if (SupportTaskId == ConflictingDummyId)
+                throw new SupportPromiseImpossibleException(SupportTaskId);
         };
         var demoTask = new SupportTask("description", "title", new List<SupportPromise>([]), 2);
         IEnumerable<SupportTask> demoTasks = [demoTask, demoTask];

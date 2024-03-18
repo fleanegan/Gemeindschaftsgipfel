@@ -7,7 +7,7 @@ export async function login(credentials: { username: string; password: string })
     try {
         const response = await axios.post('/api/auth/login', credentials);
         const token = response.data;
-        authStore.login(token);
+        authStore.login(token, credentials.username);
         return {token};
     } catch (error) {
         throw error;

@@ -29,6 +29,11 @@ const router = createRouter({
             component: () => import('../views/TopicView.vue'),
         },
         {
+            path: '/supporttask',
+            name: 'HelfendeHaende',
+            component: () => import('../views/SupportTaskView.vue'),
+        },
+        {
             path: '/topic/add',
             name: 'Neues Vortragsthema hinzufügen',
             component: () => import('../views/InputTopicView.vue'),

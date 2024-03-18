@@ -42,7 +42,7 @@
     </div>
     <h2>Meine Vorschläge</h2>
     <ul class="list">
-      <li v-for="(item, index) in myTopics" :key="item.votes" class="topic-card">
+      <li v-for="(item, index) in myTopics" :key="item.votes" class="card_scroll_container">
         <p v-if="item===mostLikedTopic && mostLikedTopic.votes > 0" class="most_liked_hint">Publikumsliebling</p>
         <div :class="{topic_card_header:true, most_liked_highlight:item===mostLikedTopic && mostLikedTopic.votes > 0}">
           <button class="action_button" @click="toggleDetails(myTopics, index)">
@@ -73,7 +73,7 @@
     </ul>
     <h2>Ideen der Anderen</h2>
     <ul class="list">
-      <li v-for="(item, index) in foreignTopics" :key="index" class="topic-card">
+      <li v-for="(item, index) in foreignTopics" :key="index" class="card_scroll_container">
         <div class="topic_card_header">
           <button class="action_button" @click="toggleDetails(foreignTopics, index)"><img
               :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">

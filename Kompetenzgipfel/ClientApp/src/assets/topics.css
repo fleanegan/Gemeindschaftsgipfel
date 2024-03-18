@@ -7,7 +7,7 @@
     padding-right: 1rem;
 }
 
-.topic-card {
+.card_scroll_container {
     display: flex;
     flex-direction: column;
 }
