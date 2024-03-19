@@ -4,6 +4,7 @@ using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,7 +19,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 builder.WebHost.ConfigureKestrel(options =>
 {
-    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT") ?? "8080");
+    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT"));
     if (builder.Environment.IsDevelopment())
         options.ListenLocalhost(serverPort, listenOptions => listenOptions.UseHttps());
     else
@@ -31,7 +32,6 @@ builder.Services.AddAuthentication(opt =>
     })
     .AddJwtBearer(options =>
     {
-        //todo: replace with a valid issuer string and a valid audience string varying on the environment
         var productionAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
                                  Environment.GetEnvironmentVariable("SERVER_PORT");
         var developmentAudience = "https://" + Environment.GetEnvironmentVariable("IP_ADDRESS") + ":" +
@@ -58,13 +58,9 @@ builder.Services.AddDbContext<DatabaseContextApplication>(options =>
     var connectionString = config.GetConnectionString(Environment.GetEnvironmentVariable("DB_NAME")!);
     options.UseSqlite(connectionString);
 });
-//todo: find a way to replace by these lines without breaking the IEmailSender dependency
-// builder.Services.AddAuthorization();
-// builder.Services.AddIdentity<User, IdentityRole>()
-// .AddEntityFrameworkStores<DatabaseContextApplication>();
-builder.Services.AddIdentityApiEndpoints<User>()
+builder.Services.AddTransient<IEmailSender<User>, NoOpEmailSenderService>();
+builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<DatabaseContextApplication>();
-builder.Services.AddCors();
 builder.Services.AddScoped<TopicRepository, TopicRepository>();
 builder.Services.AddScoped<VoteRepository, VoteRepository>();
 builder.Services.AddScoped<SupportPromiseRepository, SupportPromiseRepository>();
