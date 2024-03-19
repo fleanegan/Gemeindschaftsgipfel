@@ -17,11 +17,18 @@ axios.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+axios.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
         if (error.response && error.response.status === 401) {
-            console.log("atah\n\n\n\n\nowneogwurg");
             router.push('/login');
         }
-        return Promise.reject(error); // Return the rejected promise
     }
 );
 

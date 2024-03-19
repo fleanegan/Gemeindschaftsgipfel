@@ -19,7 +19,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 builder.WebHost.ConfigureKestrel(options =>
 {
-    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT"));
+    var serverPort = int.Parse(Environment.GetEnvironmentVariable("SERVER_PORT")!);
     if (builder.Environment.IsDevelopment())
         options.ListenLocalhost(serverPort, listenOptions => listenOptions.UseHttps());
     else
