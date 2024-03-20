@@ -79,7 +79,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             {
                 var topic = Topic.Create(newTopic.Title, newTopic.Description ?? "",
                     new User { Id = "testId" });
-                topic!.Id = HappyPathDummyId;
+                topic.Id = HappyPathDummyId;
                 return topic;
             });
         _mockTopicService.Setup(s =>
@@ -92,7 +92,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                     throw new BatschungaException(topicToUpdate.Id);
                 var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
                     new User { Id = "testId" });
-                topic!.Id = HappyPathDummyId;
+                topic.Id = HappyPathDummyId;
                 topic.Votes = [];
                 return topic;
             });
@@ -283,7 +283,6 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
         var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
 
-        var errorDescription = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -405,7 +404,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     public async Task Test_addVote_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response()
     {
         var client = _factoryWithoutAuthorization.CreateClient();
-        var voteBody = new TopicVoteDto { topicId = "some id" };
+        var voteBody = new TopicVoteDto("some id");
 
         var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
 
@@ -429,7 +428,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     public async Task Test_addVote_GIVEN_non_existing_topic_WHEN_posting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var voteBody = new TopicVoteDto { topicId = NonExistingDummyId };
+        var voteBody = new TopicVoteDto(NonExistingDummyId);
 
         var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
 
@@ -443,7 +442,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     )
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var voteBody = new TopicVoteDto { topicId = ConflictingDummyId };
+        var voteBody = new TopicVoteDto(ConflictingDummyId);
 
         var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
 

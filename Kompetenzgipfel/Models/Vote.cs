@@ -3,23 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kompetenzgipfel.Models;
 
-public class Vote
+public class Vote(Topic topic, User voter)
 {
-    internal Vote()
+    internal Vote() : this(Topic.Create("title", "description", new User()), new User())
     {
-    }
-
-    public Vote(Topic topic, User voter)
-    {
-        Topic = topic;
-        Voter = voter;
     }
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; set; }
+    public string Id { get; init; } = null!;
 
-    [Required] public Topic Topic { get; set; }
+    [Required] public Topic Topic { get; init; } = topic;
 
-    [Required] public User Voter { get; set; }
+    [Required] public User Voter { get; init; } = voter;
 }

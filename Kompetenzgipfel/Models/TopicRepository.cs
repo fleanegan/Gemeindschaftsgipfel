@@ -15,7 +15,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
 
     public async Task<Topic> Create(Topic newTopic)
     {
-        dbContext.Topics.Add(newTopic!);
+        dbContext.Topics.Add(newTopic);
         await dbContext.SaveChangesAsync();
         return newTopic;
     }
@@ -33,7 +33,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
     {
         dbContext.Topics.Update(updatedTopic);
         await dbContext.SaveChangesAsync();
-        return await FetchBy(updatedTopic.Id);
+        return (await FetchBy(updatedTopic.Id))!;
     }
 
     public async Task<IEnumerable<Topic>> GetAllExceptForUser(string userName)

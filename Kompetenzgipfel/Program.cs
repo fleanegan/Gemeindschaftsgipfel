@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(opt =>
             ValidAudiences = audiences,
             IssuerSigningKey =
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_KEY_JWT_PRIVATE")))
+                    Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_KEY_JWT_PRIVATE")!))
         };
     });
 builder.Services.AddControllers();

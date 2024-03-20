@@ -3,23 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kompetenzgipfel.Models;
 
-public class SupportPromise
+public class SupportPromise(SupportTask supportTask, User supporter)
 {
-    internal SupportPromise()
+    internal SupportPromise() : this(new SupportTask(), new User())
     {
-    }
-
-    public SupportPromise(SupportTask supportTask, User supporter)
-    {
-        SupportTask = supportTask;
-        Supporter = supporter;
     }
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; set; }
+    public string Id { get; init; } = null!;
 
-    [Required] public SupportTask SupportTask { get; set; }
+    [Required] public SupportTask SupportTask { get; init; } = supportTask;
 
-    [Required] public User Supporter { get; set; }
+    [Required] public User Supporter { get; init; } = supporter;
 }

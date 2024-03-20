@@ -8,6 +8,9 @@ public class Topic
 {
     internal Topic()
     {
+        Title = "";
+        Description = "";
+        User = new User();
     }
 
     public Topic(string description, string title, User user, ICollection<Vote> votes)
@@ -20,7 +23,7 @@ public class Topic
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
     [StringLength(Constants.MaxLengthTitle, ErrorMessage = Constants.MaxLengthTitleErrorMessage)]
     [Required(ErrorMessage = Constants.EmptyTitleErrorMessage)]
@@ -31,9 +34,9 @@ public class Topic
 
     [Required] public User User { get; init; }
 
-    public ICollection<Vote> Votes { get; set; }
+    public ICollection<Vote> Votes { get; set; } = [];
 
-    public static Topic? Create(string title, string description, User user)
+    public static Topic Create(string title, string description, User user)
     {
         var model = new Topic { Title = title, Description = description, User = user };
         Validator.ValidateObject(model, new ValidationContext(model), true);

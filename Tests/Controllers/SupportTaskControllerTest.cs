@@ -22,14 +22,14 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
     private readonly WebApplicationFactory<Program> _factoryWithAuthorization;
     private readonly WebApplicationFactory<Program> _factoryWithoutAuthorization;
 
-    private Mock<ISupportTaskService> _mockSupportTaskService;
-    private readonly SupportTask demoTask;
-    private readonly IEnumerable<SupportTask> demoTasks;
+    private Mock<ISupportTaskService> _mockSupportTaskService = null!;
+    private readonly SupportTask _demoTask;
+    private readonly IEnumerable<SupportTask> _demoTasks;
 
     public SupportTaskControllerTest(WebApplicationFactory<Program> factory)
     {
-        demoTask = new SupportTask("description", "title", "duration", 2, []);
-        demoTasks = [demoTask, demoTask];
+        _demoTask = new SupportTask("description", "title", "duration", 2, []);
+        _demoTasks = [_demoTask, _demoTask];
         _factoryWithAuthorization = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
@@ -59,12 +59,12 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         _mockSupportTaskService.Setup(c => c.AddTask(It.IsAny<SupportTaskCreationDto>(), It.IsAny<string>()))
             .ReturnsAsync(
                 (SupportTaskCreationDto _, string _) => new SupportTask("description", "title", "duration", 5, []));
-        var dummySupportTaskCommitmentAction = (string SupportTaskId, string _) =>
+        var dummySupportTaskCommitmentAction = (string supportTaskId, string _) =>
         {
-            if (SupportTaskId == NonExistingDummyId)
-                throw new SupportTaskNotFoundException(SupportTaskId);
-            if (SupportTaskId == ConflictingDummyId)
-                throw new SupportPromiseImpossibleException(SupportTaskId);
+            if (supportTaskId == NonExistingDummyId)
+                throw new SupportTaskNotFoundException(supportTaskId);
+            if (supportTaskId == ConflictingDummyId)
+                throw new SupportPromiseImpossibleException(supportTaskId);
         };
         _mockSupportTaskService.Setup(s =>
                 s.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()))
@@ -72,7 +72,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         _mockSupportTaskService.Setup(s =>
                 s.ResignFromSupportTask(It.IsAny<string>(), It.IsAny<string>()))
             .Callback(dummySupportTaskCommitmentAction);
-        _mockSupportTaskService.Setup(s => s.GetAll()).Returns(() => Task.Run(() => demoTasks));
+        _mockSupportTaskService.Setup(s => s.GetAll()).Returns(() => Task.Run(() => _demoTasks));
         services.AddSingleton(_mockSupportTaskService.Object);
     }
 
@@ -133,7 +133,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
     public async Task Test_commitToSupportTask_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response()
     {
         var client = _factoryWithoutAuthorization.CreateClient();
-        var userInput = new SupportPromiseDto { SupportTaskId = HappyPathDummyId };
+        var userInput = new SupportPromiseDto (HappyPathDummyId);
 
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
@@ -146,7 +146,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         Test_commitToSupportTask_GIVEN_connected_user_WHEN_impossible_exception_while_posting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var userInput = new SupportPromiseDto { SupportTaskId = ConflictingDummyId };
+        var userInput = new SupportPromiseDto (ConflictingDummyId);
 
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
@@ -161,7 +161,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         Test_commitToSupportTask_GIVEN_connected_user_WHEN_not_found_exception_while_posting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var userInput = new SupportPromiseDto { SupportTaskId = NonExistingDummyId };
+        var userInput = new SupportPromiseDto (NonExistingDummyId);
 
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
@@ -273,9 +273,9 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         _mockSupportTaskService.Verify(c => c.GetAll(), Times.Once);
         var dictionary =
             JsonSerializer.Deserialize<List<Dictionary<string, object>>>(await response.Content.ReadAsStringAsync());
-        Assert.Equal(demoTask.Title, dictionary![0]["title"].ToString());
-        Assert.Equal(demoTask.Description, dictionary![0]["description"].ToString());
-        Assert.Equal(demoTask.Duration, dictionary![0]["duration"].ToString());
+        Assert.Equal(_demoTask.Title, dictionary![0]["title"].ToString());
+        Assert.Equal(_demoTask.Description, dictionary[0]["description"].ToString());
+        Assert.Equal(_demoTask.Duration, dictionary[0]["duration"].ToString());
         Assert.Equal(2, dictionary.Count);
     }
 }

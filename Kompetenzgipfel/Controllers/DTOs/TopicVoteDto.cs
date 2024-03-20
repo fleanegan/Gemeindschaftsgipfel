@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kompetenzgipfel.Controllers.DTOs;
 
-public class TopicVoteDto
+public class TopicVoteDto(string topicId)
 {
-    [Required] public string topicId { get; set; }
+    [Required] public string topicId { get; init; } = topicId;
 }

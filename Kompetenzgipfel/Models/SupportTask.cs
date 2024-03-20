@@ -8,6 +8,9 @@ public class SupportTask
 {
     internal SupportTask()
     {
+        Title = "";
+        Description = "";
+        Duration = "";
     }
 
     public SupportTask(string description, string title, string duration,
@@ -22,21 +25,21 @@ public class SupportTask
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; set; }
+    public string Id { get; init; } = null!;
 
     [StringLength(Constants.MaxLengthTitle)]
     [Required]
-    public string Title { get; set; }
+    public string Title { get; init; }
 
     [StringLength(Constants.MaxLengthDescription)]
     [Required]
-    public string Description { get; set; }
+    public string Description { get; init; }
 
     [StringLength(Constants.MaxLengthTitle)]
     [Required]
-    public string Duration { get; set; }
+    public string Duration { get; init; }
 
-    [Required] public int RequiredSupporters { get; set; }
+    [Required] public int RequiredSupporters { get; init; }
 
-    public ICollection<SupportPromise> SupportPromises { get; set; } = [];
+    public ICollection<SupportPromise> SupportPromises { get; init; } = [];
 }

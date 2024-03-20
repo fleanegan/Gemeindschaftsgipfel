@@ -17,7 +17,7 @@ public class TopicController(ITopicService service) : AbstractController
         var userName = GetUserNameFromAuthorization();
         try
         {
-            var result = await service.AddTopic(userInput, userName!);
+            var result = await service.AddTopic(userInput, userName);
 
             return Ok(new OwnTopicResponseModel(result.Id, result.Title, result.Description, userName, 0));
         }
@@ -56,7 +56,7 @@ public class TopicController(ITopicService service) : AbstractController
         {
             return NotFound(e.Message);
         }
-        catch (BatschungaException e)
+        catch (BatschungaException)
         {
             return Forbid(new AuthenticationProperties());
         }
@@ -81,7 +81,7 @@ public class TopicController(ITopicService service) : AbstractController
         {
             return NotFound(e.Message);
         }
-        catch (BatschungaException e)
+        catch (BatschungaException)
         {
             return Forbid(new AuthenticationProperties());
         }
@@ -92,7 +92,7 @@ public class TopicController(ITopicService service) : AbstractController
     public async Task<IActionResult> AllExceptLoggedIn()
     {
         var userName = GetUserNameFromAuthorization();
-        var result = await service.FetchAllExceptLoggedIn(userName!);
+        var result = await service.FetchAllExceptLoggedIn(userName);
         var response = ResponseGenerator.GenerateForeignTopicResponses(result, userName);
         return Ok(response);
     }
@@ -100,7 +100,7 @@ public class TopicController(ITopicService service) : AbstractController
     [Authorize]
     public async Task<IActionResult> AllOfLoggedIn()
     {
-        var userName = GetUserNameFromAuthorization()!;
+        var userName = GetUserNameFromAuthorization();
         var result = await service.FetchAllOfLoggedIn(userName);
         var response = ResponseGenerator.GenerateOwnTopicResponses(result);
         return Ok(response);
