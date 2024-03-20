@@ -13,7 +13,7 @@ public class AuthService(
 {
     public async Task<IdentityResult> SignUp(SignupDto userInput)
     {
-        var correctPassphrase = Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE")!;
+        var correctPassphrase = Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET")!;
         if (!userInput.EntrySecret.Equals(correctPassphrase))
             return IdentityResult.Failed(new IdentityError
                 { Code = "WrongPassphrase", Description = Constants.WrongPassphraseErrorMessage });

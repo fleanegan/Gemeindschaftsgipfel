@@ -11,13 +11,13 @@ public class AuthServiceTest
 {
     private readonly string _defaultPassword;
     private readonly string _defaultUserName;
-    private readonly string _theRightPassphrase;
+    private readonly string _theRightEntrySecret;
 
     public AuthServiceTest()
     {
-        _theRightPassphrase = Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE") ??
-                              "The alternative Passphrase which only get loaded when there is no .env present.";
-        Environment.SetEnvironmentVariable("USER_CREATION_PASSPHRASE", _theRightPassphrase);
+        _theRightEntrySecret = Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET") ??
+                               "The alternative Passphrase which only get loaded when there is no .env present.";
+        Environment.SetEnvironmentVariable("USER_CREATION_ENTRY_SECRET", _theRightEntrySecret);
         _defaultPassword = "Complex enough!1#";
         _defaultUserName = "username";
     }
@@ -28,7 +28,7 @@ public class AuthServiceTest
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightPassphrase);
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
 
         await service.SignUp(userInput);
 
@@ -42,7 +42,7 @@ public class AuthServiceTest
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightPassphrase);
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
 
 
         var result = await service.SignUp(userInput);
@@ -74,7 +74,7 @@ public class AuthServiceTest
         var service = new AuthService(userManager, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
         var userInput = new SignupDto("", _defaultPassword,
-            Environment.GetEnvironmentVariable("USER_CREATION_PASSPHRASE"));
+            Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET"));
 
         var result = await service.SignUp(userInput);
 
@@ -114,7 +114,7 @@ public class AuthServiceTest
         var expectedJwt = "expected JWT";
         var jwtGenerationService = TestHelper.GetJwtGenerationService(expectedJwt);
         var service = new AuthService(userManager, passwordHasher.Object, jwtGenerationService.Object);
-        await service.SignUp(new SignupDto(_defaultUserName, _defaultPassword, _theRightPassphrase));
+        await service.SignUp(new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret));
         var userInput = new LoginDto
         (
             _defaultUserName,

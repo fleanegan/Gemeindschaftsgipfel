@@ -28,7 +28,8 @@ axios.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             router.push('/login');
-        }
+        } else
+            return Promise.reject(error);
     }
 );
 

@@ -98,9 +98,7 @@ export default defineComponent({
               await this.handleLogin()
             }
           } catch (e: any) {
-            var r = e as AxiosError;
-            console.log(r)
-            var responseData = r.response?.data as [ErrorResponseData];
+            var responseData = e.response?.data as [ErrorResponseData];
             this.errors = responseData.map(object => object["description"] as string).join("\n")
           }
         }
