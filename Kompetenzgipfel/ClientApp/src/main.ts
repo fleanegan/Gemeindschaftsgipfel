@@ -26,7 +26,8 @@ axios.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response && error.response.status === 401) {
+        const isComingFromLogin = error.request.responseURL.includes("auth/login");
+        if (error.response && error.response.status === 401 && !isComingFromLogin) {
             router.push('/login');
         } else
             return Promise.reject(error);
