@@ -4,7 +4,7 @@ events {
 
 http {
     server {
-        listen 4000;
+        listen ${PROXY_PORT};
         server_name my-site;
 
         location / {
@@ -13,7 +13,7 @@ http {
     }
 
     server {
-        listen 443 ssl;
+        listen ${PROXY_PORT_SSL} ssl;
         server_name my-site;
 
         ssl_certificate /etc/ssl/certs/my-site.crt;
@@ -21,7 +21,7 @@ http {
 
         # Vue frontend static built folder (resides with Nginx server)
         location / {
-            proxy_pass http://backend:8080;
+            proxy_pass http://backend:${SERVER_PORT};
             # Pass common authentication headers
             proxy_set_header Authorization $http_authorization;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -31,7 +31,7 @@ http {
         # Rewrite requests starting with /api to remove the prefix and pass to backend
         location /api/ {
             rewrite ^/api/(.*)$ /$1 break;
-            proxy_pass http://backend:8080;
+            proxy_pass http://backend:${SERVER_PORT};
             # Pass common authentication headers
             proxy_set_header Authorization $http_authorization;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

@@ -13,6 +13,12 @@ const router = createRouter({
             meta: {requiresAuth: false}
         },
         {
+            path: '/index.html',
+            name: 'homeByIndex',
+            component: HomeView,
+            meta: {requiresAuth: false}
+        },
+        {
             path: '/about',
             name: 'about',
             component: () => import('../views/AboutView.vue'),

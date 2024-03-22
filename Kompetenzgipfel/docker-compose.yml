@@ -1,19 +1,27 @@
 version: "3.9"
 services:
   backend:
-    build: ./
+    build:
+      dockerfile: ./DockerScripts/Main/Dockerfile
+      context: .
     volumes:
       - ./database.db:/App/database.db:rw
     ports:
-      - "8080"
+      - ${SERVER_PORT}
   frontend:
     image: nginx:alpine
+    build:
+      context: ./DockerScripts/ReverseProxy/
+      args:
+        - SERVER_PORT=${SERVER_PORT}
+        - PROXY_PORT=${PROXY_PORT}
+        - PROXY_PORT_SSL=${PROXY_PORT_SSL}
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./DockerScripts/ReverseProxy/nginx.conf.template:/etc/nginx/nginx.conf.template:ro
       - ./ssl/my-site.crt:/etc/ssl/certs/my-site.crt
       - ./ssl/my-site.key:/etc/ssl/private/my-site.key
     depends_on:
       - backend
     ports:
-      - "4000:4000"
-      - "4443:443"
+      - "${PROXY_PORT}:${PROXY_PORT}"
+      - "${PROXY_PORT_SSL}:${PROXY_PORT_SSL}"
