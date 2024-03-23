@@ -26,33 +26,7 @@
         <Folder Include="Migrations\"/>
         <Folder Include="wwwroot\"/>
     </ItemGroup>
-
-    <Target Name="PublishRunVite" AfterTargets="ComputeFilesToPublish">
-        <Exec WorkingDirectory="$(SpaRoot)" Command="npm install"/>
-        <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build"/>
-
-        <!-- Include the newly-built files in the publish output -->
-        <ItemGroup>
-            <DistFiles Include="$(SpaRoot)dist/**"/>
-            <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-                <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-                <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-        </ItemGroup>
-
-    </Target>
-
-    <!-- Include the newly-built files in the publish output -->
-    <ItemGroup>
-        <DistFiles Include="$(SpaRoot)dist/**"/>
-        <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-            <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        </ResolvedFileToPublish>
-    </ItemGroup>
-
+    
     <Target Name="PostPublishScripts" AfterTargets="Publish">
         <Exec Command="dotnet ef migrations script --output $(PublishDir)/migrations.sql --project $(ProjectDir) --context DatabaseContextApplication   "/>
     </Target>
