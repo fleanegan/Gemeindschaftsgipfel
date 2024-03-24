@@ -26,6 +26,173 @@
         <Folder Include="Migrations\"/>
         <Folder Include="wwwroot\"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\empty_delete.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\collapse.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\down.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\empty_heart.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\housing.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\favicon.ico">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\expand.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\wifi.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\empty_add.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\frame.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\index-PfwsWMum.js">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\index-_8omGK3t.css">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\AboutView-7YcINLR5.js">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\LoginView-On-NDD3o.js">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\TopicView-SEn5dyB5.js">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\LoginView-VzH4OrS5.css">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\TopicView-TXSTRqVM.css">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\InputTopicView-_SpP4kYn.js">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\InputTopicView-oZSmz8d8.css">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\SupportTaskView-zBtvsyqa.js">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\SupportTaskView-yEUJqaoe.css">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-greek-400-normal-nS-omhpN.woff">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-latin-400-normal-VSd0Tr_u.woff">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-greek-400-normal-LHChPd3P.woff2">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-latin-400-normal-RsbcMDHI.woff2">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-cyrillic-400-normal-XaB6w38r.woff">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-cyrillic-400-normal-bog3s957.woff2">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-latin-ext-400-normal-Ua0b4_rO.woff">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-latin-ext-400-normal-Ru7adCvj.woff2">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-vietnamese-400-normal-kdU9XiDZ.woff">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-vietnamese-400-normal-sGz_2dja.woff2">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-cyrillic-ext-400-normal-GpxXlzHx.woff">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\assets\comfortaa-cyrillic-ext-400-normal-NMptqLYv.woff2">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\index.html">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\empty_edit.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\full_heart.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\map.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\phone.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\calendar.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\icon.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Update="DockerScripts\ReverseProxy\wwwroot\empty_edit_no_border.svg">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
     
     <Target Name="PostPublishScripts" AfterTargets="Publish">
         <Exec Command="dotnet ef migrations script --output $(PublishDir)/migrations.sql --project $(ProjectDir) --context DatabaseContextApplication   "/>

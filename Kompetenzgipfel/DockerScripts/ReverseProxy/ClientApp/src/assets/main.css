@@ -1,0 +1,97 @@
+@import './base.css';
+
+#app {
+    min-width: 100%;
+    min-height: 100vh;
+    font-weight: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--color-background);
+}
+
+h1 {
+    margin: 5rem 1rem 3rem 1rem;
+    letter-spacing: 0.1rem;
+}
+
+h2 {
+    margin-left: 1rem;
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.1rem;
+}
+
+hr {
+    border-style: solid;
+    border-color: var(--color-primary);
+    border-bottom-left-radius: 0.2rem;
+    border-bottom-right-radius: 0.2rem;
+}
+
+.submit-button {
+    margin-left: 1rem;
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+    border-radius: 0.15rem;
+    width: 8rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border: none;
+}
+
+.form-input {
+    margin-top: .25rem;
+    min-height: 2rem;
+    padding-left: 0.5rem;
+    border-radius: 0.1rem;
+    border-style: solid;
+    border-color: var(--color-main-text);
+    resize: vertical;
+}
+
+.abort-button {
+    margin-left: 1rem;
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+    width: 8rem;
+    height: 2.5rem;
+    font-size: 1.25rem;
+    color: var(--main-color-accent);
+    background-color: var(--color-background);
+    border: 0.2rem;
+    border-style: solid;
+    border-radius: 0.15rem;
+    border-color: var(--color-primary);
+}
+
+a,
+.green {
+    text-decoration: none;
+    color: hsla(160, 100%, 37%, 1);
+    transition: 0.4s;
+    padding: 3px;
+}
+
+@media (hover: hover) {
+    a:hover {
+        background-color: hsla(160, 100%, 37%, 0.2);
+    }
+}
+
+.routed-elements {
+    width: 500px;
+    max-width: 900px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 4;
+}
+
+@media (max-width: 900px) {
+    .routed-elements {
+        width: 100%;
+    }
+}

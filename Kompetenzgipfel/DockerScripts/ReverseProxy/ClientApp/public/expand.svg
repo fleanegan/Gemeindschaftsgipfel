@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="6.3598571mm"
+   height="6.472414mm"
+   viewBox="0 0 6.3598571 6.472414"
+   version="1.1"
+   id="svg613"
+   sodipodi:docname="expand_empty_optimized.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview615"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="8.1502053"
+     inkscape:cx="4.7238074"
+     inkscape:cy="17.54557"
+     inkscape:window-width="1366"
+     inkscape:window-height="699"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs610">
+    <filter
+       id="mask-powermask-path-effect1325_inverse"
+       inkscape:label="filtermask-powermask-path-effect1325"
+       style="color-interpolation-filters:sRGB"
+       height="100"
+       width="100"
+       x="-50"
+       y="-50">
+      <feColorMatrix
+         id="mask-powermask-path-effect1325_primitive1"
+         values="1"
+         type="saturate"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         id="mask-powermask-path-effect1325_primitive2"
+         values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0 "
+         in="fbSourceGraphic" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-83.54906,-99.715476)">
+    <path
+       id="path3319-0"
+       style="fill:#006f47;fill-opacity:1;stroke:none;stroke-width:0.355;stroke-dasharray:none;stroke-opacity:1"
+       d="M 86.729228 99.715476 A 3.1799285 3.236207 0 0 0 83.54906 102.95145 A 3.1799285 3.236207 0 0 0 86.729228 106.18795 A 3.1799285 3.236207 0 0 0 89.908879 102.95145 A 3.1799285 3.236207 0 0 0 86.729228 99.715476 z M 86.720443 100.96605 C 86.816398 100.96605 86.895549 100.99749 86.957637 101.05958 C 87.019726 101.12167 87.050655 101.19768 87.050655 101.28799 L 87.050655 102.61711 L 88.379773 102.61711 C 88.470084 102.61711 88.546611 102.65118 88.608699 102.71891 C 88.676433 102.781 88.709985 102.85701 88.709985 102.94732 C 88.709985 103.03763 88.676433 103.11678 88.608699 103.18451 C 88.546611 103.2466 88.470084 103.27753 88.379773 103.27753 L 87.050655 103.27753 L 87.050655 104.60717 C 87.050655 104.70312 87.019726 104.78176 86.957637 104.84385 C 86.895549 104.90593 86.816398 104.93686 86.720443 104.93686 C 86.630132 104.93686 86.554122 104.90593 86.492033 104.84385 C 86.429944 104.78176 86.399015 104.70312 86.399015 104.60717 L 86.399015 103.27753 L 85.069381 103.27753 C 84.97907 103.27753 84.90306 103.2466 84.840971 103.18451 C 84.778882 103.12243 84.747953 103.04328 84.747953 102.94732 C 84.747953 102.85136 84.778882 102.77273 84.840971 102.71064 C 84.90306 102.64855 84.97907 102.61711 85.069381 102.61711 L 86.399015 102.61711 L 86.399015 101.28799 C 86.399015 101.19768 86.429944 101.12167 86.492033 101.05958 C 86.554122 100.99749 86.630132 100.96605 86.720443 100.96605 z " />
+  </g>
+</svg>

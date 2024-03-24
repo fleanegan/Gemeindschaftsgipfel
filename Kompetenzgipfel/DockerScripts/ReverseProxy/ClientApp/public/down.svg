@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="6.3598571mm"
+   height="6.472414mm"
+   viewBox="0 0 6.3598571 6.472414"
+   version="1.1"
+   id="svg613"
+   sodipodi:docname="down.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview615"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="9.360846"
+     inkscape:cx="1.0148655"
+     inkscape:cy="9.8281715"
+     inkscape:window-width="1366"
+     inkscape:window-height="699"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs610">
+    <filter
+       id="mask-powermask-path-effect1325_inverse"
+       inkscape:label="filtermask-powermask-path-effect1325"
+       style="color-interpolation-filters:sRGB"
+       height="100"
+       width="100"
+       x="-50"
+       y="-50">
+      <feColorMatrix
+         id="mask-powermask-path-effect1325_primitive1"
+         values="1"
+         type="saturate"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         id="mask-powermask-path-effect1325_primitive2"
+         values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0 "
+         in="fbSourceGraphic" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-83.54906,-99.715476)">
+    <g
+       id="g1469"
+       transform="translate(8.082267,2.23428)">
+      <path
+         style="fill:none;stroke:#006f47;stroke-width:0.600001;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+         d="m 75.930814,99.715476 2.700929,2.003854"
+         id="path527" />
+      <path
+         style="fill:none;stroke:#006f47;stroke-width:0.600001;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+         d="M 81.362629,99.715477 78.6617,101.71933"
+         id="path527-3" />
+    </g>
+  </g>
+</svg>
