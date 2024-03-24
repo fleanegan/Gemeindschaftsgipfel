@@ -10,7 +10,8 @@ services:
       - ${SERVER_PORT}
   frontend:
     build:
-      context: ./DockerScripts/ReverseProxy/
+      dockerfile: ./DockerScripts/ReverseProxy/Dockerfile
+      context: .
       args:
         - SERVER_PORT=${SERVER_PORT}
         - PROXY_PORT=${PROXY_PORT}

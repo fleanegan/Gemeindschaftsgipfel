@@ -19,7 +19,7 @@ ARG PROXY_PORT_SSL
 ENV SERVER_PORT $SERVER_PORT
 ENV PROXY_PORT $PROXY_PORT
 ENV PROXY_PORT_SSL $PROXY_PORT_SSL
-COPY ./nginx.conf.template /etc/nginx/nginx.conf.template
+COPY ./DockerScripts/ReverseProxy/nginx.conf.template /etc/nginx/nginx.conf.template
 RUN envsubst '${SERVER_PORT} ${PROXY_PORT} ${PROXY_PORT_SSL}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 FROM nginx:alpine AS final

@@ -193,6 +193,14 @@
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </Content>
     </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="DockerScripts\ReverseProxy\ClientApp\package-lock.json"/>
+        <_ContentIncludedByDefault Remove="DockerScripts\ReverseProxy\ClientApp\package.json"/>
+        <_ContentIncludedByDefault Remove="DockerScripts\ReverseProxy\ClientApp\tsconfig.app.json"/>
+        <_ContentIncludedByDefault Remove="DockerScripts\ReverseProxy\ClientApp\tsconfig.json"/>
+        <_ContentIncludedByDefault Remove="DockerScripts\ReverseProxy\ClientApp\tsconfig.node.json"/>
+    </ItemGroup>
     
     <Target Name="PostPublishScripts" AfterTargets="Publish">
         <Exec Command="dotnet ef migrations script --output $(PublishDir)/migrations.sql --project $(ProjectDir) --context DatabaseContextApplication   "/>
