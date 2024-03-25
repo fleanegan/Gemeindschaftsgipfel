@@ -7,23 +7,17 @@
     <img alt="Icon" src="/icon.svg" style="width: 100%; height:100%;"></img>
   </div>
   <div :class="{'slider':true, 'key_information_slider': true}"></div>
-  <info-box :globalProgress="progress.infoScreen"></info-box>
+  <info-box :data="secretData" :globalProgress="progress.infoScreen"></info-box>
   <div class="routed-elements" style="margin-right: auto; margin-left: auto">
-    <h2>Geimeinschaft</h2>
-    <p>Alle im selben Boot sein, aber kein Boot brauchen. Alle an einem Strang ziehen, ohne jemandem einen Strick draus
-      zu drehen. </p>
-    <h2>Gipfel</h2>
-    <p>"Das ist ja die Hoehe!"
-      <br>
-      - Tante Ulrike</p>
-    <p>Hier wächst zusammen, was zusammen gehört. Wir. Zusammen. Miteinander.
-    </p>
+    <h2>{{ secretData.first_section_title }}</h2>
+    <p class="text_paragraph">{{ secretData.first_section_content }}</p>
+    <h2>{{ secretData.second_section_title }}</h2>
+    <div class="text_paragraph" v-html="secretData.second_section_content"></div>
     <h2>Da will ich mitmachen!</h2>
     <h1></h1>
     <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation': currentScreen > 1.5}"
                  to="/topic">Thema einreichen
     </router-link>
-    <p></p>
     <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation1': currentScreen > 1.5}"
                  to="/supporttask">Arbeitsgruppe beitreten
     </router-link>
@@ -34,6 +28,7 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import InfoBox from "@/views/InfoBox.vue";
+import axios from "axios";
 
 export default defineComponent({
   components: {InfoBox},
@@ -45,6 +40,7 @@ export default defineComponent({
       currentScreen: 0,
       px2rem: 1 / 16,
       isNotScrolled: true,
+      secretData: {} as any,
     };
   },
   methods: {
@@ -94,7 +90,8 @@ export default defineComponent({
       return (this.currentScreen - start) / (end - start)
     },
   },
-  mounted() {
+  async mounted() {
+    this.secretData = (await axios.get('/api/home/getinfo', {})).data
     this.px2rem = 1 / parseFloat(getComputedStyle(document.documentElement).fontSize)
     this.setUpActionContainer();
     this.updateCurrentScreenNumber()
@@ -173,6 +170,8 @@ export default defineComponent({
   width: 15rem;
   display: flex;
   place-content: center;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .topic_call_to_action_animation {
@@ -201,9 +200,10 @@ export default defineComponent({
   }
   40% {
     transform: translateY(5px);
-    
+
   }
-  60% {    transform: translateY(10px);
+  60% {
+    transform: translateY(10px);
 
   }
 }
@@ -212,7 +212,7 @@ export default defineComponent({
   margin: 7rem 1rem 0 2rem;
 }
 
-.routed-elements p {
+.text_paragraph {
   margin: 2rem 0 0 2rem;
   max-width: 45rem;
 }

@@ -3,7 +3,7 @@ import {defineComponent} from 'vue'
 
 export default defineComponent({
   name: "InfoBox",
-  props: ['globalProgress'],
+  props: ['globalProgress', 'data'],
   computed: {
     keyInformationOpacity() {
       const fadeOutStart = 0.75;
@@ -42,29 +42,29 @@ export default defineComponent({
         />
       </svg>
       <div class="key_information">
-        <h2>Das Wichtigste auf einen Blick</h2>
+        <h2>{{ data.key_information_detail_title }}</h2>
         <div class="key_information_detail">
           <img alt="map" class="key_information_detail_image" src="/map.svg">
-          <p>Koordinaten</p>
+          <p>{{ data.key_information_detail_coordinates }}</p>
         </div>
         <div class="key_information_detail">
           <img alt="calendar" class="key_information_detail_image" src="/calendar.svg">
-          <p>28.06.2024 - 30.06.2024</p>
+          <p>{{ data.key_information_detail_dates }}</p>
         </div>
         <div class="key_information_detail">
           <img alt="housing" class="key_information_detail_image" src="/housing.svg">
-          <p>Bring dein Zelt mit!</p>
+          <p>{{ data.key_information_detail_accomodation }}</p>
         </div>
         <div class="key_information_detail">
           <img alt="wifi" class="key_information_detail_image" src="/wifi.svg">
           <table>
             <tr>
               <td>SSID:</td>
-              <td>sich3rh4it</td>
+              <td>{{ data.key_information_detail_wifi_ssid }}</td>
             </tr>
             <tr>
               <td>Password:</td>
-              <td>123456</td>
+              <td>{{ data.key_information_detail_wifi_password }}</td>
             </tr>
           </table>
         </div>
@@ -135,7 +135,6 @@ th:first-child, td:first-child {
   height: 100vh;
   min-height: 100vh;
   width: 100%;
-  z-index: 6;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -143,14 +142,13 @@ th:first-child, td:first-child {
 }
 
 .info_tile_content {
+  pointer-events: none;
   font-size: 1rem;
   position: relative;
   margin-bottom: auto;
   margin-top: auto;
   width: 25rem;
   min-width: 350px;
-  z-index: 6;
-
 }
 
 .info_tile_content h2 {
