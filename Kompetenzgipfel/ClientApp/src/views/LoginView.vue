@@ -84,6 +84,8 @@ export default defineComponent({
             const r = e as AxiosError;
             if (r.response?.status == 401)
               this.errors = "Falsches Passwort oder nicht existierender Nutzername"
+            else if (r.response?.status == 429)
+              this.errors = "Zu viele Versuche. Bitte in 60s noch erneut probieren."
           }
         }
         , async handleSignup() {
@@ -98,6 +100,8 @@ export default defineComponent({
               await this.handleLogin()
             }
           } catch (e: any) {
+            if (e.response?.status == 429)
+              this.errors = "Zu viele Versuche. Bitte in 60s noch erneut probieren."
             var responseData = e.response?.data as [ErrorResponseData];
             this.errors = responseData.map(object => object["description"] as string).join("\n")
           }

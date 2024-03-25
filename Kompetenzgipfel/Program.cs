@@ -1,10 +1,12 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Kompetenzgipfel;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -76,6 +78,17 @@ builder.Services.Configure<IdentityOptions>(options =>
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = false;
 });
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    rateLimiterOptions.AddFixedWindowLimiter("fixed", options =>
+    {
+        options.PermitLimit = 10;
+        options.Window = TimeSpan.FromSeconds(60);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 5;
+    });
+});
 builder.Services.AddScoped<TopicRepository, TopicRepository>();
 builder.Services.AddScoped<VoteRepository, VoteRepository>();
 builder.Services.AddScoped<SupportPromiseRepository, SupportPromiseRepository>();
@@ -108,6 +121,7 @@ app.MapIdentityApi<User>();
 app.MapControllerRoute(
     "default",
     "{controller=Home}/{action=Index}/{id?}");
+app.UseRateLimiter();
 app.Run();
 
 public partial class Program

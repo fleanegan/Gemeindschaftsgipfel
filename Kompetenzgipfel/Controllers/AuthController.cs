@@ -2,9 +2,11 @@ using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Kompetenzgipfel.Controllers;
 
+[EnableRateLimiting("fixed")]
 public class AuthController(AuthService authService) : Controller
 {
     [HttpPost]
