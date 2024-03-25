@@ -102,6 +102,8 @@ internal abstract class TestHelper
             EmailConfirmed = false,
             LockoutEnabled = false
         })!);
+        userManager.Setup(c => c.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(() => Task.FromResult(new IdentityResult()));
         return userManager;
     }
 

@@ -62,7 +62,8 @@ builder.Services.AddDbContext<DatabaseContextApplication>(options =>
 });
 builder.Services.AddTransient<IEmailSender<User>, NoOpEmailSenderService>();
 builder.Services.AddIdentityCore<User>()
-    .AddEntityFrameworkStores<DatabaseContextApplication>();
+    .AddEntityFrameworkStores<DatabaseContextApplication>()
+    .AddDefaultTokenProviders();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false;

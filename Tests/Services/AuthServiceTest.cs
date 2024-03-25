@@ -57,7 +57,7 @@ public class AuthServiceTest
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object);
-        var userInput = new SignupDto("wrong passphrase", _defaultUserName, _defaultPassword);
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, "wrong passphrase");
 
         var result = await service.SignUp(userInput);
 
@@ -127,10 +127,53 @@ public class AuthServiceTest
         AssertThatUserNameIsAddedAsClaim(jwtGenerationService);
     }
 
+    [Fact]
+    public async Task Test_changeUserPassword_GIVEN_user_not_super_admin_THEN_return_unsuccessful()
+    {
+        GivenAdminHasUserName("dummyAdmin");
+        const string loggedInUserName = "is not dummyAdmin";
+        var userManager = TestHelper.GetMockUserManager();
+        var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
+            TestHelper.GetJwtGenerationService().Object);
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
+
+        var result = await service.ChangeUserPassword(userInput, loggedInUserName);
+
+        Assert.False(result.Succeeded);
+        Assert.Single(result.Errors);
+        Assert.Equal("Unauthorized", result.Errors.ToArray()[0].Code);
+        userManager.Verify(m => m.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never());
+    }
+
+    [Fact]
+    public async Task Test_changeUserPassword_GIVEN_correct_input_THEN_return_successful()
+    {
+        GivenAdminHasUserName("dummyAdmin");
+        const string loggedInUserName = "dummyAdmin";
+        var userManager = TestHelper.GetIntegrationInMemoryUserManager();
+        var service = new AuthService(userManager, new PasswordHasher<User>(),
+            TestHelper.GetJwtGenerationService().Object);
+        var initialCredentials = new SignupDto(_defaultUserName, "forgotten password!3Jde$5tg", _theRightEntrySecret);
+        await service.SignUp(initialCredentials);
+        var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
+
+        var result = await service.ChangeUserPassword(userInput, loggedInUserName);
+
+        Assert.True(result.Succeeded);
+        var hasLoginResultWithNewCredentials = await service.Login(new LoginDto(_defaultUserName, userInput.Password));
+        Assert.False(hasLoginResultWithNewCredentials == "");
+    }
+
     private void AssertThatUserNameIsAddedAsClaim(Mock<JwtGenerationService> jwtGenerationService)
     {
         jwtGenerationService.Verify(
             c => c.Generate(It.Is<IEnumerable<Claim>>(claims =>
                 claims.Any(x => x.Type == ClaimTypes.Name && x.Value == _defaultUserName))), Times.Once);
+    }
+
+    private void GivenAdminHasUserName(string dummyadmin)
+    {
+        Environment.SetEnvironmentVariable("ADMIN_USER_NAME", dummyadmin);
     }
 }

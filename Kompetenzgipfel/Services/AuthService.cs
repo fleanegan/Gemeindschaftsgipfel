@@ -31,4 +31,19 @@ public class AuthService(
 
         return "";
     }
+
+    public async Task<IdentityResult> ChangeUserPassword(SignupDto userInput, string loggedInUserName)
+    {
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME") != loggedInUserName)
+            return IdentityResult.Failed(new IdentityError { Code = "Unauthorized" });
+
+        var user = await userManager.FindByNameAsync(userInput.UserName);
+        if (user == null)
+            return IdentityResult.Failed(new IdentityError { Code = "NotFound" });
+
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await userManager.ResetPasswordAsync(user, token, userInput.Password);
+
+        return result;
+    }
 }

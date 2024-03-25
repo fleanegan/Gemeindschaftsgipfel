@@ -1,4 +1,5 @@
 using Kompetenzgipfel.Controllers.DTOs;
+using Kompetenzgipfel.Controllers.Helpers;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace Kompetenzgipfel.Controllers;
 
 [EnableRateLimiting("fixed")]
-public class AuthController(AuthService authService) : Controller
+public class AuthController(AuthService authService) : AbstractController
 {
     [HttpPost]
     [AllowAnonymous]
@@ -32,10 +33,16 @@ public class AuthController(AuthService authService) : Controller
         return BadRequest(identityResult.Errors);
     }
 
-    [HttpGet]
-    [AllowAnonymous]
-    public IActionResult rejectme()
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> ChangeUserPassword([FromBody] SignupDto changeData)
     {
-        return Unauthorized();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var loggedInUserName = GetUserNameFromAuthorization();
+        var result = await authService.ChangeUserPassword(changeData, loggedInUserName);
+        if (result.Succeeded)
+            return Ok(result);
+        return Unauthorized(result);
     }
 }
