@@ -59,7 +59,7 @@ builder.Services.AddDbContext<DatabaseContextApplication>(options =>
     var config = builder.Configuration;
     var connectionString = config.GetConnectionString(Environment.GetEnvironmentVariable("DB_NAME")!);
     options.UseSqlite(connectionString);
-});
+}); 
 builder.Services.AddTransient<IEmailSender<User>, NoOpEmailSenderService>();
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<DatabaseContextApplication>()
