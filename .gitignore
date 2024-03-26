@@ -11,3 +11,4 @@ riderModule.iml
 wwwroot/
 ssl/
 out/
+log/

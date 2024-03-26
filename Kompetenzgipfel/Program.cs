@@ -4,13 +4,40 @@ using Kompetenzgipfel;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("log/log.txt",
+        rollingInterval: RollingInterval.Day,
+        rollOnFileSizeLimit: true,
+        fileSizeLimitBytes: 500000)
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(evt => evt.MessageTemplate.Text.Contains("LOGIN_REGISTER"))
+        .WriteTo.File("log/log_inregister.txt", rollingInterval: RollingInterval.Day)
+        .MinimumLevel.Information()
+    )
+    .CreateLogger();
+
+// Add Serilog logger to ASP.NET Core logging pipeline
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.ClearProviders(); // Remove any existing logging providers
+    loggingBuilder.AddSerilog(); // Add Serilog as the logging provider
+});
+builder.Services.AddHttpLogging(options =>
+{
+    options.LoggingFields =
+        HttpLoggingFields.RequestPropertiesAndHeaders | HttpLoggingFields.ResponsePropertiesAndHeaders;
+
+    options.CombineLogs = true;
+});
 // todo: make sure that .env is the only configuration source. Needs to set the configuration provider for builder but don't know how to do that right know
 DotEnv.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
 if (!builder.Environment.IsDevelopment()) Console.WriteLine("this is in production");
@@ -59,7 +86,7 @@ builder.Services.AddDbContext<DatabaseContextApplication>(options =>
     var config = builder.Configuration;
     var connectionString = config.GetConnectionString(Environment.GetEnvironmentVariable("DB_NAME")!);
     options.UseSqlite(connectionString);
-}); 
+});
 builder.Services.AddTransient<IEmailSender<User>, NoOpEmailSenderService>();
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<DatabaseContextApplication>()
@@ -100,6 +127,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<JwtGenerationService>();
 var app = builder.Build();
 app.UseForwardedHeaders();
+app.UseHttpLogging();
 if (!app.Environment.IsDevelopment())
 {
     // Configure the HTTP request pipeline.

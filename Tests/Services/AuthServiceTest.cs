@@ -3,6 +3,7 @@ using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Tests.Services;
@@ -11,6 +12,7 @@ public class AuthServiceTest
 {
     private readonly string _defaultPassword;
     private readonly string _defaultUserName;
+    private readonly Mock<ILogger<AuthService>> _logger;
     private readonly string _theRightEntrySecret;
 
     public AuthServiceTest()
@@ -20,14 +22,15 @@ public class AuthServiceTest
         Environment.SetEnvironmentVariable("USER_CREATION_ENTRY_SECRET", _theRightEntrySecret);
         _defaultPassword = "Complex enough!1#";
         _defaultUserName = "username";
+        _logger = new Mock<ILogger<AuthService>>();
     }
 
     [Fact]
-    public async Task Test_SignUp_GIVEN_correct_user_input_THEN_hashing_user_password()
+    public async Task Test_SignUp_GIVEN_correct_user_input_THEN_calling_UserManager_create_AND_logger()
     {
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
+            TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
 
         await service.SignUp(userInput);
@@ -41,7 +44,7 @@ public class AuthServiceTest
     {
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
+            TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
 
 
@@ -56,7 +59,7 @@ public class AuthServiceTest
     {
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
+            TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var userInput = new SignupDto(_defaultUserName, _defaultPassword, "wrong passphrase");
 
         var result = await service.SignUp(userInput);
@@ -72,7 +75,7 @@ public class AuthServiceTest
     {
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
+            TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var userInput = new SignupDto("", _defaultPassword,
             Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET"));
 
@@ -88,7 +91,8 @@ public class AuthServiceTest
     {
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var jwtGenerationService = TestHelper.GetJwtGenerationService();
-        var service = new AuthService(userManager, new PasswordHasher<User>(), jwtGenerationService.Object);
+        var service = new AuthService(userManager, new PasswordHasher<User>(), jwtGenerationService.Object,
+            _logger.Object);
         var userInput = new LoginDto
         (
             "non-existing UserName",
@@ -113,7 +117,7 @@ public class AuthServiceTest
         var passwordHasher = TestHelper.GetMockPasswordHasher();
         var expectedJwt = "expected JWT";
         var jwtGenerationService = TestHelper.GetJwtGenerationService(expectedJwt);
-        var service = new AuthService(userManager, passwordHasher.Object, jwtGenerationService.Object);
+        var service = new AuthService(userManager, passwordHasher.Object, jwtGenerationService.Object, _logger.Object);
         await service.SignUp(new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret));
         var userInput = new LoginDto
         (
@@ -134,7 +138,7 @@ public class AuthServiceTest
         const string loggedInUserName = "is not dummyAdmin";
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
+            TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
 
         var result = await service.ChangeUserPassword(userInput, loggedInUserName);
@@ -153,7 +157,7 @@ public class AuthServiceTest
         const string loggedInUserName = "dummyAdmin";
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
-            TestHelper.GetJwtGenerationService().Object);
+            TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var initialCredentials = new SignupDto(_defaultUserName, "forgotten password!3Jde$5tg", _theRightEntrySecret);
         await service.SignUp(initialCredentials);
         var userInput = new SignupDto(_defaultUserName, _defaultPassword, _theRightEntrySecret);
