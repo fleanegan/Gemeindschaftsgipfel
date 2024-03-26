@@ -6,6 +6,7 @@ services:
       context: .
     volumes:
       - ./database.db:/App/database.db:rw
+      - ./log/:/App/log/:rw
     ports:
       - ${SERVER_PORT}
   frontend:
