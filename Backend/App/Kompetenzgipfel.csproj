@@ -2,10 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-<!--        <SpaRoot>..\..\ClientApp\</SpaRoot>-->
-<!--        <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>-->
-<!--        <SpaProxyServerUrl>http://localhost:3001</SpaProxyServerUrl>-->
-<!--        <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>-->
+        <SpaRoot>..\..\ClientApp\</SpaRoot>
+        <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+        <SpaProxyServerUrl>http://localhost:3001</SpaProxyServerUrl>
+        <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>

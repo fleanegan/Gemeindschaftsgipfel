@@ -1,7 +1,8 @@
 <template>
   <div class="topic">
     <h1>Helfende Hände</h1>
-    <p class="descriptiona">Bittebitte, hilfehilfe. Hier kannst du dich eintragen, um bei Aufgaben mitzuhelfen, bei denen wir Tatkraft
+    <p class="descriptiona">Bittebitte, hilfehilfe. Hier kannst du dich eintragen, um bei Aufgaben mitzuhelfen, bei
+      denen wir Tatkraft
       brauchen!</p>
     <ul class="list">
       <li v-for="(item, index) in supportTasks" :key="item.title" class="card_scroll_container">
@@ -11,7 +12,7 @@
             <p class="">{{ item.description }}</p>
             <p class="support_task_duration">{{ item.duration }}</p>
           </div>
-          <div class="card_action_button_container">
+          <div class="card_action_container">
             <div class="progress_bar">
               <div class="progress_bar_shell">
                 <span :style="{width: calcProgressBarWidth(item)}"
@@ -22,11 +23,22 @@
                 </span>
               </div>
             </div>
-            <button
-                :class="{card_action_button: true, card_action_button_active: item.supporterUserNames.includes(userName!), card_action_button_inactive: !item.supporterUserNames.includes(userName!)}"
-                @click="toggleSupporting(index)">
-              {{ item.supporterUserNames.includes(userName!) ? "Austragen" : "Eintragen" }}
-            </button>
+            <div class="card_action_button_container">
+              <div @mouseenter="item.showSupporter=true" @mouseleave="item.showSupporter=false">
+                <img src="/helper.svg" alt="helper">
+              </div>
+              <div class="card_action_helper_list" v-if="item.showSupporter">
+                <p>Wir helfen schon:</p>
+                  <div v-for="supporter in item.supporterUserNames" :key="supporter">
+                    <p style="margin-left: 0.5rem; font-size: 0.75rem">{{supporter}}</p>
+                  </div>
+              </div>
+              <button
+                  :class="{card_action_button: true, card_action_button_active: item.supporterUserNames.includes(userName!), card_action_button_inactive: !item.supporterUserNames.includes(userName!)}"
+                  @click="toggleSupporting(index)">
+                {{ item.supporterUserNames.includes(userName!) ? "Austragen" : "Eintragen" }}
+              </button>
+            </div>
           </div>
         </div>
       </li>
@@ -47,6 +59,7 @@ interface SupportTask {
   supporterUserNames: string[];
   duration: string;
   requiredSupporters: number;
+  showSupporter: boolean;
 }
 
 
@@ -83,13 +96,15 @@ export default defineComponent({
       if (item.requiredSupporters === 0)
         return 0;
       const normalWidth = item.supporterUserNames.length / item.requiredSupporters;
-      let result = '';
+      let result = 0;
       if (normalWidth < 0.075 && item.supporterUserNames.includes(this.userName!)) {
-        result = "10%";
+        result = 10;
       } else {
-        result = 100 * normalWidth + "%";
+        result = 100 * normalWidth;
       }
-      return result;
+      if (result > 100)
+        result = 100
+      return result + "%";
     },
     handleScroll: function () {
       this.isSticky = window.scrollY > 750;
@@ -139,7 +154,7 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-.card_action_button_container {
+.card_action_container {
   width: 100%;
   margin-right: 0.25rem;
   margin-bottom: 0.25rem;
@@ -147,6 +162,19 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   padding: 0.5rem;
+}
+
+.card_action_button_container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+.card_action_helper_list {
+  position: relative;
+  margin: 1rem;
 }
 
 .card_action_button {
