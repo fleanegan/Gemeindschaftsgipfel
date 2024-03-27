@@ -1,6 +1,7 @@
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
+using Kompetenzgipfel.Repositories;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -97,7 +98,7 @@ public class TopicServiceTest
             await service.UpdateTopic(updatedTopic, loggedInUserName);
         }
 
-        await Assert.ThrowsAsync<BatschungaException>(Action);
+        await Assert.ThrowsAsync<UnauthorizedTopicModificationException>(Action);
     }
 
 

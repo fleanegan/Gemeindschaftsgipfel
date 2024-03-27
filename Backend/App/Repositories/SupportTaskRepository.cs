@@ -1,6 +1,7 @@
+using Kompetenzgipfel.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kompetenzgipfel.Models;
+namespace Kompetenzgipfel.Repositories;
 
 public class SupportTaskRepository(DatabaseContextApplication dbContext)
 {

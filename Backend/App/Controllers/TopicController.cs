@@ -56,7 +56,7 @@ public class TopicController(ITopicService service) : AbstractController
         {
             return NotFound(e.Message);
         }
-        catch (BatschungaException)
+        catch (UnauthorizedTopicModificationException)
         {
             return Forbid(new AuthenticationProperties());
         }
@@ -81,7 +81,7 @@ public class TopicController(ITopicService service) : AbstractController
         {
             return NotFound(e.Message);
         }
-        catch (BatschungaException)
+        catch (UnauthorizedTopicModificationException)
         {
             return Forbid(new AuthenticationProperties());
         }

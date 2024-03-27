@@ -1,7 +1,7 @@
-using System.Collections;
+using Kompetenzgipfel.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kompetenzgipfel.Models;
+namespace Kompetenzgipfel.Repositories;
 
 public class VoteRepository(DatabaseContextApplication dbContext)
 {

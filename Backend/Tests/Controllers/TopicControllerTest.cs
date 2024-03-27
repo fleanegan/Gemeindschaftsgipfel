@@ -90,7 +90,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                 if (topicToUpdate.Id == NonExistingDummyId)
                     throw new TopicNotFoundException(topicToUpdate.Id);
                 if (topicToUpdate.Id == ConflictingDummyId)
-                    throw new BatschungaException(topicToUpdate.Id);
+                    throw new UnauthorizedTopicModificationException(topicToUpdate.Id);
                 var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
                     new User { Id = "testId" });
                 topic.Id = HappyPathDummyId;
@@ -131,7 +131,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                     if (topicId == NonExistingDummyId)
                         throw new TopicNotFoundException(topicId);
                     if (topicId == ConflictingDummyId)
-                        throw new BatschungaException(topicId);
+                        throw new UnauthorizedTopicModificationException(topicId);
                 });
             });
         services.AddSingleton(_mockTopicService.Object);

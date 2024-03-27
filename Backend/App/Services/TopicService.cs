@@ -1,6 +1,7 @@
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
+using Kompetenzgipfel.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 namespace Kompetenzgipfel.Services;
@@ -19,7 +20,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     {
         var user = await userManager.FindByNameAsync(userName);
         var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.Description ?? "", user!);
-        return await topicRepository.Create(newTopic!);
+        return await topicRepository.Create(newTopic);
     }
 
     public async Task<Topic> UpdateTopic(TopicUpdateDto updatedTopicCreationContent,
@@ -29,7 +30,8 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
         if (topicToChange == null)
             throw new TopicNotFoundException(updatedTopicCreationContent.Id);
         if (userName != topicToChange.User.UserName)
-            throw new BatschungaException(topicToChange.Id);
+            throw new UnauthorizedTopicModificationException(topicToChange.Id);
+
         topicToChange.Title = updatedTopicCreationContent.Title;
         topicToChange.Description = updatedTopicCreationContent.Description ?? "";
         return await topicRepository.Update(topicToChange);

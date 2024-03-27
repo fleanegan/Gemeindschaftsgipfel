@@ -1,6 +1,7 @@
 using Kompetenzgipfel.Controllers.DTOs;
 using Kompetenzgipfel.Exceptions;
 using Kompetenzgipfel.Models;
+using Kompetenzgipfel.Repositories;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
