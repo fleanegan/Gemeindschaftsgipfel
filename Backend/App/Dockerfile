@@ -19,8 +19,7 @@ RUN apt-get update && \
 
 WORKDIR /App
 COPY --from=build-env /App/out .
-COPY ./.env .
 EXPOSE 8080
 
-RUN sqlite3 database.db < migrations.sql
+RUN sqlite3   database.db < migrations.sql
 ENTRYPOINT ["dotnet", "Kompetenzgipfel.dll"]

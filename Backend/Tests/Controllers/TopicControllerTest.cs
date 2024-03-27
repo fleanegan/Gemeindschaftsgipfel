@@ -33,6 +33,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
     public TopicControllerTest(WebApplicationFactory<Program> factory)
     {
+        TestHelper.ReadTestEnv();
         _factoryWithAuthorization = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>

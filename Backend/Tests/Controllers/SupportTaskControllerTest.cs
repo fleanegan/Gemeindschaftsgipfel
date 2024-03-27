@@ -17,17 +17,18 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
     private const string HappyPathDummyId = "happyPathDummyId";
     private const string NonExistingDummyId = "nonExistingDummyId";
     private const string ConflictingDummyId = "conflictingDummyId";
+    private readonly SupportTask _demoTask;
+    private readonly IEnumerable<SupportTask> _demoTasks;
 
 
     private readonly WebApplicationFactory<Program> _factoryWithAuthorization;
     private readonly WebApplicationFactory<Program> _factoryWithoutAuthorization;
 
     private Mock<ISupportTaskService> _mockSupportTaskService = null!;
-    private readonly SupportTask _demoTask;
-    private readonly IEnumerable<SupportTask> _demoTasks;
 
     public SupportTaskControllerTest(WebApplicationFactory<Program> factory)
     {
+        TestHelper.ReadTestEnv();
         _demoTask = new SupportTask("description", "title", "duration", 2, []);
         _demoTasks = [_demoTask, _demoTask];
         _factoryWithAuthorization = factory.WithWebHostBuilder(builder =>
@@ -133,7 +134,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
     public async Task Test_commitToSupportTask_GIVEN_no_connected_user_WHEN_posting_THEN_return_error_response()
     {
         var client = _factoryWithoutAuthorization.CreateClient();
-        var userInput = new SupportPromiseDto (HappyPathDummyId);
+        var userInput = new SupportPromiseDto(HappyPathDummyId);
 
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
@@ -146,7 +147,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         Test_commitToSupportTask_GIVEN_connected_user_WHEN_impossible_exception_while_posting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var userInput = new SupportPromiseDto (ConflictingDummyId);
+        var userInput = new SupportPromiseDto(ConflictingDummyId);
 
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 
@@ -161,7 +162,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         Test_commitToSupportTask_GIVEN_connected_user_WHEN_not_found_exception_while_posting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var userInput = new SupportPromiseDto (NonExistingDummyId);
+        var userInput = new SupportPromiseDto(NonExistingDummyId);
 
         var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
 

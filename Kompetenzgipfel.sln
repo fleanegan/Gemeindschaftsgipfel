@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kompetenzgipfel", "Kompetenzgipfel\Kompetenzgipfel.csproj", "{0EC33736-9669-40A3-932E-C273C5FF7E2C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kompetenzgipfel", "Backend\App\Kompetenzgipfel.csproj", "{0EC33736-9669-40A3-932E-C273C5FF7E2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{E9994B44-FB61-456B-BD53-5DDFF0FA4900}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Backend\Tests\Tests.csproj", "{E9994B44-FB61-456B-BD53-5DDFF0FA4900}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -33,8 +33,7 @@ public class SupportTaskServiceTest
     [Fact]
     public async void Test_add_GIVEN_correct_input_THEN_store_in_db()
     {
-        GivenAdminHasUserName("dummyAdmin");
-        const string loggedInUserName = "dummyAdmin";
+        var loggedInUserName = Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!;
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new SupportTaskRepository(dbContext);
         ISupportTaskService service = await GetService(dbContext, [loggedInUserName], repository);

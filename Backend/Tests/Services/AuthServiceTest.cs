@@ -19,6 +19,7 @@ public class AuthServiceTest
     {
         _theRightEntrySecret = Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET") ??
                                "The alternative Passphrase which only get loaded when there is no .env present.";
+        TestHelper.ReadTestEnv();
         Environment.SetEnvironmentVariable("USER_CREATION_ENTRY_SECRET", _theRightEntrySecret);
         _defaultPassword = "Complex enough!1#";
         _defaultUserName = "username";
@@ -153,8 +154,7 @@ public class AuthServiceTest
     [Fact]
     public async Task Test_changeUserPassword_GIVEN_correct_input_THEN_return_successful()
     {
-        GivenAdminHasUserName("dummyAdmin");
-        const string loggedInUserName = "dummyAdmin";
+        var loggedInUserName = Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!;
         var userManager = TestHelper.GetIntegrationInMemoryUserManager();
         var service = new AuthService(userManager, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object, _logger.Object);

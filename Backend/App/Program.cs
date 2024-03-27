@@ -24,12 +24,10 @@ Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Information()
     )
     .CreateLogger();
-
-// Add Serilog logger to ASP.NET Core logging pipeline
 builder.Services.AddLogging(loggingBuilder =>
 {
-    loggingBuilder.ClearProviders(); // Remove any existing logging providers
-    loggingBuilder.AddSerilog(); // Add Serilog as the logging provider
+    loggingBuilder.ClearProviders();
+    loggingBuilder.AddSerilog();
 });
 builder.Services.AddHttpLogging(options =>
 {
@@ -39,7 +37,10 @@ builder.Services.AddHttpLogging(options =>
     options.CombineLogs = true;
 });
 // todo: make sure that .env is the only configuration source. Needs to set the configuration provider for builder but don't know how to do that right know
-DotEnv.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
+var parentFullName = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName ?? Directory.GetCurrentDirectory();
+var envFilePath = Path.Combine(
+    parentFullName!, ".env");
+DotEnv.Load(envFilePath);
 if (!builder.Environment.IsDevelopment()) Console.WriteLine("this is in production");
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -142,7 +143,6 @@ app.UseCors(builder => builder
     .AllowAnyHeader()
 );
 if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

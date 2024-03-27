@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Kompetenzgipfel;
 using Kompetenzgipfel.Models;
 using Kompetenzgipfel.Services;
 using Microsoft.AspNetCore.Builder;
@@ -121,6 +122,16 @@ internal abstract class TestHelper
         var result = new Mock<JwtGenerationService>();
         result.Setup(c => c.Generate(It.IsAny<IEnumerable<Claim>>())).Returns(dummyJwt);
         return result;
+    }
+
+    public static void ReadTestEnv()
+    {
+        var parentFullName = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.Parent?.Parent
+            ?.FullName;
+        var envFilePath = Path.Combine(
+            parentFullName!,
+            ".env");
+        DotEnv.Load(envFilePath);
     }
 }
 
