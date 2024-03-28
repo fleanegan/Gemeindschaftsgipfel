@@ -13,11 +13,11 @@ public class HomeController : AbstractController
         return Ok(new
         {
             key_information_detail_title = "Das Wichtigste auf einen Blick",
-            key_information_detail_coordinates = "Dummykoordinaten",
-            key_information_detail_dates = "24.08 - 12.09.2024",
-            key_information_detail_accomodation = "Bring dein Zelt mit",
-            key_information_detail_wifi_ssid = "sich3rh4it",
-            key_information_detail_wifi_password = "1234567890",
+            key_information_detail_coordinates = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_COORDINATES") ?? "LANDING_PAGE_DETAIL_COORDINATES",
+            key_information_detail_dates = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_DATES") ?? "LANDING_PAGE_DETAIL_DATES",
+            key_information_detail_accomodation = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_ACCOMODATION" ?? "LANDING_PAGE_DETAIL_ACCOMODATION"),
+            key_information_detail_wifi_ssid = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_WIFI_SSID") ?? "LANDING_PAGE_DETAIL_WIFI_SSID",
+            key_information_detail_wifi_password = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_WIFI_PASSWORD") ?? "LANDING_PAGE_DETAIL_WIFI_PASSWORD",
             first_section_title = "Geimeinschaft",
             first_section_content =
                 "Alle im selben Boot sein, aber kein Boot brauchen. Alle an einem Strang ziehen, ohne jemandem einen Strick draus zu drehen.",
