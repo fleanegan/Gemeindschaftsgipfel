@@ -4,8 +4,8 @@ ENV PATH $PATH:/root/.dotnet/tools
 
 WORKDIR /App
 
-COPY ["Kompetenzgipfel.csproj", "."]
-RUN dotnet restore "Kompetenzgipfel.csproj" 
+COPY ["Gemeinschaftsgipfel.csproj", "."]
+RUN dotnet restore "Gemeinschaftsgipfel.csproj" 
 
 COPY . ./
 
