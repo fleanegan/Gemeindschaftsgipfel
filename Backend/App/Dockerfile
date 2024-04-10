@@ -22,4 +22,4 @@ COPY --from=build-env /App/out .
 EXPOSE 8080
 
 RUN sqlite3   database.db < migrations.sql
-ENTRYPOINT ["dotnet", "Kompetenzgipfel.dll"]
+ENTRYPOINT ["dotnet", "Gemeinschaftsgipfel.dll"]

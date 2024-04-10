@@ -1,2 +1,2 @@
-touch ./Backend/App/database.sh
+touch ./Backend/App/database.db
 docker compose up --build
