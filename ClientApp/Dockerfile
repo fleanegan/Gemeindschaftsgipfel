@@ -3,8 +3,8 @@ FROM node:latest AS node_base
 RUN echo "NODE Version:" && node --version
 RUN echo "NPM Version:" && npm --version
 
-COPY ["./package.json", "./"]
-RUN npm install
+COPY package*.json ./
+RUN npm cache clear --force && npm ci --loglevel verbose 
 COPY [".", "."]
 RUN npm run build
 CMD ls -l ./dist
