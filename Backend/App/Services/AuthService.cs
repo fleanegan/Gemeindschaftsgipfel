@@ -1,10 +1,10 @@
 using System.Security.Claims;
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Models;
-using Kompetenzgipfel.Properties;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Models;
+using Gemeinschaftsgipfel.Properties;
 using Microsoft.AspNetCore.Identity;
 
-namespace Kompetenzgipfel.Services;
+namespace Gemeinschaftsgipfel.Services;
 
 public class AuthService(
     UserManager<User> userManager,

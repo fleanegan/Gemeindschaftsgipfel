@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Kompetenzgipfel.Models;
+namespace Gemeinschaftsgipfel.Models;
 
 public class SupportPromise(SupportTask supportTask, User supporter)
 {

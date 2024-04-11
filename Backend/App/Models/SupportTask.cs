@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Kompetenzgipfel.Properties;
+using Gemeinschaftsgipfel.Properties;
 
-namespace Kompetenzgipfel.Models;
+namespace Gemeinschaftsgipfel.Models;
 
 public class SupportTask
 {

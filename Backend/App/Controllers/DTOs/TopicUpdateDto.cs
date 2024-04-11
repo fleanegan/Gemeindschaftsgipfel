@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Constants = Kompetenzgipfel.Properties.Constants;
+using Constants = Gemeinschaftsgipfel.Properties.Constants;
 
-namespace Kompetenzgipfel.Controllers.DTOs;
+namespace Gemeinschaftsgipfel.Controllers.DTOs;
 
 public class TopicUpdateDto(string id, string title, string? description)
 {

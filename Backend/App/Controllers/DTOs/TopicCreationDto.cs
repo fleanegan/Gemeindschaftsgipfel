@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Kompetenzgipfel.Controllers.DTOs;
+namespace Gemeinschaftsgipfel.Controllers.DTOs;
 
 public class TopicCreationDto(string title, string? description)
 {

@@ -1,7 +1,7 @@
-using Kompetenzgipfel.Models;
+using Gemeinschaftsgipfel.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Kompetenzgipfel.Services;
+namespace Gemeinschaftsgipfel.Services;
 
 public class NoOpEmailSenderService : IEmailSender<User>
 {

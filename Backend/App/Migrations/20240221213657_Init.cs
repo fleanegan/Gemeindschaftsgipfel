@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Kompetenzgipfel.Migrations
+namespace Gemeinschaftsgipfel.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration

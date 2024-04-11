@@ -1,12 +1,12 @@
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Controllers.Helpers;
-using Kompetenzgipfel.Exceptions;
-using Kompetenzgipfel.Services;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Controllers.Helpers;
+using Gemeinschaftsgipfel.Exceptions;
+using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kompetenzgipfel.Controllers;
+namespace Gemeinschaftsgipfel.Controllers;
 
 public class TopicController(ITopicService service) : AbstractController
 {

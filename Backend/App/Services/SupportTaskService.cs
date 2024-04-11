@@ -1,10 +1,10 @@
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Exceptions;
-using Kompetenzgipfel.Models;
-using Kompetenzgipfel.Repositories;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Exceptions;
+using Gemeinschaftsgipfel.Models;
+using Gemeinschaftsgipfel.Repositories;
 using Microsoft.AspNetCore.Identity;
 
-namespace Kompetenzgipfel.Services;
+namespace Gemeinschaftsgipfel.Services;
 
 public class SupportTaskService(
     SupportTaskRepository supportTaskRepository,

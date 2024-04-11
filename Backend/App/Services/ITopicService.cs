@@ -1,7 +1,7 @@
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Models;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Models;
 
-namespace Kompetenzgipfel.Services;
+namespace Gemeinschaftsgipfel.Services;
 
 public interface ITopicService
 {

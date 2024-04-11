@@ -1,10 +1,10 @@
 using System.Net;
 using System.Text.Json;
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Exceptions;
-using Kompetenzgipfel.Models;
-using Kompetenzgipfel.Properties;
-using Kompetenzgipfel.Services;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Exceptions;
+using Gemeinschaftsgipfel.Models;
+using Gemeinschaftsgipfel.Properties;
+using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

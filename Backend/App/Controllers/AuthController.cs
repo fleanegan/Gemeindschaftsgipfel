@@ -1,11 +1,11 @@
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Controllers.Helpers;
-using Kompetenzgipfel.Services;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Controllers.Helpers;
+using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace Kompetenzgipfel.Controllers;
+namespace Gemeinschaftsgipfel.Controllers;
 
 [EnableRateLimiting("fixed")]
 public class AuthController(AuthService authService) : AbstractController

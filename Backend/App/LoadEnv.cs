@@ -1,4 +1,4 @@
-namespace Kompetenzgipfel;
+namespace Gemeinschaftsgipfel;
 
 public static class DotEnv
 {

@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Kompetenzgipfel;
-using Kompetenzgipfel.Models;
-using Kompetenzgipfel.Services;
+using Gemeinschaftsgipfel;
+using Gemeinschaftsgipfel.Models;
+using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

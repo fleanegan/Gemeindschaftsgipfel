@@ -1,4 +1,4 @@
-namespace Kompetenzgipfel.Controllers;
+namespace Gemeinschaftsgipfel.Controllers;
 
 public class AuthenticatedResponse
 {

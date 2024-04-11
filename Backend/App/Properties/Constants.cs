@@ -1,4 +1,4 @@
-namespace Kompetenzgipfel.Properties;
+namespace Gemeinschaftsgipfel.Properties;
 
 public static class Constants
 {

@@ -1,9 +1,9 @@
 using System.Text;
 using System.Threading.RateLimiting;
-using Kompetenzgipfel;
-using Kompetenzgipfel.Models;
-using Kompetenzgipfel.Repositories;
-using Kompetenzgipfel.Services;
+using Gemeinschaftsgipfel;
+using Gemeinschaftsgipfel.Models;
+using Gemeinschaftsgipfel.Repositories;
+using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;

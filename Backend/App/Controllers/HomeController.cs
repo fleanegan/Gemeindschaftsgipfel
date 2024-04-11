@@ -1,8 +1,8 @@
-using Kompetenzgipfel.Controllers.Helpers;
+using Gemeinschaftsgipfel.Controllers.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kompetenzgipfel.Controllers;
+namespace Gemeinschaftsgipfel.Controllers;
 
 public class HomeController : AbstractController
 {

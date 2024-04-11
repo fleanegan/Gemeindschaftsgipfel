@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Models;
-using Kompetenzgipfel.Services;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Models;
+using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;

@@ -1,4 +1,4 @@
-namespace Kompetenzgipfel.Controllers.DTOs;
+namespace Gemeinschaftsgipfel.Controllers.DTOs;
 
 public class OwnTopicResponseModel(
     string id,

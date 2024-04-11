@@ -1,7 +1,7 @@
-using Kompetenzgipfel.Controllers.DTOs;
-using Kompetenzgipfel.Models;
+using Gemeinschaftsgipfel.Controllers.DTOs;
+using Gemeinschaftsgipfel.Models;
 
-namespace Kompetenzgipfel.Controllers.Helpers;
+namespace Gemeinschaftsgipfel.Controllers.Helpers;
 
 public abstract class ResponseGenerator
 {

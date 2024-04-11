@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Kompetenzgipfel.Models;
+using Gemeinschaftsgipfel.Models;
 
 namespace Tests.Models;
 

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Kompetenzgipfel.Migrations
+namespace Gemeinschaftsgipfel.Migrations
 {
     /// <inheritdoc />
     public partial class RenameCreatortoPresenterYAGNI : Migration
