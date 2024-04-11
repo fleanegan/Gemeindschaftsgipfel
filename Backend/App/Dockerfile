@@ -19,7 +19,12 @@ RUN apt-get update && \
 
 WORKDIR /App
 COPY --from=build-env /App/out .
+COPY entrypoint.sh .
+
+# Set execute permission on entrypoint script
+RUN chmod +x entrypoint.sh
+
 EXPOSE 8080
 
-RUN sqlite3   database.db < migrations.sql
-ENTRYPOINT ["dotnet", "Gemeinschaftsgipfel.dll"]
+# Use entrypoint script to handle migration check and execution
+ENTRYPOINT ["./entrypoint.sh"]
