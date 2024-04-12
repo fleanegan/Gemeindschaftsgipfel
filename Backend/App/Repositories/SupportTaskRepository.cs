@@ -29,4 +29,11 @@ public class SupportTaskRepository(DatabaseContextApplication dbContext)
             .ThenInclude(promise => promise.Supporter)
             .FirstOrDefaultAsync(c => c.Id == supportTaskId);
     }
+
+    public async Task<SupportTask> Update(SupportTask updatedSupportTask)
+    {
+        dbContext.SupportTasks.Update(updatedSupportTask);
+        await dbContext.SaveChangesAsync();
+        return (await FetchBy(updatedSupportTask.Id))!;
+    }
 }

@@ -135,7 +135,6 @@ public class AuthServiceTest
     [Fact]
     public async Task Test_changeUserPassword_GIVEN_user_not_super_admin_THEN_return_unsuccessful()
     {
-        GivenAdminHasUserName("dummyAdmin");
         const string loggedInUserName = "is not dummyAdmin";
         var userManager = TestHelper.GetMockUserManager();
         var service = new AuthService(userManager.Object, new PasswordHasher<User>(),
@@ -174,10 +173,5 @@ public class AuthServiceTest
         jwtGenerationService.Verify(
             c => c.Generate(It.Is<IEnumerable<Claim>>(claims =>
                 claims.Any(x => x.Type == ClaimTypes.Name && x.Value == _defaultUserName))), Times.Once);
-    }
-
-    private void GivenAdminHasUserName(string dummyadmin)
-    {
-        Environment.SetEnvironmentVariable("ADMIN_USER_NAME", dummyadmin);
     }
 }

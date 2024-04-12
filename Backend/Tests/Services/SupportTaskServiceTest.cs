@@ -14,7 +14,6 @@ public class SupportTaskServiceTest
     [Fact]
     public async Task Test_add_GIVEN_user_which_is_not_admin_THEN_throw_exception()
     {
-        GivenAdminHasUserName("dummyAdmin");
         const string loggedInUserName = "is not dummyAdmin";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new SupportTaskRepository(dbContext);
@@ -29,8 +28,7 @@ public class SupportTaskServiceTest
         var exception = await Assert.ThrowsAsync<UnauthorizedException>(Action);
         Assert.Contains(loggedInUserName, exception.Message);
     }
-
-
+    
     [Fact]
     public async void Test_add_GIVEN_correct_input_THEN_store_in_db()
     {
@@ -47,6 +45,46 @@ public class SupportTaskServiceTest
         Assert.Equal(userInput.Title, result.Title);
         Assert.Equal(userInput.Description, result.Description);
         Assert.Equal(userInput.Duration, result.Duration);
+    }
+
+    [Fact]
+    public async Task Test_modify_GIVEN_user_which_is_not_admin_THEN_throw_exception()
+    {
+        const string loggedInUserName = "is not dummyAdmin";
+        const string existingSupportTaskId = "existing Id";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new SupportTaskRepository(dbContext);
+        ISupportTaskService service = await GetService(dbContext, [loggedInUserName], repository);
+        var userInput = new SupportTaskCreationDto("title", "description", "from day x to day y", 4);
+
+        async Task Action()
+        {
+            await service.ModifyTask(userInput, existingSupportTaskId, loggedInUserName);
+        }
+
+        var exception = await Assert.ThrowsAsync<UnauthorizedException>(Action);
+        Assert.Contains(loggedInUserName, exception.Message);
+    }
+
+    [Fact]
+    public async void Test_modify_GIVEN_correct_input_THEN_store_in_db()
+    {
+        var loggedInUserName = Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!;
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new SupportTaskRepository(dbContext);
+        ISupportTaskService service = await GetService(dbContext, [loggedInUserName], repository);
+        var old = await service.AddTask(new SupportTaskCreationDto("title", "description", "from day x to day y", 4), loggedInUserName);
+        var modified = new SupportTaskCreationDto("new title", "new description", "new duration", 3);
+
+
+        await service.ModifyTask(modified, old.Id, loggedInUserName);
+        
+        var result = (await repository.FetchAll()).ToArray()[0];
+        Assert.NotNull(result);
+        Assert.Equal(modified.Title, result.Title);
+        Assert.Equal(modified.Description, result.Description);
+        Assert.Equal(modified.RequiredSupporters, result.RequiredSupporters);
+        Assert.Equal(modified.Duration, result.Duration);
     }
 
     [Fact]
@@ -190,18 +228,12 @@ public class SupportTaskServiceTest
 
     private async Task<string> GivenAddedSupportTask(ISupportTaskService service)
     {
-        var dummyadmin = "dummyAdmin";
-        GivenAdminHasUserName(dummyadmin);
+        var dummyadmin = Environment.GetEnvironmentVariable("ADMIN_USER_NAME");
         var createdSupportTask =
             await service.AddTask(new SupportTaskCreationDto("title", "description", "duration", 55), dummyadmin);
         return createdSupportTask.Id;
     }
-
-    private void GivenAdminHasUserName(string dummyadmin)
-    {
-        Environment.SetEnvironmentVariable("ADMIN_USER_NAME", dummyadmin);
-    }
-
+    
     private static async Task<SupportTaskService> GetService(DatabaseContextApplication dbContext,
         List<string> userNames,
         SupportTaskRepository repository)

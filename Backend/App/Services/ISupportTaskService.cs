@@ -9,4 +9,5 @@ public interface ISupportTaskService
     Task CommitToSupportTask(string supportTaskId, string loggedInUserName);
     Task ResignFromSupportTask(string supportTaskId, string loggedInUserName);
     Task<IEnumerable<SupportTask>> GetAll();
+    Task<SupportTask> ModifyTask(SupportTaskCreationDto userInput, string supportTaskId, string loggedInUserName);
 }

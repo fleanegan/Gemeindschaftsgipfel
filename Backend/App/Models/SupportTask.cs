@@ -25,21 +25,21 @@ public class SupportTask
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string Id { get; init; } = null!;
+    public string Id { get; set; } = null!;
 
     [StringLength(Constants.MaxLengthTitle)]
     [Required]
-    public string Title { get; init; }
+    public string Title { get; set; }
 
     [StringLength(Constants.MaxLengthDescription)]
     [Required]
-    public string Description { get; init; }
+    public string Description { get; set; }
 
     [StringLength(Constants.MaxLengthTitle)]
     [Required]
-    public string Duration { get; init; }
+    public string Duration { get; set; }
 
-    [Required] public int RequiredSupporters { get; init; }
+    [Required] public int RequiredSupporters { get; set; }
 
     public ICollection<SupportPromise> SupportPromises { get; init; } = [];
 }

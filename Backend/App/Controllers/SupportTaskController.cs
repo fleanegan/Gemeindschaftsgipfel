@@ -19,6 +19,17 @@ public class SupportTaskController(ISupportTaskService service) : AbstractContro
         await service.AddTask(userInput, userName);
         return Ok();
     }
+    
+    [HttpPatch]
+    [Authorize]
+    public async Task<IActionResult> Modify([FromBody] SupportTaskCreationDto userInput, string id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var userName = GetUserNameFromAuthorization();
+        await service.ModifyTask(userInput, id, userName);
+        return Ok();
+    }
 
     [HttpPost]
     [Authorize]

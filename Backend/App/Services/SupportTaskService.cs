@@ -11,15 +11,27 @@ public class SupportTaskService(
     SupportPromiseRepository supportPromiseRepository,
     UserManager<User> userManager) : ISupportTaskService
 {
-    public async Task<SupportTask> AddTask(SupportTaskCreationDto userInput, string loggedIdUserName)
+    public async Task<SupportTask> AddTask(SupportTaskCreationDto userInput, string loggedInUserName)
     {
-        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME") != loggedIdUserName)
-            throw new UnauthorizedException(loggedIdUserName);
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME") != loggedInUserName)
+            throw new UnauthorizedException(loggedInUserName);
         return await supportTaskRepository.Create(new SupportTask
         {
             Title = userInput.Title, Description = userInput.Description, Duration = userInput.Duration,
             RequiredSupporters = userInput.RequiredSupporters
         });
+    }
+
+    public async Task<SupportTask> ModifyTask(SupportTaskCreationDto userInput, string supportTaskId, string loggedInUserName)
+    {
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME") != loggedInUserName)
+            throw new UnauthorizedException(loggedInUserName);
+        var existingSupportTask = await supportTaskRepository.FetchBy(supportTaskId);
+        existingSupportTask!.RequiredSupporters = userInput.RequiredSupporters;
+        existingSupportTask.Description = userInput.Description;
+        existingSupportTask.Title = userInput.Title;
+        existingSupportTask.Duration = userInput.Duration;
+        return await supportTaskRepository.Update(existingSupportTask);
     }
 
     public async Task CommitToSupportTask(string supportTaskId, string loggedInUserName)
