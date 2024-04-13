@@ -8,7 +8,7 @@
   </div>
   <div :class="{'slider':true, 'key_information_slider': true}"></div>
   <info-box :data="secretData" :globalProgress="progress.infoScreen"></info-box>
-  <div class="routed-elements" style="margin-right: auto; margin-left: auto">
+  <div class="content_box">
     <h2>{{ secretData.first_section_title }}</h2>
     <p class="text_paragraph">{{ secretData.first_section_content }}</p>
     <h2>{{ secretData.second_section_title }}</h2>
@@ -138,6 +138,8 @@ export default defineComponent({
 }
 
 .animate_scroll_down_motivator {
+  position: absolute;
+  bottom: 0;
   animation: fadeInOut 1s infinite alternate ease-in-out; /* Animation name, duration, iteration count, and direction */
 }
 
@@ -208,13 +210,20 @@ export default defineComponent({
   }
 }
 
-.routed-elements h2 {
-  margin: 7rem 1rem 0 2rem;
+.content_box {
+  margin-right: auto; 
+  margin-left: auto;
+  z-index: 10;
+}
+
+h2 {
+  margin: 7rem 2rem 0 2rem;
 }
 
 .text_paragraph {
-  margin: 2rem 0 0 2rem;
+  margin: 2rem 2rem 0 2rem;
   max-width: 45rem;
+
 }
 
 </style>
