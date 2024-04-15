@@ -1,9 +1,7 @@
 <template>
   <div class="topic">
     <h1>Helfende Hände</h1>
-    <p class="descriptiona">Bittebitte, hilfehilfe. Hier kannst du dich eintragen, um bei Aufgaben mitzuhelfen, bei
-      denen wir Tatkraft
-      brauchen!</p>
+    <p class="descriptiona">Wir werden viele Menschen sein und es wird eine Menge zu tun geben, um uns alle miteinander zu versorgen. Wir wären daher dankbar, wenn auch du einen Dienst für die Gemeinschaft übernimmst. Falls du Lust hast, darfst du dich natürlich auch mehrfach einbringen. Jeder Dienst wird in Dreiergruppen gestaltet, damit du auch bei diesem Teil des Festivals immer von netten Menschen umgeben bist. Zur vergeben sind:</p>
     <ul class="list">
       <li v-for="(item, index) in supportTasks" :key="item.title" class="card_scroll_container">
         <div :class="{card_success: item.supporterUserNames.length === item.requiredSupporters}" class="card">

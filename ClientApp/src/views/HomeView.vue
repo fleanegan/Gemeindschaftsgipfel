@@ -9,12 +9,7 @@
   <div :class="{'slider':true, 'key_information_slider': true}"></div>
   <info-box :data="secretData" :globalProgress="progress.infoScreen"></info-box>
   <div class="content_box">
-    <h2>{{ secretData.first_section_title }}</h2>
-    <p class="text_paragraph">{{ secretData.first_section_content }}</p>
-    <h2>{{ secretData.second_section_title }}</h2>
-    <div class="text_paragraph" v-html="secretData.second_section_content"></div>
-    <h2>Da will ich mitmachen!</h2>
-    <h1></h1>
+    <div class="text_paragraph" v-html="secretData.content"></div>
     <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation': currentScreen > 1.5}"
                  to="/topic">Thema einreichen
     </router-link>
@@ -216,8 +211,34 @@ export default defineComponent({
   z-index: 10;
 }
 
-h2 {
-  margin: 7rem 2rem 0 2rem;
+:deep(h1) {
+  margin: 0rem 0rem 1rem 0rem;
+  padding: 0;
+}
+:deep(h2) {
+  margin: 0rem 0rem 0.5rem 0rem;
+  padding: 0;
+}
+
+:deep(br) {
+  margin-bottom: 2rem;
+}
+
+:deep(ul) {
+  margin-top: 0.5rem;
+  list-style-position: outside;
+}
+
+:deep(li) {
+  margin-bottom: 0.5rem;
+}
+
+:deep(li p) {
+  margin-left: 0.75rem;
+}
+
+:deep(li h3) {
+  margin-left: 0.75rem;
 }
 
 .text_paragraph {
