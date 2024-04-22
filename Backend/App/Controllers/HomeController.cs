@@ -16,8 +16,10 @@ public class HomeController : AbstractController
             key_information_detail_coordinates = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_COORDINATES") ?? "LANDING_PAGE_DETAIL_COORDINATES",
             key_information_detail_dates = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_DATES") ?? "LANDING_PAGE_DETAIL_DATES",
             key_information_detail_accomodation = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_ACCOMODATION" ?? "LANDING_PAGE_DETAIL_ACCOMODATION"),
-            key_information_detail_wifi_ssid = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_WIFI_SSID") ?? "LANDING_PAGE_DETAIL_WIFI_SSID",
-            key_information_detail_wifi_password = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_WIFI_PASSWORD") ?? "LANDING_PAGE_DETAIL_WIFI_PASSWORD",
+            key_information_detail_fee_receiver = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_RECEIVER") ?? "LANDING_PAGE_DETAIL_FEE_RECEIVER",
+            key_information_detail_fee_iban = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_IBAN") ?? "LANDING_PAGE_DETAIL_FEE_IBAN",
+            key_information_detail_fee_deadline = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_DEADLINE") ?? "LANDING_PAGE_DETAIL_FEE_DEADLINE",
+            key_information_detail_fee_amount = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_AMOUNT") ?? "LANDING_PAGE_DETAIL_FEE_AMOUNT",
             content = Environment.GetEnvironmentVariable("LANDING_PAGE_CONTENT") ?? "LANDING_PAGE_CONTENT"
         });
     }

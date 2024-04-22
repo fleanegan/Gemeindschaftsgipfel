@@ -56,15 +56,23 @@ export default defineComponent({
           <p>{{ data.key_information_detail_accomodation }}</p>
         </div>
         <div class="key_information_detail">
-          <img alt="wifi" class="key_information_detail_image" src="/wifi.svg">
+          <img alt="fee" class="key_information_detail_image" src="/wifi.svg">
           <table>
             <tr>
-              <td>SSID:</td>
-              <td>{{ data.key_information_detail_wifi_ssid }}</td>
+              <td>Betrag</td>
+              <td>{{ data.key_information_detail_fee_amount}}</td>
             </tr>
             <tr>
-              <td>Password:</td>
-              <td>{{ data.key_information_detail_wifi_password }}</td>
+              <td>IBAN:</td>
+              <td>{{ data.key_information_detail_fee_iban }}</td>
+            </tr>
+            <tr>
+              <td>Empfänger:</td>
+              <td>{{ data.key_information_detail_fee_receiver }}</td>
+            </tr>
+            <tr>
+              <td>Frist</td>
+              <td>{{ data.key_information_detail_fee_deadline }}</td>
             </tr>
           </table>
         </div>
@@ -107,6 +115,7 @@ export default defineComponent({
 
 .key_information_detail_image {
   margin-right: 1rem;
+  margin-bottom: auto;
   width: 3rem;
   height: 3rem;
 }
