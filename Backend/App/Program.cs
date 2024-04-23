@@ -86,7 +86,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<DatabaseContextApplication>(options =>
 {
     var config = builder.Configuration;
-    var connectionString = config.GetConnectionString(Environment.GetEnvironmentVariable("DB_NAME")!);
+    var connectionString = "Data Source=data/database.db";
     options.UseSqlite(connectionString);
 });
 builder.Services.AddTransient<IEmailSender<User>, NoOpEmailSenderService>();

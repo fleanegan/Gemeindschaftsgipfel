@@ -3,7 +3,7 @@ services:
   backend:
     build: ./Backend/App/ 
     volumes:
-      - ./Backend/App/database.db:/App/database.db:rw
+      - ./Backend/App/data:/App/data:rw
       - ./log/:/App/log/:rw
       - ./.env:/App/.env:ro
     ports:
