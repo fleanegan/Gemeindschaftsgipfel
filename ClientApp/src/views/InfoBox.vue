@@ -56,10 +56,10 @@ export default defineComponent({
           <p>{{ data.key_information_detail_accomodation }}</p>
         </div>
         <div class="key_information_detail">
-          <img alt="fee" class="key_information_detail_image" src="/wifi.svg">
+          <img alt="fee" class="key_information_detail_image" src="/helper_white.svg">
           <table>
             <tr>
-              <td>Betrag</td>
+              <td>Beitrag</td>
               <td>{{ data.key_information_detail_fee_amount}}</td>
             </tr>
             <tr>

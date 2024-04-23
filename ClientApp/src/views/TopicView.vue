@@ -9,9 +9,7 @@
     <div class="instruction_container">
       <div class="instruction_card">
         <div class="instruction_card_content">
-          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Inhalt</p>
-          <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
-            ausdenken</p>
+          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Inhalt ausdenken</p>
           <p>Reite dein Steckenpferd und erzaehle uns, was dich begeistert! Ob
             Trick
             17, dein Promotionsthema oder Haekeltipps, wir sind gespannt.</p>
@@ -20,9 +18,7 @@
       </div>
       <div class="instruction_card">
         <div class="instruction_card_content">
-          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Entscheidung</p>
-          <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
-            treffen</p>
+          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Entscheidung treffen</p>
           <p>Geht es dir wie uns, du kannst dich kaum entscheiden, welches deiner vielen Herzensthemen du praesentieren
             sollst? Trag alle Themen ein, lass die Gemeinschaft waehlen und hilf selbst mit deiner Stimme!</p>
         </div>
@@ -30,9 +26,7 @@
       </div>
       <div class="instruction_card">
         <div class="instruction_card_content">
-          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Gemeinsam</p>
-          <p class="instruction_card_content_header_title" style="padding-left: 1.5rem; padding-bottom: 0.5rem">
-            staunen</p>
+          <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Gemeinsam staunen</p>
           <p>Das Ziel ist es, zusammen unsere Vielfalt zu geniessen. Lass Leistungsdruck und Lampenfieber zuhause, denn
             es
             erwartet dich ein wohlwollendes Publikum :)</p>
