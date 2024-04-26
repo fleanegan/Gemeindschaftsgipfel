@@ -5,7 +5,7 @@
                                                                          style="width: 6rem; height: 6rem; max-height: 48px; max-width: 48px;">
       </router-link>
       <div class="transparent-header-area"></div>
-      <router-link :class="{'router-link': true, 'headerless': !isStandardPage}" to="/topic">Vortragsthemen
+      <router-link :class="{'router-link': true, 'headerless': !isStandardPage}" to="/topic">Inhalte
       </router-link>
       <router-link :class="{'router-link': true, 'headerless': !isStandardPage}" to="/supporttask">Mithelfen
       </router-link>

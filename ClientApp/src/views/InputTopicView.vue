@@ -2,12 +2,12 @@
   <h1>{{ isEditing ? 'Thema bearbeiten' : 'Neues Thema hinzufügen' }}</h1>
   <form @submit.prevent="submitData">
     <div class="form-group">
-      <label for="title">Worüber möchtest du sprechen?</label>
+      <label for="title">Worum geht es?</label>
       <input id="title" v-model="title" class="form-input" type="text"/>
-      <p v-if="isTitleEmpty" class="title-error">Der Vortragstitel muss zwischen 1 und 100 Zeichen lang sein</p>
+      <p v-if="isTitleEmpty" class="title-error">Der Titel muss zwischen 1 und 150 Zeichen lang sein</p>
     </div>
     <div class="form-group">
-      <label for="description">Platz für Details (optional)</label>
+      <label for="description">Details und benötigtes Material</label>
       <input id="description" v-model="description" class="form-input"/>
     </div>
     <div class="form-group">

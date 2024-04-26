@@ -5,12 +5,12 @@
         <img :src="'/expand.svg'" alt="Expand">
       </button>
     </div>
-    <h1>Vortragsthemen</h1>
+    <h1>Zeig uns was 'ne Harke ist!</h1>
     <div class="instruction_container">
       <div class="instruction_card">
         <div class="instruction_card_content">
           <p class="instruction_card_content_header_title" style="padding-left: 2.25rem">Inhalt ausdenken</p>
-          <p>Reite dein Steckenpferd und erzaehle uns, was dich begeistert! Ob
+          <p>Reite dein Steckenpferd und zeig' uns, was dich begeistert! Ob
             Trick
             17, dein Promotionsthema oder Haekeltipps, wir sind gespannt.</p>
         </div>
@@ -143,7 +143,7 @@ export default defineComponent({
     },
     editTopic(topicId: string): void {
       this.$router.push({
-        name: 'Vortragsthema bearbeiten',
+        name: 'Thema bearbeiten',
         params: {
           'topicId': topicId,
         }

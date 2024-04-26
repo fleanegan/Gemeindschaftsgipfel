@@ -45,7 +45,7 @@ export default defineComponent({
         <h2>{{ data.key_information_detail_title }}</h2>
         <div class="key_information_detail">
           <img alt="map" class="key_information_detail_image" src="/map.svg">
-          <p>{{ data.key_information_detail_coordinates }}</p>
+          <div v-html="data.key_information_detail_coordinates"></div>
         </div>
         <div class="key_information_detail">
           <img alt="calendar" class="key_information_detail_image" src="/calendar.svg">
@@ -134,7 +134,7 @@ th, td {
   text-align: left;
 }
 
-/* Apply specific width to the first column */
+
 th:first-child, td:first-child {
   width: 70%;
 }
