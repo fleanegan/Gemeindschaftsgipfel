@@ -3,7 +3,7 @@
     <h1>Helfende Hände</h1>
     <p class="descriptiona">Freiwillige vor! Wir haben ein paar Aufgaben gesammelt, bei denen wir Hilfe brauchen. Mach mit und schaff die letzten Hürden auf dem Weg zum Gemeinschaftsgipfel aus dem Weg. Keine Scheu, hier steht das Vergnügen proportional zum Schweiß : Jeder Dienst wird in Dreiergruppen gestaltet, damit du auch bei diesem Teil des Festivals immer von netten Menschen umgeben bist. Zur vergeben sind (oh ja, du darfst dich auch mehrmals eintragen):</p>
     <ul class="list">
-      <li v-for="(item, index) in supportTasks" :key="item.title" class="card_scroll_container">
+      <li v-for="(item, index) in supportTasks" class="card_scroll_container">
         <div :class="{card_success: item.supporterUserNames.length === item.requiredSupporters}" class="card">
           <div class="card_content">
             <h3 class="support_task_header">{{ item.title }}</h3>
@@ -71,7 +71,13 @@ export default defineComponent({
   methods: {
     useAuthStore,
     async fetchData() {
-      this.supportTasks = (await axios.get('/api/supporttask/getall', {})).data;
+      this.supportTasks = (await axios.get('/api/supporttask/getall', {})).data.sort(function(a: SupportTask, b: SupportTask){
+	if (a.duration > b.duration)
+	  return 1;
+	if (a.duration < b.duration)
+	  return -1;
+	return 0;
+      });
     },
     async toggleSupporting(index: number): Promise<void> {
       if (this.supportTasks[index].supporterUserNames.includes(this.userName!)) {
