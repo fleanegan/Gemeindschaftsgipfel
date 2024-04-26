@@ -10,6 +10,10 @@
       <label for="description">Platz für Details (optional)</label>
       <input id="description" v-model="description" class="form-input"/>
     </div>
+    <div class="form-group">
+      <label for="presentationTimeInMinutes">Wie lange dauert dein Beitrag in etwa?</label>
+      <input id="presentationTimeInMinutes" type='number' v-model.number="presentationTimeInMinutes" class="form-input" placeholder="in Minuten"/>
+    </div>
     <div class="button-container">
       <button class="abort-button" @click="abort">Verwerfen</button>
       <button class="submit-button" type="submit">Abschicken</button>
@@ -26,6 +30,7 @@ export default defineComponent({
     return {
       title: '',
       description: '',
+      presentationTimeInMinutes: null,
     };
   },
   methods: {
@@ -40,13 +45,15 @@ export default defineComponent({
         if (this.isEditing) {
           await axios.put('/api/topic/update', {
             "Title": this.title,
+	    "PresentationTimeInMinutes": this.presentationTimeInMinutes,
             "Description": this.description,
             "Id": this.$props["topicId"],
           });
         } else {
           await axios.post('/api/topic/addnew', {
             "Title": this.title,
-            "Description": this.description
+	    "PresentationTimeInMinutes": this.presentationTimeInMinutes,
+            "Description": this.description,
           });
         }
 
@@ -74,6 +81,7 @@ export default defineComponent({
         var existingTopic = await axios.get('/api/topic/getone/' + this.$props["topicId"]);
         this.title = existingTopic.data["title"];
         this.description = existingTopic.data["description"];
+        this.presentationTimeInMinutes = existingTopic.data["presentationTimeInMinutes"];
       } catch (e) {
         console.log("edit: could not get existing topic")
       }

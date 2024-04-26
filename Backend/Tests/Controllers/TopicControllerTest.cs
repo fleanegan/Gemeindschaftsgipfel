@@ -23,7 +23,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     [
         new Topic("description", "title",
             new User { UserName = AutoAuthorizeMiddleware.UserName },
-            [new Vote(Topic.Create("asdf", "asdf", new User()), new User())])
+            [new Vote(Topic.Create("asdf", 5, "asdf", new User()), new User())])
     ];
 
     private readonly WebApplicationFactory<Program> _factoryWithAuthorization;
@@ -78,7 +78,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         _mockTopicService.Setup(s => s.AddTopic(It.IsAny<TopicCreationDto>(), It.IsAny<string>()))
             .ReturnsAsync((TopicCreationDto newTopic, string _) =>
             {
-                var topic = Topic.Create(newTopic.Title, newTopic.Description ?? "",
+                var topic = Topic.Create(newTopic.Title, newTopic.PresentationTimeInMinutes, newTopic.Description ?? "",
                     new User { Id = "testId" });
                 topic.Id = HappyPathDummyId;
                 return topic;
@@ -91,7 +91,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                     throw new TopicNotFoundException(topicToUpdate.Id);
                 if (topicToUpdate.Id == ConflictingDummyId)
                     throw new UnauthorizedTopicModificationException(topicToUpdate.Id);
-                var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.Description ?? "",
+                var topic = Topic.Create(topicToUpdate.Title, topicToUpdate.PresentationTimeInMinutes, topicToUpdate.Description ?? "",
                     new User { Id = "testId" });
                 topic.Id = HappyPathDummyId;
                 topic.Votes = [];
@@ -144,6 +144,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var newTopic = new
         {
             Title = "Correct title",
+	    PresentationTimeInMinutes = 5,
             Description = "Correct description"
         };
 
@@ -161,7 +162,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.PostAsync("/topic/AddNew", jsonContent);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.Equal(Constants.EmptyTitleErrorMessage, await response.Content.ReadAsStringAsync());
+        Assert.Contains(Constants.EmptyTitleErrorMessage, await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -171,6 +172,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var newTopic = new
         {
             Title = "Correct title",
+            PresentationTimeInMinutes = 5,
             Description = "Correct description"
         };
 
@@ -182,6 +184,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             Times.Once);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(newTopic.Title, dictionary?["title"].ToString());
+        Assert.Equal(newTopic.PresentationTimeInMinutes, Convert.ToInt32(dictionary?["presentationTimeInMinutes"].ToString()));
         Assert.Equal(newTopic.Description, dictionary?["description"].ToString());
         Assert.Equal(HappyPathDummyId, dictionary?["id"].ToString());
     }
@@ -220,6 +223,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(_demoTopics.ToArray()[0].Title, dictionary?["title"].ToString());
         Assert.Equal(_demoTopics.ToArray()[0].Description, dictionary?["description"].ToString());
+        Assert.Equal(_demoTopics.ToArray()[0].PresentationTimeInMinutes, Convert.ToInt32(dictionary?["presentationTimeInMinutes"].ToString()));
         Assert.Equal(HappyPathDummyId, dictionary?["id"].ToString());
     }
 
@@ -230,6 +234,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var updatedTopic = new
         {
             Id = "Correct id",
+	    PresentationTimeInMinutes = 5,
             Title = "Correct title",
             Description = "Correct description"
         };
@@ -261,6 +266,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         {
             Id = NonExistingDummyId,
             Title = "Correct title",
+	    PresentationTimeInMinutes = 5,
             Description = "Correct description"
         };
 
@@ -279,6 +285,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         {
             Id = ConflictingDummyId,
             Title = "Correct title",
+	    PresentationTimeInMinutes = 5,
             Description = "Correct description"
         };
 
@@ -294,6 +301,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var payload = new TopicUpdateDto(
             "Correct id",
             "Correct title",
+	    3,
             "Correct description"
         );
 
@@ -309,6 +317,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             JsonSerializer.Deserialize<Dictionary<string, object>>(await response.Content.ReadAsStringAsync());
         Assert.NotNull(dictionary);
         Assert.Equal(payload.Title, dictionary["title"].ToString());
+        Assert.Equal(payload.PresentationTimeInMinutes, Convert.ToInt32(dictionary["presentationTimeInMinutes"].ToString()));
         Assert.Equal(payload.Description, dictionary["description"].ToString());
     }
 
@@ -326,6 +335,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains("description", dictionary[0]["description"].ToString());
+        Assert.Equal(_demoTopics.First().PresentationTimeInMinutes, Convert.ToInt32(dictionary[0]["presentationTimeInMinutes"].ToString()));
         Assert.Contains("title", dictionary[0]["title"].ToString());
         Assert.Equal("False", dictionary[0]["didIVoteForThis"].ToString());
         Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"].ToString());
@@ -366,6 +376,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(c => c.FetchAllOfLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains("description", dictionary[0]["description"].ToString());
+        Assert.Equal(_demoTopics.First().PresentationTimeInMinutes, Convert.ToInt32(dictionary[0]["presentationTimeInMinutes"].ToString()));
         Assert.Contains("title", dictionary[0]["title"].ToString());
         Assert.Contains("1", dictionary[0]["votes"].ToString());
         Assert.Contains(AutoAuthorizeMiddleware.UserName, dictionary[0]["presenterUserName"].ToString());

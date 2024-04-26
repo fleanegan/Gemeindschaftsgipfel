@@ -50,12 +50,21 @@
 }
 
 .topic-card-details {
-    padding-left: 3rem;
+    padding-left: 1rem;
     padding-top: 0.5rem;
     padding-right: 0.5rem;
     padding-bottom: 0.5rem;
     background-color: var(--color-background);
     border-radius: 0.2rem;
+}
+
+.topic-card-presentation-time-in-minutes{
+    width: 2.5rem;
+    max-width: 2.5rem;
+    text-align: center;
+    padding-top: .25rem;
+    font-size: 1.125rem;
+    font-weight: bolder;
 }
 
 .topic_card_details_owner {

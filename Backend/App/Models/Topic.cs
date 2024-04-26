@@ -32,13 +32,15 @@ public class Topic
     [StringLength(Constants.MaxLengthDescription, ErrorMessage = Constants.MaxLengthDescriptionErrorMessage)]
     public string Description { get; set; }
 
+    [Required(ErrorMessage = Constants.MissingPresentationTimeErrorMessage)] public int PresentationTimeInMinutes { get; set; }
+
     [Required] public User User { get; init; }
 
     public ICollection<Vote> Votes { get; set; } = [];
 
-    public static Topic Create(string title, string description, User user)
+    public static Topic Create(string title, int presentationTimeInMinutes, string description, User user)
     {
-        var model = new Topic { Title = title, Description = description, User = user };
+        var model = new Topic { Title = title, Description = description, PresentationTimeInMinutes = presentationTimeInMinutes, User = user };
         Validator.ValidateObject(model, new ValidationContext(model), true);
         return model;
     }

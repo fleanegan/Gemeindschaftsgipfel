@@ -19,7 +19,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     public async Task<Topic> AddTopic(TopicCreationDto toBeAdded, string userName)
     {
         var user = await userManager.FindByNameAsync(userName);
-        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.Description ?? "", user!);
+        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.PresentationTimeInMinutes, toBeAdded.Description ?? "", user!);
         return await topicRepository.Create(newTopic);
     }
 
@@ -33,6 +33,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
             throw new UnauthorizedTopicModificationException(topicToChange.Id);
 
         topicToChange.Title = updatedTopicCreationContent.Title;
+        topicToChange.PresentationTimeInMinutes = updatedTopicCreationContent.PresentationTimeInMinutes;
         topicToChange.Description = updatedTopicCreationContent.Description ?? "";
         return await topicRepository.Update(topicToChange);
     }

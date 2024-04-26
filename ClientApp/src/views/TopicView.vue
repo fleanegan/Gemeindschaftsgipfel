@@ -46,6 +46,7 @@
         </div>
         <div v-if="item.expanded" class="topic-card-details">
           <div class="topic_card_details_owner">
+            <p class='topic-card-presentation-time-in-minutes'>{{item.presentationTimeInMinutes}}'</p>  
             <p class="description">{{ item.description }}</p>
             <div class="topic_card_details_owner_actions">
               <button class="action_button" style="margin-bottom: 0.25rem;" @click="removeTopic(item.id)">
@@ -78,7 +79,10 @@
           </button>
         </div>
         <div v-if="item.expanded" class="topic-card-details">
-          <p class="description">{{ item.description }}</p>
+	  <div style='display: flex; flex-direction: row;'>
+	      <p class='topic-card-presentation-time-in-minutes'>{{item.presentationTimeInMinutes}}'</p>  
+	      <p class="description">{{ item.description }}</p>
+	  </div>
           <p class="presenter">{{ item.presenterUserName }}</p>
         </div>
       </li>
@@ -100,6 +104,7 @@ interface MyTopic {
   title: string;
   description: string;
   votes: number;
+  presentationTimeInMinutes: number;
   expanded: boolean;
 }
 
@@ -108,6 +113,7 @@ interface ForeignTopic {
   title: string;
   description: string;
   presenterUserName: string;
+  presentationTimeInMinutes: number;
   didIVoteForThis: boolean;
   expanded: boolean;
 }

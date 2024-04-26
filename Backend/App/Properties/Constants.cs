@@ -16,4 +16,6 @@ public static class Constants
 
     public const string EmptyIdErrorMessage =
         "Die Vortragsidentitifikationsnummer ist obligatorisch, um Vortragsthemen zu modifizieren.";
+
+    public const string MissingPresentationTimeErrorMessage = "Gib an, wie lang der Vortrag geht.";
 }

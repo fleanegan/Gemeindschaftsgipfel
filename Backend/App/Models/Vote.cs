@@ -5,7 +5,7 @@ namespace Gemeinschaftsgipfel.Models;
 
 public class Vote(Topic topic, User voter)
 {
-    internal Vote() : this(Topic.Create("title", "description", new User()), new User())
+    internal Vote() : this(Topic.Create("title", 5, "description", new User()), new User())
     {
     }
 
