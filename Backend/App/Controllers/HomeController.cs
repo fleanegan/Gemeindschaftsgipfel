@@ -7,6 +7,13 @@ namespace Gemeinschaftsgipfel.Controllers;
 public class HomeController : AbstractController
 {
     [HttpGet]
+    [AllowAnonymous]
+    public IActionResult GetImpressum()
+    {
+        return Ok(Environment.GetEnvironmentVariable("LOGIN_PAGE_LEGAL") ?? "bana");
+    }
+
+    [HttpGet]
     [Authorize]
     public IActionResult GetInfo()
     {

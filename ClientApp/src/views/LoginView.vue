@@ -30,48 +30,7 @@
       <button class="submit-button" type="submit">Abschicken</button>
     </form>
   </div>
-  <div class="impressum">
-    <h1>Impressum</h1>
-    <p>
-    Anbieter dieser Webseite ist: Frederik Schlüter
-    <br><br>
-    Am Volkspark 63
-    <br><br>
-    10715 Berlin
-    <br><br>
-    Email: f.schlueter@posteo.de
-    <br><br>
-    </p>
-    <h1>Datenschutzerklärung</h1>
-    <p>Vielen Dank für Ihren Besuch auf unserer nicht kommerziellen Webseite. Der Schutz Ihrer Privatsphäre ist uns ein wichtiges Anliegen. Nachfolgend informieren wir Sie über die Verarbeitung Ihrer personenbezogenen Daten bei der Nutzung unserer Webseite.
-<br><br>
-    Verantwortliche Stelle:<br>
-    Die verantwortliche Stelle im Sinne der Datenschutzgesetze ist Frederik Schlüter, Am Volkspark 63 Berlin 10715, f.schlueter@posteo.de .
-<br><br>
-    Erhebung und Verarbeitung von Daten:<br>
-    Wir erheben und verarbeiten personenbezogene Daten nur im Rahmen des technisch notwendigen Umfangs, um Ihnen die Nutzung unserer Webseite zu ermöglichen. Dabei werden keine Drittanbieter genutzt. Wir erfassen keine personenbezogenen Daten ohne Ihre ausdrückliche Zustimmung.
-<br><br>
-    Zweck der Datenverarbeitung:<br>
-    Die von uns erhobenen Daten dienen ausschließlich dem Schutz vor illegalen Aktivitäten im Zusammenhang mit der Nutzung unserer Webseite. Wir verwenden Ihre Daten nicht für Werbezwecke oder zur Profilbildung.
-<br><br>
-    Weitergabe von Daten an Dritte:<br>
-    Eine Weitergabe Ihrer personenbezogenen Daten an Dritte erfolgt nicht, es sei denn, dies ist zur Erfüllung rechtlicher Verpflichtungen erforderlich oder Sie haben ausdrücklich eingewilligt.
-<br><br>
-    Ihre Rechte:<br>
-    Sie haben das Recht, Auskunft über die bei uns gespeicherten personenbezogenen Daten zu erhalten, sowie das Recht auf Berichtigung, Löschung oder Sperrung dieser Daten. Bitte kontaktieren Sie uns dazu unter den oben angegebenen Kontaktdaten.
-<br><br>
-    Sicherheit:<br>
-    Wir treffen angemessene technische und organisatorische Maßnahmen, um Ihre Daten vor Verlust, Missbrauch oder unbefugtem Zugriff zu schützen.
-<br><br>
-    Änderungen dieser Datenschutzerklärung:<br>
-    Wir behalten uns vor, diese Datenschutzerklärung jederzeit zu ändern, um sie an aktuelle rechtliche Anforderungen anzupassen oder um Änderungen in unserer Datenverarbeitungspraxis zu berücksichtigen. Die jeweils aktuelle Version finden Sie auf unserer Webseite.
-<br><br>
-Wenn Sie Fragen zum Datenschutz haben, können Sie sich jederzeit unter den oben genannten Kontaktdaten an uns wenden.
-<br>
-Stand: 22.04.2024
-<br><br>
-Vielen Dank für Ihr Vertrauen und Ihr Interesse an unserer Webseite.</p>
-  </div>
+  <div class="impressum" v-html="impressum"></div>
 </template>
 
 <script lang="ts">
@@ -92,12 +51,16 @@ export default defineComponent({
           entrySecret: '',
           errors: '',
           isSignup: false,
+	  impressum: '',
         };
       },
       computed: {
         passwordsMatching: function passwordsMatching() {
           return this.password == this.passwordConfirmation;
         }
+      },
+      async mounted() {
+        this.impressum = (await axios.get('/api/home/getimpressum', {})).data
       },
       methods: {
         async submitData() {
@@ -246,4 +209,8 @@ export default defineComponent({
   max-width: 50%;
 }
 
+:deep(p) {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
 </style>
