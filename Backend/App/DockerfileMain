@@ -19,12 +19,7 @@ RUN apt-get update && \
 
 WORKDIR /App
 COPY --from=build-env /App/out .
-COPY entrypoint.sh .
-
-# Set execute permission on entrypoint script
-RUN chmod +x entrypoint.sh
 
 EXPOSE 8080
 
-# Use entrypoint script to handle migration check and execution
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT dotnet Gemeinschaftsgipfel.dll

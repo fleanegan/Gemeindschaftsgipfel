@@ -1,13 +1,24 @@
 version: "3.9"
 services:
+  database_migrations:
+    volumes:
+      - ./Backend/App/data:/App/data:rw
+    build:
+      context: ./Backend/App/
+      dockerfile: DockerfileDatabaseMigrations
   backend:
-    build: ./Backend/App/ 
+    build: 
+      context: ./Backend/App/ 
+      dockerfile: DockerfileMain
     volumes:
       - ./Backend/App/data:/App/data:rw
       - ./log/:/App/log/:rw
       - ./.env:/App/.env:ro
     ports:
       - ${SERVER_PORT}
+    depends_on:
+      database_migrations:
+        condition: service_completed_successfully
   frontend:
     build:
       dockerfile: ./Dockerfile
