@@ -34,11 +34,11 @@ export default defineComponent({
         <path
             :style="{'stroke-dashoffset': borderProgress}"
             class="path"
-            d="M 30,30 L 30,170 L 170,170 L 170,30 Z"
+            d="M 30,30 L 30,170 L 170,170 L 170,30 L 30, 30"
             fill="none"
             pathLength="1"
             stroke="white"
-            stroke-width="0.2rem"
+            stroke-width="2"
         />
       </svg>
       <div class="key_information">
@@ -69,6 +69,10 @@ export default defineComponent({
             <tr>
               <td>Empfänger:</td>
               <td>{{ data.key_information_detail_fee_receiver }}</td>
+            </tr>
+            <tr>
+              <td>Zweck</td>
+              <td>{{ data.key_information_detail_fee_reason }}</td>
             </tr>
             <tr>
               <td>Frist</td>

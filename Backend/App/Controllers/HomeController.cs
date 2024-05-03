@@ -27,6 +27,7 @@ public class HomeController : AbstractController
             key_information_detail_fee_iban = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_IBAN") ?? "LANDING_PAGE_DETAIL_FEE_IBAN",
             key_information_detail_fee_deadline = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_DEADLINE") ?? "LANDING_PAGE_DETAIL_FEE_DEADLINE",
             key_information_detail_fee_amount = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_AMOUNT") ?? "LANDING_PAGE_DETAIL_FEE_AMOUNT",
+            key_information_detail_fee_reason = Environment.GetEnvironmentVariable("LANDING_PAGE_DETAIL_FEE_REASON") ?? "LANDING_PAGE_DETAIL_FEE_REASON",
             content = Environment.GetEnvironmentVariable("LANDING_PAGE_CONTENT") ?? "LANDING_PAGE_CONTENT"
         });
     }

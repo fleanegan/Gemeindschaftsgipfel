@@ -10,7 +10,7 @@
   <info-box :data="secretData" :globalProgress="progress.infoScreen"></info-box>
   <div class="content_box">
     <div class="text_paragraph" v-html="secretData.content"></div>
-    <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation': currentScreen > 1.5}"
+    <router-link :class="{'topic_call_to_action': true, 'call_to_action_highlight': true, 'topic_call_to_action_animation': currentScreen > 1.5}"
                  to="/topic">Thema einreichen
     </router-link>
     <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation1': currentScreen > 1.5}"
@@ -169,6 +169,16 @@ export default defineComponent({
   place-content: center;
   margin-bottom: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.call_to_action_highlight{
+  background-color:red;
+  color: white;
+  border: none;
+}
+
+.call_to_action_highlight:hover {
+background-color: var(--main-color-primary);
 }
 
 .topic_call_to_action_animation {
