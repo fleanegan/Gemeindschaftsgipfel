@@ -13,7 +13,7 @@ public class SupportTaskService(
 {
     public async Task<SupportTask> AddTask(SupportTaskCreationDto userInput, string loggedInUserName)
     {
-        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME") != loggedInUserName)
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME").ToLower() != loggedInUserName.ToLower())
             throw new UnauthorizedException(loggedInUserName);
         return await supportTaskRepository.Create(new SupportTask
         {
@@ -24,7 +24,7 @@ public class SupportTaskService(
 
     public async Task<SupportTask> ModifyTask(SupportTaskCreationDto userInput, string supportTaskId, string loggedInUserName)
     {
-        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME") != loggedInUserName)
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME").ToLower() != loggedInUserName.ToLower())
             throw new UnauthorizedException(loggedInUserName);
         var existingSupportTask = await supportTaskRepository.FetchBy(supportTaskId);
         existingSupportTask!.RequiredSupporters = userInput.RequiredSupporters;
@@ -41,7 +41,7 @@ public class SupportTaskService(
             throw new SupportTaskNotFoundException(supportTaskId);
         var supporter = await userManager.FindByNameAsync(loggedInUserName);
         var supportPromise = new SupportPromise(supportTask, supporter!);
-        if (supportTask.SupportPromises.Any(s => s.Supporter.UserName == supporter!.UserName))
+        if (supportTask.SupportPromises.Any(s => s.Supporter.UserName.ToLower() == supporter!.UserName.ToLower()))
             throw new SupportPromiseImpossibleException(supportTaskId);
         await supportPromiseRepository.Create(supportPromise);
     }
@@ -51,7 +51,7 @@ public class SupportTaskService(
         var supportTask = await supportTaskRepository.FetchBy(supportTaskId);
         if (supportTask == null)
             throw new SupportTaskNotFoundException(supportTaskId);
-        var supportPromise = supportTask.SupportPromises.FirstOrDefault(s => s.Supporter.UserName == loggedInUserName);
+        var supportPromise = supportTask.SupportPromises.FirstOrDefault(s => s.Supporter.UserName.ToLower() == loggedInUserName.ToLower());
         if (supportPromise == null)
             throw new SupportPromiseImpossibleException(supportTaskId);
         await supportPromiseRepository.Remove(supportPromise);

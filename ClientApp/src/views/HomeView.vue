@@ -13,7 +13,7 @@
     <router-link :class="{'topic_call_to_action': true, 'call_to_action_highlight': true, 'topic_call_to_action_animation': currentScreen > 1.5}"
                  to="/topic">Thema einreichen
     </router-link>
-    <router-link :class="{'topic_call_to_action': true, 'topic_call_to_action_animation1': currentScreen > 1.5}"
+    <router-link :class="{'topic_call_to_action': true, 'call_to_action_highlight': true, 'topic_call_to_action_animation1': currentScreen > 1.5}"
                  to="/supporttask">Arbeitsgruppe beitreten
     </router-link>
   </div>
@@ -172,7 +172,7 @@ export default defineComponent({
 }
 
 .call_to_action_highlight{
-  background-color:red;
+  background-color: var(--main-color-secondary);
   color: white;
   border: none;
 }

@@ -24,7 +24,7 @@ public abstract class ResponseGenerator
 		    topic.PresentationTimeInMinutes,
                     topic.Description,
                     topic.User.UserName,
-                    topic.Votes.Count(vote => vote.Voter.UserName == loggedInUserName) == 1
+                    topic.Votes.Count(vote => vote.Voter.UserName.ToLower() == loggedInUserName.ToLower()) > 0
                 )
             )
             .ToList();
@@ -35,7 +35,7 @@ public abstract class ResponseGenerator
         return supportTasks
             .Select(task => new SupportTaskResponseModel(task.Id, task.Title, task.Description, task.Duration,
                 task.RequiredSupporters,
-                task.SupportPromises.Select(supporter => supporter.Supporter.UserName).ToList()))
+                task.SupportPromises.Select(supporter => supporter.Supporter.UserName.ToLower()).Distinct().ToList()))
             .ToList();
     }
 }

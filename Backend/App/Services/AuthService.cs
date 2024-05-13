@@ -24,7 +24,7 @@ public class AuthService(
         }
 
         logger.LogInformation("LOGIN_REGISTER: [USER_CREATED] with username " + userInput.UserName);
-        return await userManager.CreateAsync(new User { UserName = userInput.UserName }, userInput.Password);
+        return await userManager.CreateAsync(new User { UserName = userInput.UserName.ToLower() }, userInput.Password);
     }
 
     public async Task<string> Login(LoginDto userInput)
@@ -36,10 +36,10 @@ public class AuthService(
             PasswordVerificationResult.Success)
         {
             logger.LogInformation("LOGIN_REGISTER: " + userInput.UserName + " successfully logged in");
-            return jwtGenerationService.Generate(new List<Claim>([new Claim(ClaimTypes.Name, userInput.UserName)]));
+            return jwtGenerationService.Generate(new List<Claim>([new Claim(ClaimTypes.Name, userInput.UserName.ToLower())]));
         }
 
-        logger.LogWarning("LOGIN_REGISTER: [LOGIN_FAILURE] username: " + userInput.UserName +
+        logger.LogWarning("LOGIN_REGISTER: [LOGIN_FAILURE] username: " + userInput.UserName.ToLower() +
                           " failed to log in, password length: " + userInput.Password.Length);
 
         return "";

@@ -54,7 +54,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
         if (topicToVote == null) throw new TopicNotFoundException(topicId);
         var voter = await userManager.FindByNameAsync(loggedInUserName);
         var newVote = new Vote(topicToVote, voter!);
-        if (topicToVote.Votes.Any(vote => vote.Voter.UserName == voter!.UserName))
+        if (topicToVote.Votes.Any(vote => vote.Voter.UserName.ToLower() == voter!.UserName.ToLower()))
             throw new VoteImpossibleException(topicId);
         await voteRepository.Create(newVote);
     }
@@ -63,7 +63,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     {
         var topicToVote = await topicRepository.FetchBy(topicId);
         if (topicToVote == null) throw new TopicNotFoundException(topicId);
-        var first = topicToVote.Votes.FirstOrDefault(vote => vote.Voter.UserName == loggedInUserName);
+        var first = topicToVote.Votes.FirstOrDefault(vote => vote.Voter.UserName.ToLower() == loggedInUserName.ToLower());
         if (first != null) await voteRepository.Remove(first);
     }
 

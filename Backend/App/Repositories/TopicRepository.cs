@@ -43,7 +43,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
             .Include(c => c.User)
             .Include(c => c.Votes)
             .ThenInclude(c => c.Voter)
-            .Where(topic => topic.User.UserName != userName)
+            .Where(topic => topic.User.UserName.ToLower() != userName.ToLower())
             .ToListAsync();
     }
 
@@ -53,7 +53,7 @@ public class TopicRepository(DatabaseContextApplication dbContext)
             .Include(c => c.User)
             .Include(c => c.Votes)
             .ThenInclude(c => c.Voter)
-            .Where(topic => topic.User.UserName == userName)
+            .Where(topic => topic.User.UserName.ToLower() == userName.ToLower())
             .ToListAsync();
     }
 

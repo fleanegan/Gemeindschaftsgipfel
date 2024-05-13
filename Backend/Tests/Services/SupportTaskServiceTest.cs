@@ -164,6 +164,23 @@ public class SupportTaskServiceTest
     }
 
     [Fact]
+    public async Task Test_resignFromSupportTask_GIVEN_existing_SupportTask_id_AND_different_UserName_casing_THEN_remove_SupportPromise()
+    {
+        const string loggedInUserNameDuringCommitment = "Fake User";
+        const string loggedInUserNameDuringResignment = "fAKE User";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new SupportTaskRepository(dbContext);
+        ISupportTaskService service = await GetService(dbContext, [loggedInUserNameDuringCommitment], repository);
+        var supportTaskId = await GivenAddedSupportTask(service);
+        await service.CommitToSupportTask(supportTaskId, loggedInUserNameDuringCommitment);
+
+        await service.ResignFromSupportTask(supportTaskId, loggedInUserNameDuringResignment);
+
+        var supportTasks = (await repository.FetchAll()).ToArray();
+        Assert.Equal(0, supportTasks.First().SupportPromises.Count);
+    }
+
+    [Fact]
     public async Task Test_resignFromSupportTask_GIVEN_existing_SupportTask_id_THEN_remove_SupportPromise()
     {
         const string loggedInUserName = "Fake User";

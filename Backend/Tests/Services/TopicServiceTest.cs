@@ -162,6 +162,24 @@ public class TopicServiceTest
 
     [Fact]
     public async void
+        Test_fetchAllExceptLoggedIn_GIVEN_topic_logged_in_with_different_case_THEN_do_not_show_as_foreign()
+    {
+        var nameDuringCreation = "loggedInUserName";
+        var nameDuringRetrieval = "LOGGEDINUSERNAME";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [nameDuringCreation], repository);
+        var ownTopic  = new TopicCreationDto("first title", 5, "first description");
+        await service.AddTopic(ownTopic, nameDuringCreation);
+
+        var result = await service.FetchAllExceptLoggedIn(nameDuringRetrieval);
+
+        var collection = result as Topic[] ?? result.ToArray();
+        Assert.Empty(collection);
+    }
+
+    [Fact]
+    public async void
         Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_two_different_users_THEN_return_only_those_by_other_user()
     {
         var loggedInUserName = "loggedInUserName";
@@ -230,6 +248,30 @@ public class TopicServiceTest
         await service.AddTopic(secondTopicContent, loggedInUserName);
 
         var result = await service.FetchAllOfLoggedIn(loggedInUserName);
+
+        var collection = result as Topic[] ?? result.ToArray();
+        Assert.Single(collection);
+        Assert.DoesNotContain(collection,
+            topic => topic.Title == firstTopicContent.Title && topic.Description == firstTopicContent.Description);
+        Assert.Contains(collection,
+            topic => topic.Title == secondTopicContent.Title && topic.Description == secondTopicContent.Description);
+    }
+
+    [Fact]
+    public async void
+        Test_fetchAllOfLoggedIn_GIVEN_case_difference_two_topics_by_two_different_users_THEN_return_only_those_by_current_user()
+    {
+        var loggedInUserName = "loggedInUserName";
+        var otherUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserName, otherUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
+        await service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", 5, "second description");
+        await service.AddTopic(secondTopicContent, loggedInUserName);
+
+        var result = await service.FetchAllOfLoggedIn(loggedInUserName.ToUpper());
 
         var collection = result as Topic[] ?? result.ToArray();
         Assert.Single(collection);
@@ -379,6 +421,25 @@ public class TopicServiceTest
         await service.AddTopicVote(topic.Id, loggedInUserName);
 
         await service.RemoveTopicVote(topic.Id, loggedInUserName);
+
+        var result = await repository.FetchBy(topic.Id);
+        Assert.Empty(result!.Votes.ToArray());
+    }
+
+    [Fact]
+    public async void Test_removing_vote_GIVEN_an_existing_vote_with_another_case_THEN_remove_voter_from_topic()
+    {
+        const string loggedInUserNameForVoteCreation = "loggedInUserName";
+        const string loggedInUserNameForVoteRemoval = "LOGGEDINUSERNAME";
+        const string creatorUserName = "otherUserName";
+        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var repository = new TopicRepository(dbContext);
+        var service = await GetService(dbContext, [loggedInUserNameForVoteCreation, creatorUserName], repository);
+        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
+        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+        await service.AddTopicVote(topic.Id, loggedInUserNameForVoteCreation);
+
+        await service.RemoveTopicVote(topic.Id, loggedInUserNameForVoteRemoval);
 
         var result = await repository.FetchBy(topic.Id);
         Assert.Empty(result!.Votes.ToArray());
