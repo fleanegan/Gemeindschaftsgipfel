@@ -1,4 +1,5 @@
 <template>
+  <global-loading/>
   <header :class="{'nav_header': true, 'nav_header_sticky': isSticky && isStandardPage}">
     <nav class="nav-links">
       <router-link v-if="isStandardPage" class="router-link" to="/"><img alt="Home" src="/icon.svg"
