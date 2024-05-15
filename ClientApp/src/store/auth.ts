@@ -10,12 +10,10 @@ export const useAuthStore = defineStore({
         login(token: string, userName: string) {
             this.token = token;
             this.userName = userName;
-	    this.content = 'after login'
         },
         logout() {
             this.token = null;
             this.userName = null;
-	    this.content = 'before login'
         },
     },
 });

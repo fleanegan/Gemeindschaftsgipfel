@@ -20,7 +20,7 @@ axios.interceptors.request.use(
         return config;
     },
     (error) => {
-	useDataStore.stopLoading();
+	useDataStore().stopLoading();
         return Promise.reject(error);
     }
 );
