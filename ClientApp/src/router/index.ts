@@ -29,6 +29,11 @@ const router = createRouter({
             component: () => import('../views/TopicView.vue'),
         },
         {
+            path: '/schedule',
+            name: 'Ablaufplan',
+            component: () => import('../views/ScheduleView.vue'),
+        },
+        {
             path: '/supporttask',
             name: 'HelfendeHaende',
             component: () => import('../views/SupportTaskView.vue'),
