@@ -44,7 +44,7 @@ internal abstract class TestHelper
         return options;
     }
 
-    public static StringContent encodeBody(object value, string? jwtAuthToken = null)
+    public static StringContent EncodeBody(object value, string? jwtAuthToken = null)
     {
         var jsonContent = new StringContent(
             JsonSerializer.Serialize(value),
@@ -85,14 +85,14 @@ internal abstract class TestHelper
     {
         var userManager = new Mock<UserManager<User>>(
             userStore ?? Mock.Of<IUserStore<User>>(), // Pass a mock of IUserStore<User>
-            null, // Pass a null IConfiguration
-            null, // Pass a null IPasswordHasher<User>
-            null, // Pass a null IEnumerable<IUserValidator<User>>
-            null, // Pass a null IEnumerable<IPasswordValidator<User>>
-            null, // Pass a null ILookupNormalizer
-            null, // Pass a null IdentityErrorDescriber
-            null, // Pass a null IServiceProvider
-            null // Pass a null ILogger<UserManager<User>>
+            null!, // Pass a null IConfiguration
+            null!, // Pass a null IPasswordHasher<User>
+            null!, // Pass a null IEnumerable<IUserValidator<User>>
+            null!, // Pass a null IEnumerable<IPasswordValidator<User>>
+            null!, // Pass a null ILookupNormalizer
+            null!, // Pass a null IdentityErrorDescriber
+            null!, // Pass a null IServiceProvider
+            null! // Pass a null ILogger<UserManager<User>>
         );
         userManager.Setup(c => c.CreateAsync(It.IsAny<User>())).ReturnsAsync(() => IdentityResult.Success);
         userManager.Setup(c => c.FindByNameAsync("FakeAuthUser")).Returns(() => Task.FromResult(new User
@@ -111,7 +111,7 @@ internal abstract class TestHelper
     public static Mock<PasswordHasher<User>> GetMockPasswordHasher()
     {
         // new PasswordHasher<User>()
-        var passwordHasher = new Mock<PasswordHasher<User>>(null);
+        var passwordHasher = new Mock<PasswordHasher<User>>(null!);
         passwordHasher.Setup(c => c.VerifyHashedPassword(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(PasswordVerificationResult.Success);
         return passwordHasher;

@@ -78,7 +78,7 @@ public class AuthServiceTest
         var service = new AuthService(userManager, new PasswordHasher<User>(),
             TestHelper.GetJwtGenerationService().Object, _logger.Object);
         var userInput = new SignupDto("", _defaultPassword,
-            Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET"));
+            Environment.GetEnvironmentVariable("USER_CREATION_ENTRY_SECRET")!);
 
         var result = await service.SignUp(userInput);
 

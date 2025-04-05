@@ -30,7 +30,7 @@ public class SupportTaskServiceTest
     }
     
     [Fact]
-    public async void Test_add_GIVEN_correct_input_THEN_store_in_db()
+    public async Task Test_add_GIVEN_correct_input_THEN_store_in_db()
     {
         var loggedInUserName = Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!;
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -67,7 +67,7 @@ public class SupportTaskServiceTest
     }
 
     [Fact]
-    public async void Test_modify_GIVEN_correct_input_THEN_store_in_db()
+    public async Task Test_modify_GIVEN_correct_input_THEN_store_in_db()
     {
         var loggedInUserName = Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!;
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -117,10 +117,10 @@ public class SupportTaskServiceTest
         await service.CommitToSupportTask(supportTaskId, loggedInUserName);
 
         var supportTasks = (await repository.FetchAll()).ToArray();
-        Assert.Equal(1, supportTasks.First().SupportPromises.Count);
+        Assert.Single(supportTasks.First().SupportPromises);
         var supportPromises = supportTasks.First().SupportPromises;
         Assert.Single(supportPromises);
-        Assert.Equal(supportPromises.First().Supporter.UserName, loggedInUserName);
+        Assert.Equal(loggedInUserName, supportPromises.First().Supporter.UserName);
         Assert.Equal(supportPromises.First().SupportTask.Id, supportTaskId);
     }
 
@@ -142,7 +142,7 @@ public class SupportTaskServiceTest
 
         await Assert.ThrowsAsync<SupportPromiseImpossibleException>(Action);
         var supportTasks = (await repository.FetchAll()).ToArray();
-        Assert.Equal(1, supportTasks.First().SupportPromises.Count);
+        Assert.Single(supportTasks.First().SupportPromises);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class SupportTaskServiceTest
         await service.ResignFromSupportTask(supportTaskId, loggedInUserNameDuringResignment);
 
         var supportTasks = (await repository.FetchAll()).ToArray();
-        Assert.Equal(0, supportTasks.First().SupportPromises.Count);
+        Assert.Empty(supportTasks.First().SupportPromises);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class SupportTaskServiceTest
         await service.ResignFromSupportTask(supportTaskId, loggedInUserName);
 
         var supportTasks = (await repository.FetchAll()).ToArray();
-        Assert.Equal(0, supportTasks.First().SupportPromises.Count);
+        Assert.Empty(supportTasks.First().SupportPromises);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class SupportTaskServiceTest
 
         await Assert.ThrowsAsync<SupportPromiseImpossibleException>(Action);
         var supportTasks = (await repository.FetchAll()).ToArray();
-        Assert.Equal(0, supportTasks.First().SupportPromises.Count);
+        Assert.Empty(supportTasks.First().SupportPromises);
     }
 
     [Fact]
@@ -235,19 +235,19 @@ public class SupportTaskServiceTest
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new SupportTaskRepository(dbContext);
         ISupportTaskService service = await GetService(dbContext, [loggedInUserName], repository);
-        var firstSupportTaskId = await GivenAddedSupportTask(service);
-        var secondSupportTaskId = await GivenAddedSupportTask(service);
+        await GivenAddedSupportTask(service);
+        await GivenAddedSupportTask(service);
 
         var result = (await service.GetAll()).ToArray();
 
         Assert.Equal(2, result.Length);
     }
 
-    private async Task<string> GivenAddedSupportTask(ISupportTaskService service)
+    private static async Task<string> GivenAddedSupportTask(ISupportTaskService service)
     {
         var dummyadmin = Environment.GetEnvironmentVariable("ADMIN_USER_NAME");
         var createdSupportTask =
-            await service.AddTask(new SupportTaskCreationDto("title", "description", "duration", 55), dummyadmin);
+            await service.AddTask(new SupportTaskCreationDto("title", "description", "duration", 55), dummyadmin!);
         return createdSupportTask.Id;
     }
     

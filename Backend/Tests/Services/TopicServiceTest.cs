@@ -15,7 +15,8 @@ public class TopicServiceTest
     [InlineData("Correct title", 5, "")]
     [InlineData("Correct title", 5, null)]
     [InlineData("Correct title", 5, "Non empty but also correct title")]
-    public async void Test_add_GIVEN_correct_input_THEN_store_in_db(string title, int presentationTimeInMinutes, string? description)
+    public async Task Test_add_GIVEN_correct_input_THEN_store_in_db(string title, int presentationTimeInMinutes,
+        string? description)
     {
         const string loggedInUserName = "Fake User";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -67,7 +68,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_update_GIVEN_non_existing_id_THEN_throw_exception()
+    public async Task Test_update_GIVEN_non_existing_id_THEN_throw_exception()
     {
         const string loggedInUserName = "Fake User";
         var nonExistingId = "the original topic does not exist";
@@ -85,14 +86,14 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_update_GIVEN_UserName_different_from_creator_THEN_throw_exception()
+    public async Task Test_update_GIVEN_UserName_different_from_creator_THEN_throw_exception()
     {
         const string loggedInUserName = "Fake User";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new TopicRepository(dbContext);
         ITopicService service = await GetService(dbContext, [loggedInUserName], repository);
         var originalTopic = await service.AddTopic(new TopicCreationDto("original title", 5, ""), "anotherUserName");
-        var updatedTopic = new TopicUpdateDto(originalTopic!.Id, "updated title", 5, "updated description");
+        var updatedTopic = new TopicUpdateDto(originalTopic.Id, "updated title", 5, "updated description");
 
         async Task Action()
         {
@@ -107,10 +108,10 @@ public class TopicServiceTest
     [InlineData("Correct title", "")]
     [InlineData("Correct title", null)]
     [InlineData("Correct title", "Non empty but also correct title")]
-    public async void Test_update_GIVEN_authorized_user_and_existing_topic_WHEN_passing_with_new_values_THEN_update(
-        string newTitle, string newDescription)
+    public async Task Test_update_GIVEN_authorized_user_and_existing_topic_WHEN_passing_with_new_values_THEN_update(
+        string newTitle, string? newDescription)
     {
-	int newPresentationTimeInMinutes = 3;
+        int newPresentationTimeInMinutes = 3;
         const string loggedInUserName = "Fake User";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new TopicRepository(dbContext);
@@ -126,7 +127,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_fetchAllExceptLoggedIn_GIVEN_zero_topics_THEN_return_empty()
+    public async Task Test_fetchAllExceptLoggedIn_GIVEN_zero_topics_THEN_return_empty()
     {
         var loggedInUserName = "loggedInUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -139,7 +140,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_them_all()
+    public async Task Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_them_all()
     {
         var otherUserName = "otherUserName";
         var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
@@ -161,7 +162,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void
+    public async Task
         Test_fetchAllExceptLoggedIn_GIVEN_topic_logged_in_with_different_case_THEN_do_not_show_as_foreign()
     {
         var nameDuringCreation = "loggedInUserName";
@@ -169,7 +170,7 @@ public class TopicServiceTest
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var repository = new TopicRepository(dbContext);
         var service = await GetService(dbContext, [nameDuringCreation], repository);
-        var ownTopic  = new TopicCreationDto("first title", 5, "first description");
+        var ownTopic = new TopicCreationDto("first title", 5, "first description");
         await service.AddTopic(ownTopic, nameDuringCreation);
 
         var result = await service.FetchAllExceptLoggedIn(nameDuringRetrieval);
@@ -179,7 +180,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void
+    public async Task
         Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_two_different_users_THEN_return_only_those_by_other_user()
     {
         var loggedInUserName = "loggedInUserName";
@@ -203,7 +204,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_fetchAllOfLoggedIn_GIVEN_zero_topics_THEN_return_empty()
+    public async Task Test_fetchAllOfLoggedIn_GIVEN_zero_topics_THEN_return_empty()
     {
         var loggedInUserName = "loggedInUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -216,7 +217,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_fetchAllOfLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_empty()
+    public async Task Test_fetchAllOfLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_empty()
     {
         var otherUserName = "otherUserName";
         var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
@@ -234,7 +235,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void
+    public async Task
         Test_fetchAllOfLoggedIn_GIVEN_two_topics_by_two_different_users_THEN_return_only_those_by_current_user()
     {
         var loggedInUserName = "loggedInUserName";
@@ -258,7 +259,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void
+    public async Task
         Test_fetchAllOfLoggedIn_GIVEN_case_difference_two_topics_by_two_different_users_THEN_return_only_those_by_current_user()
     {
         var loggedInUserName = "loggedInUserName";
@@ -282,7 +283,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_removing_topic_GIVEN_non_existing_topic_THEN_throw_error()
+    public async Task Test_removing_topic_GIVEN_non_existing_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
         const string nonExistingId = "nonExistingId";
@@ -299,7 +300,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_removing_topic_GIVEN_someone_else_s_topic_THEN_throw_error()
+    public async Task Test_removing_topic_GIVEN_someone_else_s_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "creatorUserName";
@@ -319,7 +320,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_removing_topic_GIVEN_one_s_own_topic_THEN_remove_topic()
+    public async Task Test_removing_topic_GIVEN_one_s_own_topic_THEN_remove_topic()
     {
         const string loggedInUserName = "loggedInUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -334,7 +335,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_adding_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
+    public async Task Test_adding_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -352,7 +353,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_adding_vote_GIVEN_an_existing_topic_and_two_users_THEN_add_voter_to_topic()
+    public async Task Test_adding_vote_GIVEN_an_existing_topic_and_two_users_THEN_add_voter_to_topic()
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
@@ -369,7 +370,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_adding_vote_GIVEN_voting_twice_with_same_user_THEN_add_voter_to_topic_once()
+    public async Task Test_adding_vote_GIVEN_voting_twice_with_same_user_THEN_add_voter_to_topic_once()
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
@@ -388,11 +389,11 @@ public class TopicServiceTest
 
         await Assert.ThrowsAsync<VoteImpossibleException>(Action);
         var result = await repository.FetchBy(topic.Id);
-        Assert.Equal(1, result!.Votes.Count);
+        Assert.Single(result!.Votes);
     }
 
     [Fact]
-    public async void Test_removing_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
+    public async Task Test_removing_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
@@ -409,7 +410,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_removing_vote_GIVEN_an_existing_vote_THEN_remove_voter_from_topic()
+    public async Task Test_removing_vote_GIVEN_an_existing_vote_THEN_remove_voter_from_topic()
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
@@ -427,7 +428,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_removing_vote_GIVEN_an_existing_vote_with_another_case_THEN_remove_voter_from_topic()
+    public async Task Test_removing_vote_GIVEN_an_existing_vote_with_another_case_THEN_remove_voter_from_topic()
     {
         const string loggedInUserNameForVoteCreation = "loggedInUserName";
         const string loggedInUserNameForVoteRemoval = "LOGGEDINUSERNAME";
@@ -446,7 +447,7 @@ public class TopicServiceTest
     }
 
     [Fact]
-    public async void Test_removing_vote_GIVEN_removing_twice_with_same_user_THEN_do_nothing()
+    public async Task Test_removing_vote_GIVEN_removing_twice_with_same_user_THEN_do_nothing()
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
@@ -459,7 +460,7 @@ public class TopicServiceTest
         await service.RemoveTopicVote(topic.Id, loggedInUserName);
 
         var result = await repository.FetchBy(topic.Id);
-        Assert.Equal(0, result!.Votes.Count);
+        Assert.Empty(result!.Votes);
     }
 
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,

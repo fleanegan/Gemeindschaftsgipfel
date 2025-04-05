@@ -83,7 +83,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithoutAuthorization.CreateClient();
         var userInput = new SupportTaskCreationDto("title", "description", "from x to y", 53);
 
-        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -95,7 +95,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithoutAuthorization.CreateClient();
         var userInput = new SupportTaskCreationDto("title", "description", "from x to y", 53);
 
-        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -110,7 +110,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
             RequiredSupporters = "This must be an int"
         };
 
-        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         _mockSupportTaskService.Verify(c =>
@@ -123,7 +123,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithAuthorization.CreateClient();
         var userInput = new SupportTaskCreationDto("title", "description", "from x to y", 53);
 
-        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/AddNew", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockSupportTaskService.Verify(c =>
@@ -136,7 +136,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithoutAuthorization.CreateClient();
         var userInput = new SupportPromiseDto(HappyPathDummyId);
 
-        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         _mockSupportTaskService.Verify(c => c.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -149,7 +149,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithAuthorization.CreateClient();
         var userInput = new SupportPromiseDto(ConflictingDummyId);
 
-        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         _mockSupportTaskService.Verify(
@@ -164,7 +164,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithAuthorization.CreateClient();
         var userInput = new SupportPromiseDto(NonExistingDummyId);
 
-        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         _mockSupportTaskService.Verify(
@@ -179,7 +179,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithAuthorization.CreateClient();
         var userInput = new { SupportTaskId = 123 };
 
-        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         _mockSupportTaskService.Verify(c => c.CommitToSupportTask(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -192,7 +192,7 @@ public class SupportTaskControllerTest : IClassFixture<WebApplicationFactory<Pro
         var client = _factoryWithAuthorization.CreateClient();
         var userInput = new { SupportTaskId = HappyPathDummyId };
 
-        var response = await client.PostAsync("/SupportTask/help", TestHelper.encodeBody(userInput));
+        var response = await client.PostAsync("/SupportTask/help", TestHelper.EncodeBody(userInput));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockSupportTaskService.Verify(

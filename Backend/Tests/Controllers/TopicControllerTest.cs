@@ -21,9 +21,9 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
     private readonly IEnumerable<Topic> _demoTopics =
     [
-        new Topic("description", "title",
+        new("description", "title",
             new User { UserName = AutoAuthorizeMiddleware.UserName },
-            [new Vote(Topic.Create("asdf", 5, "asdf", new User()), new User())])
+            [new Vote(Topic.Create("asdf", 5, "asdf", new User()), new User {UserName = "demo voter"})])
     ];
 
     private readonly WebApplicationFactory<Program> _factoryWithAuthorization;
@@ -148,7 +148,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             Description = "Correct description"
         };
 
-        var response = await client.PostAsync("/topic/AddNew", TestHelper.encodeBody(newTopic));
+        var response = await client.PostAsync("/topic/AddNew", TestHelper.EncodeBody(newTopic));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -157,7 +157,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     public async Task Test_add_GIVEN_wrong_data_type_WHEN_posting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var jsonContent = TestHelper.encodeBody(new { });
+        var jsonContent = TestHelper.EncodeBody(new { });
 
         var response = await client.PostAsync("/topic/AddNew", jsonContent);
 
@@ -176,7 +176,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             Description = "Correct description"
         };
 
-        var response = await client.PostAsync("/topic/AddNew", TestHelper.encodeBody(newTopic));
+        var response = await client.PostAsync("/topic/AddNew", TestHelper.EncodeBody(newTopic));
 
         var responseContent = await response.Content.ReadAsStringAsync();
         var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
@@ -239,7 +239,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             Description = "Correct description"
         };
 
-        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+        var response = await client.PutAsync("/topic/Update", TestHelper.EncodeBody(updatedTopic));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -248,9 +248,9 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     public async Task Test_update_GIVEN_wrong_data_type_WHEN_putting_THEN_return_error_response()
     {
         var client = _factoryWithAuthorization.CreateClient();
-        var updatedTopic = TestHelper.encodeBody(new { });
+        var updatedTopic = TestHelper.EncodeBody(new { });
 
-        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+        var response = await client.PutAsync("/topic/Update", TestHelper.EncodeBody(updatedTopic));
 
         var errorDescription = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -270,7 +270,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             Description = "Correct description"
         };
 
-        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+        var response = await client.PutAsync("/topic/Update", TestHelper.EncodeBody(updatedTopic));
 
         var errorDescription = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -289,7 +289,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             Description = "Correct description"
         };
 
-        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(updatedTopic));
+        var response = await client.PutAsync("/topic/Update", TestHelper.EncodeBody(updatedTopic));
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -305,7 +305,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             "Correct description"
         );
 
-        var response = await client.PutAsync("/topic/Update", TestHelper.encodeBody(payload));
+        var response = await client.PutAsync("/topic/Update", TestHelper.EncodeBody(payload));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(
@@ -329,10 +329,10 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
 
         var response = await client.GetAsync("/topic/allExceptLoggedIn");
 
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var dictionary =
             JsonSerializer.Deserialize<List<Dictionary<string, object>>>(await response.Content.ReadAsStringAsync());
         Assert.NotNull(dictionary);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService!.Verify(c => c.FetchAllExceptLoggedIn(AutoAuthorizeMiddleware.UserName), Times.Once);
         Assert.Contains("description", dictionary[0]["description"].ToString());
         Assert.Equal(_demoTopics.First().PresentationTimeInMinutes, Convert.ToInt32(dictionary[0]["presentationTimeInMinutes"].ToString()));
@@ -418,7 +418,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var client = _factoryWithoutAuthorization.CreateClient();
         var voteBody = new TopicVoteDto("some id");
 
-        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+        var response = await client.PostAsync("/topic/addVote", TestHelper.EncodeBody(voteBody));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -429,7 +429,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var client = _factoryWithAuthorization.CreateClient();
         var voteBody = new { Manamana = "dip di bidibi" };
 
-        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+        var response = await client.PostAsync("/topic/addVote", TestHelper.EncodeBody(voteBody));
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         _mockTopicService!.Verify(c => c.AddTopicVote(It.IsAny<string>(), It.IsAny<string>()),
@@ -442,7 +442,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var client = _factoryWithAuthorization.CreateClient();
         var voteBody = new TopicVoteDto(NonExistingDummyId);
 
-        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+        var response = await client.PostAsync("/topic/addVote", TestHelper.EncodeBody(voteBody));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         _mockTopicService!.Verify(c => c.AddTopicVote(NonExistingDummyId, AutoAuthorizeMiddleware.UserName),
@@ -456,7 +456,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var client = _factoryWithAuthorization.CreateClient();
         var voteBody = new TopicVoteDto(ConflictingDummyId);
 
-        var response = await client.PostAsync("/topic/addVote", TestHelper.encodeBody(voteBody));
+        var response = await client.PostAsync("/topic/addVote", TestHelper.EncodeBody(voteBody));
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         _mockTopicService!.Verify(c => c.AddTopicVote(ConflictingDummyId, AutoAuthorizeMiddleware.UserName),
