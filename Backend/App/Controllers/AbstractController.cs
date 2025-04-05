@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gemeinschaftsgipfel.Controllers.Helpers;
+namespace Gemeinschaftsgipfel.Controllers;
 
 public abstract class AbstractController : Controller
 {
