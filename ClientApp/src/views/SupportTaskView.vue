@@ -1,10 +1,15 @@
 <template>
   <div class="topic">
     <h1>Helfende Hände</h1>
-    <p class="descriptiona">Freiwillige vor! Wir haben ein paar Aufgaben gesammelt, bei denen wir Hilfe brauchen. Mach mit und schaff die letzten Hürden auf dem Weg zum Gemeinschaftsgipfel aus dem Weg. Keine Scheu, hier steht das Vergnügen proportional zum Schweiß : Jeder Dienst wird in Dreiergruppen gestaltet, damit du auch bei diesem Teil des Festivals immer von netten Menschen umgeben bist. Zur vergeben sind (oh ja, du darfst dich auch mehrmals eintragen):</p>
+    <p class="support_description">Freiwillige vor! Wir haben ein paar Aufgaben gesammelt, bei denen wir Hilfe brauchen.
+      Mach
+      mit und schaff die letzten Hürden auf dem Weg zum Gemeinschaftsgipfel aus dem Weg. Keine Scheu, hier steht das
+      Vergnügen proportional zum Schweiß : Jeder Dienst wird in Dreiergruppen gestaltet, damit du auch bei diesem Teil
+      des Festivals immer von netten Menschen umgeben bist. Zur vergeben sind (oh ja, du darfst dich auch mehrmals
+      eintragen):</p>
     <ul class="list">
-      <li v-for="(item, index) in supportTasks" class="card_scroll_container">
-        <div :class="{card_success: item.supporterUserNames.length === item.requiredSupporters}" class="card">
+      <li v-for="(item, index) in supportTasks" :key="index" class="card_scroll_container">
+        <div class="card">
           <div class="card_content">
             <h3 class="support_task_header">{{ item.title }}</h3>
             <p class="">{{ item.description }}</p>
@@ -23,18 +28,23 @@
             </div>
             <div class="card_action_button_container">
               <div @mouseenter="item.showSupporter=true" @mouseleave="item.showSupporter=false">
-                <img src="/helper.svg" alt="helper">
+                <div v-if="isUserSubscribed(item)" style="display: flex; flex-direction: row;">
+                  <img src="/helper_filled.svg" alt="helper">
+                </div>
+                <img v-else src="/helper.svg" alt="helper">
               </div>
               <div class="card_action_helper_list" v-if="item.showSupporter">
                 <p>Wir helfen schon:</p>
-                  <div v-for="supporter in item.supporterUserNames" :key="supporter">
-                    <p style="margin-left: 0.5rem; font-size: 0.75rem">{{supporter}}</p>
-                  </div>
+                <div v-for="supporter in item.supporterUserNames" :key="supporter">
+                  <p style="margin-left: 0.5rem; font-size: 0.75rem">{{ supporter }}</p>
+                </div>
               </div>
+              <p v-if="isUserSubscribed(item) && !item.showSupporter" class="card_action_helper_list">Ich habe mich
+                eingetragen</p>
               <button
-                  :class="{card_action_button: true, card_action_button_active: item.supporterUserNames.includes(userName!), card_action_button_inactive: !item.supporterUserNames.includes(userName!)}"
+                  :class="{card_action_button: true, card_action_button_active: isUserSubscribed(item), card_action_button_inactive: !isUserSubscribed(item)}"
                   @click="toggleSupporting(index)">
-                {{ item.supporterUserNames.includes(userName!) ? "Austragen" : "Eintragen" }}
+                {{ isUserSubscribed(item) ? "Austragen" : "Eintragen" }}
               </button>
             </div>
           </div>
@@ -71,12 +81,12 @@ export default defineComponent({
   methods: {
     useAuthStore,
     async fetchData() {
-      this.supportTasks = (await axios.get('/api/supporttask/getall', {})).data.sort(function(a: SupportTask, b: SupportTask){
-	if (a.duration > b.duration)
-	  return 1;
-	if (a.duration < b.duration)
-	  return -1;
-	return 0;
+      this.supportTasks = (await axios.get('/api/supporttask/getall', {})).data.sort(function (a: SupportTask, b: SupportTask) {
+        if (a.duration > b.duration)
+          return 1;
+        if (a.duration < b.duration)
+          return -1;
+        return 0;
       });
     },
     async toggleSupporting(index: number): Promise<void> {
@@ -112,8 +122,10 @@ export default defineComponent({
     },
     handleScroll: function () {
       this.isSticky = window.scrollY > 750;
+    },
+    isUserSubscribed(item: SupportTask): boolean {
+      return item.supporterUserNames.includes(this.userName!);
     }
-    ,
   },
   computed: {
     userName() {
@@ -144,9 +156,6 @@ export default defineComponent({
   border: 0.1rem solid rgba(179, 76, 76, 0.1);
 }
 
-.card_success {
-}
-
 .card_content {
   display: flex;
   flex-direction: column;
@@ -156,6 +165,7 @@ export default defineComponent({
   flex-basis: 75%;
   width: 100%;
   justify-content: space-between;
+  position: relative;
 }
 
 .card_action_container {
@@ -178,7 +188,9 @@ export default defineComponent({
 
 .card_action_helper_list {
   position: relative;
-  margin: 1rem;
+  margin-left: 0.4rem;
+  padding-top: .2rem;
+  font-size: small;
 }
 
 .card_action_button {
@@ -249,7 +261,7 @@ export default defineComponent({
   margin-right: 0.5rem;
 }
 
-.descriptiona {
+.support_description {
   margin: 1rem;
   margin-right: 2rem;
   margin-bottom: 5rem;

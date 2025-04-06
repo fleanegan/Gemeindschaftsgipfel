@@ -58,26 +58,28 @@ export default defineComponent({
         <div class="key_information_detail">
           <img alt="fee" class="key_information_detail_image" src="/helper_white.svg">
           <table>
-            <tr>
-              <td>Beitrag</td>
-              <td>{{ data.key_information_detail_fee_amount}}</td>
-            </tr>
-            <tr>
-              <td>IBAN:</td>
-              <td>{{ data.key_information_detail_fee_iban }}</td>
-            </tr>
-            <tr>
-              <td>Empfänger:</td>
-              <td>{{ data.key_information_detail_fee_receiver }}</td>
-            </tr>
-            <tr>
-              <td>Zweck</td>
-              <td>{{ data.key_information_detail_fee_reason }}</td>
-            </tr>
-            <tr>
-              <td>Frist</td>
-              <td>{{ data.key_information_detail_fee_deadline }}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>Beitrag</td>
+                <td>{{ data.key_information_detail_fee_amount }}</td>
+              </tr>
+              <tr>
+                <td>IBAN:</td>
+                <td>{{ data.key_information_detail_fee_iban }}</td>
+              </tr>
+              <tr>
+                <td>Empfänger:</td>
+                <td>{{ data.key_information_detail_fee_receiver }}</td>
+              </tr>
+              <tr>
+                <td>Zweck</td>
+                <td>{{ data.key_information_detail_fee_reason }}</td>
+              </tr>
+              <tr>
+                <td>Frist</td>
+                <td>{{ data.key_information_detail_fee_deadline }}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
