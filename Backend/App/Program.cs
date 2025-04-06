@@ -24,6 +24,11 @@ Log.Logger = new LoggerConfiguration()
         .WriteTo.File("log/log_inregister.txt", rollingInterval: RollingInterval.Day)
         .MinimumLevel.Information()
     )
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(evt => evt.MessageTemplate.Text.Contains("AUTH_FAILURE"))
+        .WriteTo.File("log/auth_failures.txt", rollingInterval: RollingInterval.Day)
+        .MinimumLevel.Warning()
+    )
     .CreateLogger();
 builder.Services.AddLogging(loggingBuilder =>
 {
@@ -38,7 +43,8 @@ builder.Services.AddHttpLogging(options =>
     options.CombineLogs = true;
 });
 // todo: make sure that .env is the only configuration source. Needs to set the configuration provider for builder but don't know how to do that right know
-var parentFullName = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName ?? Directory.GetCurrentDirectory();
+var parentFullName = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.FullName ??
+                     Directory.GetCurrentDirectory();
 var envFilePath = Path.Combine(
     parentFullName!, ".env");
 DotEnv.Load(envFilePath);
@@ -80,6 +86,36 @@ builder.Services.AddAuthentication(opt =>
             IssuerSigningKey =
                 new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ENCRYPTION_KEY_JWT_PRIVATE")!))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                if (context.Exception is SecurityTokenExpiredException)
+                {
+                    logger.LogWarning("AUTH_FAILURE: Expired token for {Path}. Token expired at {ExpiredTime}",
+                        context.Request.Path,
+                        ((SecurityTokenExpiredException)context.Exception).Expires);
+                }
+                else
+                {
+                    logger.LogWarning("AUTH_FAILURE: Invalid token for {Path}. Error: {ErrorMessage}",
+                        context.Request.Path,
+                        context.Exception.Message);
+                }
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    logger.LogWarning("AUTH_FAILURE: No token provided for {Path}", context.Request.Path);
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 builder.Services.AddControllers();
@@ -132,9 +168,7 @@ app.UseForwardedHeaders();
 app.UseHttpLogging();
 if (!app.Environment.IsDevelopment())
 {
-    // Configure the HTTP request pipeline.
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

@@ -25,7 +25,7 @@ public class JwtGenerationService
             Environment.GetEnvironmentVariable("SERVER_PORT"),
             productionAudience,
             claims,
-            expires: DateTime.Now.AddMinutes(5),
+            expires: DateTime.Now.AddMinutes(60),
             signingCredentials: signinCredentials
         );
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
