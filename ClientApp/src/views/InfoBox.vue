@@ -61,7 +61,7 @@ export default defineComponent({
           <table>
             <tbody>
             <tr>
-              <td>Beitrag</td>
+              <td>Beitrag:</td>
               <td>{{ data.key_information_detail_fee_amount }}</td>
             </tr>
             <tr>
@@ -69,7 +69,7 @@ export default defineComponent({
               <td>{{ data.key_information_detail_fee_iban }}</td>
             </tr>
             <tr>
-              <td>Empfänger:</td>
+              <td>An:</td>
               <td>{{ data.key_information_detail_fee_receiver }}</td>
             </tr>
             <tr>
@@ -131,7 +131,7 @@ export default defineComponent({
 table {
   border-collapse: collapse;
   width: 100%;
-  margin-right: 2rem;
+  text-align: left;
   margin-left: -0.5rem;
 }
 
@@ -143,7 +143,7 @@ th, td {
 
 
 th:first-child, td:first-child {
-  width: 70%;
+  width: 10%;
 }
 
 .info_tile {
@@ -163,7 +163,7 @@ th:first-child, td:first-child {
   position: relative;
   margin-bottom: auto;
   margin-top: auto;
-  width: 25rem;
+  width: 27rem;
   min-width: 350px;
 }
 
