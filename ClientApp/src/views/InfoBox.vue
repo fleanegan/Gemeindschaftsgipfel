@@ -34,11 +34,12 @@ export default defineComponent({
         <path
             :style="{'stroke-dashoffset': borderProgress}"
             class="path"
-            d="M 30,30 L 30,170 L 170,170 L 170,30 L 30, 30"
+            d="M30,30 L30,170 L170,170 L170,30 Z"
             fill="none"
-            pathLength="1"
+            pathLength="0.3"
             stroke="white"
-            stroke-width="2"
+            stroke-width="5"
+            vector-effect="non-scaling-stroke"
         />
       </svg>
       <div class="key_information">
@@ -59,26 +60,26 @@ export default defineComponent({
           <img alt="fee" class="key_information_detail_image" src="/helper_white.svg">
           <table>
             <tbody>
-              <tr>
-                <td>Beitrag</td>
-                <td>{{ data.key_information_detail_fee_amount }}</td>
-              </tr>
-              <tr>
-                <td>IBAN:</td>
-                <td>{{ data.key_information_detail_fee_iban }}</td>
-              </tr>
-              <tr>
-                <td>Empfänger:</td>
-                <td>{{ data.key_information_detail_fee_receiver }}</td>
-              </tr>
-              <tr>
-                <td>Zweck</td>
-                <td>{{ data.key_information_detail_fee_reason }}</td>
-              </tr>
-              <tr>
-                <td>Frist</td>
-                <td>{{ data.key_information_detail_fee_deadline }}</td>
-              </tr>
+            <tr>
+              <td>Beitrag</td>
+              <td>{{ data.key_information_detail_fee_amount }}</td>
+            </tr>
+            <tr>
+              <td>IBAN:</td>
+              <td>{{ data.key_information_detail_fee_iban }}</td>
+            </tr>
+            <tr>
+              <td>Empfänger:</td>
+              <td>{{ data.key_information_detail_fee_receiver }}</td>
+            </tr>
+            <tr>
+              <td>Zweck</td>
+              <td>{{ data.key_information_detail_fee_reason }}</td>
+            </tr>
+            <tr>
+              <td>Frist</td>
+              <td>{{ data.key_information_detail_fee_deadline }}</td>
+            </tr>
             </tbody>
           </table>
         </div>
