@@ -1,29 +1,45 @@
 <!-- GlobalLoading.vue -->
 <template>
-  <div v-if="isLoading" class="global-loading-overlay">
-<img alt="arrow" class="animate_scroll_down_motivator" src="/loading.webp" style="width: 40%; max-width:350px;">
-<h1 style='padding:1.25rem;'>Loading...</h1>
+  <div v-if="showLoading" class="global-loading-overlay">
+    <img alt="arrow" class="animate_scroll_down_motivator" src="/loading.webp" style="width: 40%; max-width:350px;">
+    <h1 style='padding:1.25rem;'>Loading...</h1>
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue';
+<script>
 import {useDataStore} from '@/store/data';
-import {useAuthStore} from '@/store/auth';
+import {storeToRefs} from 'pinia';
 
-export default defineComponent({
+export default {
+  name: 'GlobalLoadingView',
+  setup() {
+    const dataStore = useDataStore();
+    const {isLoading} = storeToRefs(dataStore);
+    return {isLoading};
+  },
   data() {
     return {
-      dummy : '',
-      content : 'connection to pinia not yet established',
+      showLoading: false,
+      loadingTimeout: null,
+      delay: 400
     };
   },
-    computed: {
-	    isLoading(){return useDataStore().isLoading}
-    },
-    mounted() {
-    },
-})
+  watch: {
+    isLoading(newVal) {
+      if (newVal) {
+        if (this.loadingTimeout) clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = setTimeout(() => {
+          if (this.isLoading) {
+            this.showLoading = true;
+          }
+        }, this.delay);
+      } else {
+        if (this.loadingTimeout) clearTimeout(this.loadingTimeout);
+        this.showLoading = false;
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -38,6 +54,6 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999; 
+  z-index: 9999;
 }
 </style>
