@@ -36,6 +36,10 @@
         />
       </li>
     </ul>
+    <div style="color: var(--main-color-secondary); margin: 1.5rem 0 0 1rem; font-size: small">{{allTheTaskNamesISubscribedTo.length ? "Da unterstützt du schon: " : " " }}</div>
+    <div style="background: var(--main-color-secondary); border: var(--main-color-secondary) .2rem solid; border-radius: .1rem; padding: 0 1rem 0 1rem; margin: .25rem 1.5rem 1rem 1rem; color: white">
+      {{allTheTaskNamesISubscribedTo.length? allTheTaskNamesISubscribedTo.join(",") : "Oha, du hast dich noch nirgendwo eingetragen"}}
+    </div>
   </div>
 </template>
 
@@ -107,6 +111,11 @@ export default defineComponent({
     singleSupportTasks() {
       return this.supportTasks.filter((task: SupportTask) => task.requiredSupporters === 1);
     },
+    allTheTaskNamesISubscribedTo() {
+      return this.supportTasks
+          .filter(task => task.supporterUserNames.includes(this.userName!))
+          .map(task => task.title)
+    }
   },
   mounted() {
     this.fetchData()

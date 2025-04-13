@@ -17,9 +17,7 @@
       </div>
       <div class="card_action_button_container">
         <div @mouseenter="$emit('update:showSupporter', true)" @mouseleave="$emit('update:showSupporter', false)">
-          <div v-if="isUserSubscribed(task)" style="display: flex; flex-direction: row;">
-            <img src="/helper_filled.svg" alt="helper">
-          </div>
+          <img v-if="isUserSubscribed(task)" src="/helper_filled.svg" alt="helper">
           <img v-else src="/helper.svg" alt="helper">
         </div>
         <div class="card_action_helper_list" v-if="task.showSupporter">
@@ -45,9 +43,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import type { PropType } from 'vue';
-import type { SupportTask } from '@/views/SupportTaskView.vue';
+import {defineComponent} from 'vue';
+import type {PropType} from 'vue';
+import type {SupportTask} from '@/views/SupportTaskView.vue';
 
 export default defineComponent({
   props: {
@@ -156,7 +154,7 @@ export default defineComponent({
   margin-left: auto;
   margin-right: 0;
   min-width: 5rem;
-  height: 1.5rem;
+  height: 1.75rem;
   border-radius: 0.2rem;
   border: 0.1rem solid var(--main-color-primary);
 }
