@@ -105,6 +105,7 @@ builder.Services.AddAuthentication(opt =>
                         context.Request.Path,
                         context.Exception.Message);
                 }
+
                 return Task.CompletedTask;
             },
             OnMessageReceived = context =>
@@ -114,6 +115,7 @@ builder.Services.AddAuthentication(opt =>
                 {
                     logger.LogWarning("AUTH_FAILURE: No token provided for {Path}", context.Request.Path);
                 }
+
                 return Task.CompletedTask;
             }
         };
@@ -159,7 +161,19 @@ builder.Services.AddScoped<TopicRepository, TopicRepository>();
 builder.Services.AddScoped<VoteRepository, VoteRepository>();
 builder.Services.AddScoped<SupportPromiseRepository, SupportPromiseRepository>();
 builder.Services.AddScoped<SupportTaskRepository, SupportTaskRepository>();
-builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<ITopicService>(provider =>
+{
+    var allowedPresentationDurations = Environment.GetEnvironmentVariable("VITE_LEGAL_PRESENTATION_DURATIONS")
+        ?.Split(",").ToList()
+        ?.Select(int.Parse)
+        .ToList() ?? [];
+    return new TopicService(
+        provider.GetRequiredService<TopicRepository>(),
+        provider.GetRequiredService<VoteRepository>(),
+        provider.GetRequiredService<UserManager<User>>(),
+        allowedPresentationDurations
+        );
+});
 builder.Services.AddScoped<ISupportTaskService, SupportTaskService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<JwtGenerationService>();

@@ -13,7 +13,7 @@ public class SupportTaskService(
 {
     public async Task<SupportTask> AddTask(SupportTaskCreationDto userInput, string loggedInUserName)
     {
-        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME").ToLower() != loggedInUserName.ToLower())
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!.ToLower() != loggedInUserName.ToLower())
             throw new UnauthorizedException(loggedInUserName);
         return await supportTaskRepository.Create(new SupportTask
         {
@@ -24,7 +24,7 @@ public class SupportTaskService(
 
     public async Task<SupportTask> ModifyTask(SupportTaskCreationDto userInput, string supportTaskId, string loggedInUserName)
     {
-        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME").ToLower() != loggedInUserName.ToLower())
+        if (Environment.GetEnvironmentVariable("ADMIN_USER_NAME")!.ToLower() != loggedInUserName.ToLower())
             throw new UnauthorizedException(loggedInUserName);
         var existingSupportTask = await supportTaskRepository.FetchBy(supportTaskId);
         existingSupportTask!.RequiredSupporters = userInput.RequiredSupporters;

@@ -11,7 +11,7 @@
     <p class="support_description">Hier zu helfen kostet nicht so viel Zeit und Energie, hilft aber ungemein</p>
     <ul class="list">
       <li v-for="(item, index) in groupSupportTasks" :key="index" class="card_scroll_container">
-        <SupportTaskCard  
+        <SupportTaskCard
           :task="item"
           :taskList="groupSupportTasks"
           :taskIndex="index"

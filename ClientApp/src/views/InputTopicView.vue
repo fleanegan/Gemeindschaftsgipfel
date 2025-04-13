@@ -12,7 +12,13 @@
     </div>
     <div class="form-group">
       <label for="presentationTimeInMinutes">Wie lange dauert dein Beitrag in etwa?</label>
-      <input id="presentationTimeInMinutes" type='number' v-model.number="presentationTimeInMinutes" class="form-input" placeholder="in Minuten"/>
+      <select v-if="legalDurations.length > 0" id="presentationTimeInMinutes" v-model.number="presentationTimeInMinutes"
+              class="form-input" required>
+        <option value="" disabled selected>Bitte wähle eine Dauer</option>
+        <option v-for="option in legalDurations" :key="option" :value="option">{{ option }} Minuten</option>
+      </select>
+      <input v-else id="presentationTimeInMinutes" type="number" v-model.number="presentationTimeInMinutes"
+             class="form-input" placeholder="in Minuten"/>
     </div>
     <div class="button-container">
       <button class="abort-button" @click="abort">Verwerfen</button>
@@ -45,14 +51,14 @@ export default defineComponent({
         if (this.isEditing) {
           await axios.put('/api/topic/update', {
             "Title": this.title,
-	    "PresentationTimeInMinutes": this.presentationTimeInMinutes,
+            "PresentationTimeInMinutes": this.presentationTimeInMinutes,
             "Description": this.description,
             "Id": this.$props["topicId"],
           });
         } else {
           await axios.post('/api/topic/addnew', {
             "Title": this.title,
-	    "PresentationTimeInMinutes": this.presentationTimeInMinutes,
+            "PresentationTimeInMinutes": this.presentationTimeInMinutes,
             "Description": this.description,
           });
         }
@@ -72,6 +78,20 @@ export default defineComponent({
     },
     isEditing() {
       return this.isTopicIdSet();
+    },
+    legalDurations() {
+      try {
+        const durations = import.meta.env.VITE_LEGAL_PRESENTATION_DURATIONS;
+        if (!durations) return [];
+        const values = durations.split(',').map((val: string) => parseInt(val.trim(), 10));
+        if (Array.isArray(values) && values.every((val: number) => Number.isInteger(val))) {
+          return values;
+        }
+        return [];
+      } catch (e) {
+        console.error("Error parsing LEGAL_PRESENTATION_DURATIONS environment variable:", e);
+        return [];
+      }
     }
   },
   async beforeCreate() {

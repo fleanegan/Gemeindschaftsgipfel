@@ -5,45 +5,61 @@ using Gemeinschaftsgipfel.Repositories;
 using Gemeinschaftsgipfel.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Tests.Services;
 
 public class TopicServiceTest
 {
+    private const int AnAllowedPresentationTime = 5;
+    private const int AnotherAllowedPresentationTime = 15;
+
     [Theory]
-    [InlineData("Correct title", 5, "")]
-    [InlineData("Correct title", 5, null)]
-    [InlineData("Correct title", 5, "Non empty but also correct title")]
-    public async Task Test_add_GIVEN_correct_input_THEN_store_in_db(string title, int presentationTimeInMinutes,
-        string? description)
+    [InlineData("Correct title", "")]
+    [InlineData("Correct title", null)]
+    [InlineData("Correct title", "Non empty but also correct title")]
+    public async Task Test_add_GIVEN_correct_input_THEN_store_in_db(string title, string? description)
     {
         const string loggedInUserName = "Fake User";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        ITopicService service = await GetService(dbContext, [loggedInUserName], repository);
+        var instance = await CreateInstance([loggedInUserName]);
 
-        await service.AddTopic(new TopicCreationDto(title, presentationTimeInMinutes, description), loggedInUserName);
+        await instance.Service.AddTopic(new TopicCreationDto(title, AnAllowedPresentationTime, description),
+            loggedInUserName);
 
-        var result = (await repository.GetAll()).ToArray()[0];
+        var result = (await instance.Repository.GetAll()).ToArray()[0];
         Assert.NotNull(result);
         Assert.Equal(title, result.Title);
         Assert.Equal(description ?? "", result.Description);
-        Assert.Equal(presentationTimeInMinutes, result.PresentationTimeInMinutes);
+        Assert.Equal(AnAllowedPresentationTime, result.PresentationTimeInMinutes);
         Assert.Equal(loggedInUserName, result.User.UserName);
+    }
+
+    [Fact]
+    public async Task Test_add_GIVEN_duration_not_listed_THEN_throw_exception()
+    {
+        const int ilallowedPresentationTime = 66;
+        const string loggedInUserName = "Fake User";
+        var instance = await CreateInstance([loggedInUserName]);
+
+        async Task Action()
+        {
+            await instance.Service.AddTopic(new TopicCreationDto("title", ilallowedPresentationTime, "description"),
+                loggedInUserName);
+        }
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(Action);
     }
 
     [Fact]
     public async Task Test_getById_GIVEN_non_existing_id_THEN_throw_exception()
     {
         const string nonExistingId = "nonExistingId";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [], repository);
+        var instance = await CreateInstance([]);
 
         async Task Action()
         {
-            await service.GetTopicById(nonExistingId);
+            await instance.Service.GetTopicById(nonExistingId);
         }
 
         await Assert.ThrowsAsync<TopicNotFoundException>(Action);
@@ -54,13 +70,11 @@ public class TopicServiceTest
     public async Task Test_getById_GIVEN_existing_id_THEN_return_result()
     {
         const string loggedInUserName = "Fake User";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
-        var topicCreationDto = new TopicCreationDto("title", 5, "description");
-        var expectedResult = await service.AddTopic(topicCreationDto, loggedInUserName);
+        var instance = await CreateInstance([loggedInUserName]);
+        var topicCreationDto = new TopicCreationDto("title", AnAllowedPresentationTime, "description");
+        var expectedResult = await instance.Service.AddTopic(topicCreationDto, loggedInUserName);
 
-        var actualResult = await service.GetTopicById(expectedResult.Id);
+        var actualResult = await instance.Service.GetTopicById(expectedResult.Id);
 
         Assert.Equal(expectedResult.Id, actualResult.Id);
         Assert.Equal(expectedResult.Description, actualResult.Description);
@@ -72,14 +86,12 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "Fake User";
         var nonExistingId = "the original topic does not exist";
-        var updatedTopic = new TopicUpdateDto(nonExistingId, "title", 5, "description");
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var updatedTopic = new TopicUpdateDto(nonExistingId, "title", AnAllowedPresentationTime, "description");
+        var instance = await CreateInstance([loggedInUserName]);
 
         async Task Action()
         {
-            await service.UpdateTopic(updatedTopic, loggedInUserName);
+            await instance.Service.UpdateTopic(updatedTopic, loggedInUserName);
         }
 
         await Assert.ThrowsAsync<TopicNotFoundException>(Action);
@@ -89,18 +101,36 @@ public class TopicServiceTest
     public async Task Test_update_GIVEN_UserName_different_from_creator_THEN_throw_exception()
     {
         const string loggedInUserName = "Fake User";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        ITopicService service = await GetService(dbContext, [loggedInUserName], repository);
-        var originalTopic = await service.AddTopic(new TopicCreationDto("original title", 5, ""), "anotherUserName");
-        var updatedTopic = new TopicUpdateDto(originalTopic.Id, "updated title", 5, "updated description");
+        var instance = await CreateInstance([loggedInUserName]);
+        var originalTopic =
+            await instance.Service.AddTopic(new TopicCreationDto("original title", AnAllowedPresentationTime, ""),
+                "anotherUserName");
+        var updatedTopic = new TopicUpdateDto(originalTopic.Id, "updated title", AnAllowedPresentationTime,
+            "updated description");
 
         async Task Action()
         {
-            await service.UpdateTopic(updatedTopic, loggedInUserName);
+            await instance.Service.UpdateTopic(updatedTopic, loggedInUserName);
         }
 
         await Assert.ThrowsAsync<UnauthorizedTopicModificationException>(Action);
+    }
+
+
+    [Fact]
+    public async Task
+        Test_update_GIVEN_duration_not_listed_AND_no_allowed_durations_whatsoever_WHEN_passing_with_new_values_THEN_do_not_throw()
+    {
+        int newPresentationTimeInMinutes = 33;
+        const string loggedInUserName = "Fake User";
+        var instance = await CreateInstance([loggedInUserName], []);
+        var originalTopic =
+            await instance.Service.AddTopic(new TopicCreationDto("original title", 76, ""),
+                loggedInUserName);
+        var updatedTopic =
+            new TopicUpdateDto(originalTopic.Id, "newTitle", newPresentationTimeInMinutes, "newDescription");
+        
+        await instance.Service.UpdateTopic(updatedTopic, loggedInUserName);
     }
 
 
@@ -111,17 +141,17 @@ public class TopicServiceTest
     public async Task Test_update_GIVEN_authorized_user_and_existing_topic_WHEN_passing_with_new_values_THEN_update(
         string newTitle, string? newDescription)
     {
-        int newPresentationTimeInMinutes = 3;
+        int newPresentationTimeInMinutes = AnotherAllowedPresentationTime;
         const string loggedInUserName = "Fake User";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
-        var originalTopic = await service.AddTopic(new TopicCreationDto("original title", 0, ""), loggedInUserName);
+        var instance = await CreateInstance([loggedInUserName]);
+        var originalTopic =
+            await instance.Service.AddTopic(new TopicCreationDto("original title", AnAllowedPresentationTime, ""),
+                loggedInUserName);
         var updatedTopic = new TopicUpdateDto(originalTopic.Id, newTitle, newPresentationTimeInMinutes, newDescription);
 
-        await service.UpdateTopic(updatedTopic, loggedInUserName);
+        await instance.Service.UpdateTopic(updatedTopic, loggedInUserName);
 
-        var result = await repository.FetchBy(originalTopic.Id);
+        var result = await instance.Repository.FetchBy(originalTopic.Id);
         Assert.Equal(updatedTopic.Title, result!.Title);
         Assert.Equal(updatedTopic.PresentationTimeInMinutes, result.PresentationTimeInMinutes);
     }
@@ -130,11 +160,9 @@ public class TopicServiceTest
     public async Task Test_fetchAllExceptLoggedIn_GIVEN_zero_topics_THEN_return_empty()
     {
         var loggedInUserName = "loggedInUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var instance = await CreateInstance([loggedInUserName]);
 
-        var result = await service.FetchAllExceptLoggedIn(loggedInUserName);
+        var result = await instance.Service.FetchAllExceptLoggedIn(loggedInUserName);
 
         Assert.Empty(result);
     }
@@ -143,15 +171,13 @@ public class TopicServiceTest
     public async Task Test_fetchAllExceptLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_them_all()
     {
         var otherUserName = "otherUserName";
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var secondTopicContent = new TopicCreationDto("second title", 5, "second description");
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [otherUserName], repository);
-        await service.AddTopic(firstTopicContent, otherUserName);
-        await service.AddTopic(secondTopicContent, otherUserName);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var secondTopicContent = new TopicCreationDto("second title", AnAllowedPresentationTime, "second description");
+        var instance = await CreateInstance([otherUserName]);
+        await instance.Service.AddTopic(firstTopicContent, otherUserName);
+        await instance.Service.AddTopic(secondTopicContent, otherUserName);
 
-        var result = await service.FetchAllExceptLoggedIn("loggedInUserName");
+        var result = await instance.Service.FetchAllExceptLoggedIn("loggedInUserName");
 
         var enumerable = result as Topic[] ?? result.ToArray();
         Assert.Equal(2, enumerable.Count());
@@ -167,13 +193,11 @@ public class TopicServiceTest
     {
         var nameDuringCreation = "loggedInUserName";
         var nameDuringRetrieval = "LOGGEDINUSERNAME";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [nameDuringCreation], repository);
-        var ownTopic = new TopicCreationDto("first title", 5, "first description");
-        await service.AddTopic(ownTopic, nameDuringCreation);
+        var instance = await CreateInstance([nameDuringCreation]);
+        var ownTopic = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        await instance.Service.AddTopic(ownTopic, nameDuringCreation);
 
-        var result = await service.FetchAllExceptLoggedIn(nameDuringRetrieval);
+        var result = await instance.Service.FetchAllExceptLoggedIn(nameDuringRetrieval);
 
         var collection = result as Topic[] ?? result.ToArray();
         Assert.Empty(collection);
@@ -186,14 +210,13 @@ public class TopicServiceTest
         var loggedInUserName = "loggedInUserName";
         var otherUserName = "otherUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, otherUserName], repository);
+        var instance = await CreateInstance([loggedInUserName, otherUserName]);
         var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        await service.AddTopic(firstTopicContent, otherUserName);
-        var secondTopicContent = new TopicCreationDto("second title", 5, "second description");
-        await service.AddTopic(secondTopicContent, loggedInUserName);
+        await instance.Service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", AnAllowedPresentationTime, "second description");
+        await instance.Service.AddTopic(secondTopicContent, loggedInUserName);
 
-        var result = await service.FetchAllExceptLoggedIn(loggedInUserName);
+        var result = await instance.Service.FetchAllExceptLoggedIn(loggedInUserName);
 
         var collection = result as Topic[] ?? result.ToArray();
         Assert.Single(collection);
@@ -207,11 +230,9 @@ public class TopicServiceTest
     public async Task Test_fetchAllOfLoggedIn_GIVEN_zero_topics_THEN_return_empty()
     {
         var loggedInUserName = "loggedInUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var instance = await CreateInstance([loggedInUserName]);
 
-        var result = await service.FetchAllOfLoggedIn(loggedInUserName);
+        var result = await instance.Service.FetchAllOfLoggedIn(loggedInUserName);
 
         Assert.Empty(result);
     }
@@ -220,15 +241,13 @@ public class TopicServiceTest
     public async Task Test_fetchAllOfLoggedIn_GIVEN_two_topics_by_other_users_THEN_return_empty()
     {
         var otherUserName = "otherUserName";
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var secondTopicContent = new TopicCreationDto("second title", 5, "second description");
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [otherUserName], repository);
-        await service.AddTopic(firstTopicContent, otherUserName);
-        await service.AddTopic(secondTopicContent, otherUserName);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var secondTopicContent = new TopicCreationDto("second title", AnAllowedPresentationTime, "second description");
+        var instance = await CreateInstance([otherUserName]);
+        await instance.Service.AddTopic(firstTopicContent, otherUserName);
+        await instance.Service.AddTopic(secondTopicContent, otherUserName);
 
-        var result = await service.FetchAllOfLoggedIn("loggedInUserName");
+        var result = await instance.Service.FetchAllOfLoggedIn("loggedInUserName");
 
         var enumerable = result as Topic[] ?? result.ToArray();
         Assert.Empty(enumerable);
@@ -241,14 +260,13 @@ public class TopicServiceTest
         var loggedInUserName = "loggedInUserName";
         var otherUserName = "otherUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, otherUserName], repository);
+        var instance = await CreateInstance([loggedInUserName, otherUserName]);
         var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        await service.AddTopic(firstTopicContent, otherUserName);
-        var secondTopicContent = new TopicCreationDto("second title", 5, "second description");
-        await service.AddTopic(secondTopicContent, loggedInUserName);
+        await instance.Service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", AnAllowedPresentationTime, "second description");
+        await instance.Service.AddTopic(secondTopicContent, loggedInUserName);
 
-        var result = await service.FetchAllOfLoggedIn(loggedInUserName);
+        var result = await instance.Service.FetchAllOfLoggedIn(loggedInUserName);
 
         var collection = result as Topic[] ?? result.ToArray();
         Assert.Single(collection);
@@ -265,14 +283,13 @@ public class TopicServiceTest
         var loggedInUserName = "loggedInUserName";
         var otherUserName = "otherUserName";
         await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, otherUserName], repository);
+        var instance = await CreateInstance([loggedInUserName, otherUserName]);
         var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        await service.AddTopic(firstTopicContent, otherUserName);
-        var secondTopicContent = new TopicCreationDto("second title", 5, "second description");
-        await service.AddTopic(secondTopicContent, loggedInUserName);
+        await instance.Service.AddTopic(firstTopicContent, otherUserName);
+        var secondTopicContent = new TopicCreationDto("second title", AnAllowedPresentationTime, "second description");
+        await instance.Service.AddTopic(secondTopicContent, loggedInUserName);
 
-        var result = await service.FetchAllOfLoggedIn(loggedInUserName.ToUpper());
+        var result = await instance.Service.FetchAllOfLoggedIn(loggedInUserName.ToUpper());
 
         var collection = result as Topic[] ?? result.ToArray();
         Assert.Single(collection);
@@ -287,13 +304,11 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "loggedInUserName";
         const string nonExistingId = "nonExistingId";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var instance = await CreateInstance([loggedInUserName]);
 
         async Task Action()
         {
-            await service.RemoveTopic(nonExistingId, loggedInUserName);
+            await instance.Service.RemoveTopic(nonExistingId, loggedInUserName);
         }
 
         await Assert.ThrowsAsync<TopicNotFoundException>(Action);
@@ -304,15 +319,14 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "creatorUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
-        var topicToDelete = await service.AddTopic(new TopicCreationDto("title", 5, "description"), creatorUserName);
-
+        var instance = await CreateInstance([loggedInUserName, creatorUserName]);
+        var topicToDelete =
+            await instance.Service.AddTopic(new TopicCreationDto("title", AnAllowedPresentationTime, "description"),
+                creatorUserName);
 
         async Task Action()
         {
-            await service.RemoveTopic(topicToDelete.Id, loggedInUserName);
+            await instance.Service.RemoveTopic(topicToDelete.Id, loggedInUserName);
         }
 
         var exception = await Assert.ThrowsAsync<Exception>(Action);
@@ -323,33 +337,31 @@ public class TopicServiceTest
     public async Task Test_removing_topic_GIVEN_one_s_own_topic_THEN_remove_topic()
     {
         const string loggedInUserName = "loggedInUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
-        var topicToDelete = await service.AddTopic(new TopicCreationDto("title", 5, "description"), loggedInUserName);
+        var instance = await CreateInstance([loggedInUserName]);
+        var topicToDelete =
+            await instance.Service.AddTopic(new TopicCreationDto("title", AnAllowedPresentationTime, "description"),
+                loggedInUserName);
 
 
-        await service.RemoveTopic(topicToDelete.Id, loggedInUserName);
+        await instance.Service.RemoveTopic(topicToDelete.Id, loggedInUserName);
 
-        Assert.Empty(await new TopicRepository(dbContext).GetAll());
+        Assert.Empty(await instance.Repository.GetAll());
     }
 
     [Fact]
     public async Task Test_adding_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var instance = await CreateInstance([loggedInUserName]);
         const string nonExistingId = "non-existing Id";
 
         async Task Action()
         {
-            await service.AddTopicVote(nonExistingId, loggedInUserName);
+            await instance.Service.AddTopicVote(nonExistingId, loggedInUserName);
         }
 
         await Assert.ThrowsAsync<TopicNotFoundException>(Action);
-        Assert.Empty(await new VoteRepository(dbContext).FetchAll());
+        Assert.Empty(await instance.Repository.GetAllForUser(loggedInUserName));
     }
 
     [Fact]
@@ -357,15 +369,13 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+        var instance = await CreateInstance([loggedInUserName, creatorUserName]);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var topic = await instance.Service.AddTopic(firstTopicContent, creatorUserName);
 
-        await service.AddTopicVote(topic.Id, loggedInUserName);
+        await instance.Service.AddTopicVote(topic.Id, loggedInUserName);
 
-        var result = await repository.FetchBy(topic.Id);
+        var result = await instance.Repository.FetchBy(topic.Id);
         Assert.Equal(loggedInUserName, result!.Votes.ToArray()[0].Voter.UserName);
     }
 
@@ -374,21 +384,19 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+        var instance = await CreateInstance([loggedInUserName, creatorUserName]);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var topic = await instance.Service.AddTopic(firstTopicContent, creatorUserName);
 
-        await service.AddTopicVote(topic.Id, loggedInUserName);
+        await instance.Service.AddTopicVote(topic.Id, loggedInUserName);
 
         async Task Action()
         {
-            await service.AddTopicVote(topic.Id, loggedInUserName);
+            await instance.Service.AddTopicVote(topic.Id, loggedInUserName);
         }
 
         await Assert.ThrowsAsync<VoteImpossibleException>(Action);
-        var result = await repository.FetchBy(topic.Id);
+        var result = await instance.Repository.FetchBy(topic.Id);
         Assert.Single(result!.Votes);
     }
 
@@ -396,14 +404,12 @@ public class TopicServiceTest
     public async Task Test_removing_vote_GIVEN_a_non_existing_topic_THEN_throw_error()
     {
         const string loggedInUserName = "loggedInUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName], repository);
+        var instance = await CreateInstance([loggedInUserName]);
         const string nonExistingId = "non-existing Id";
 
         async Task Action()
         {
-            await service.RemoveTopicVote(nonExistingId, loggedInUserName);
+            await instance.Service.RemoveTopicVote(nonExistingId, loggedInUserName);
         }
 
         await Assert.ThrowsAsync<TopicNotFoundException>(Action);
@@ -414,16 +420,14 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
-        await service.AddTopicVote(topic.Id, loggedInUserName);
+        var instance = await CreateInstance([loggedInUserName, creatorUserName]);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var topic = await instance.Service.AddTopic(firstTopicContent, creatorUserName);
+        await instance.Service.AddTopicVote(topic.Id, loggedInUserName);
 
-        await service.RemoveTopicVote(topic.Id, loggedInUserName);
+        await instance.Service.RemoveTopicVote(topic.Id, loggedInUserName);
 
-        var result = await repository.FetchBy(topic.Id);
+        var result = await instance.Repository.FetchBy(topic.Id);
         Assert.Empty(result!.Votes.ToArray());
     }
 
@@ -433,16 +437,14 @@ public class TopicServiceTest
         const string loggedInUserNameForVoteCreation = "loggedInUserName";
         const string loggedInUserNameForVoteRemoval = "LOGGEDINUSERNAME";
         const string creatorUserName = "otherUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserNameForVoteCreation, creatorUserName], repository);
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
-        await service.AddTopicVote(topic.Id, loggedInUserNameForVoteCreation);
+        var instance = await CreateInstance([loggedInUserNameForVoteCreation, loggedInUserNameForVoteRemoval]);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var topic = await instance.Service.AddTopic(firstTopicContent, creatorUserName);
+        await instance.Service.AddTopicVote(topic.Id, loggedInUserNameForVoteCreation);
 
-        await service.RemoveTopicVote(topic.Id, loggedInUserNameForVoteRemoval);
+        await instance.Service.RemoveTopicVote(topic.Id, loggedInUserNameForVoteRemoval);
 
-        var result = await repository.FetchBy(topic.Id);
+        var result = await instance.Repository.FetchBy(topic.Id);
         Assert.Empty(result!.Votes.ToArray());
     }
 
@@ -451,25 +453,40 @@ public class TopicServiceTest
     {
         const string loggedInUserName = "loggedInUserName";
         const string creatorUserName = "otherUserName";
-        await using var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
-        var repository = new TopicRepository(dbContext);
-        var service = await GetService(dbContext, [loggedInUserName, creatorUserName], repository);
-        var firstTopicContent = new TopicCreationDto("first title", 5, "first description");
-        var topic = await service.AddTopic(firstTopicContent, creatorUserName);
+        var instance = await CreateInstance([loggedInUserName, creatorUserName]);
+        var firstTopicContent = new TopicCreationDto("first title", AnAllowedPresentationTime, "first description");
+        var topic = await instance.Service.AddTopic(firstTopicContent, creatorUserName);
 
-        await service.RemoveTopicVote(topic.Id, loggedInUserName);
+        await instance.Service.RemoveTopicVote(topic.Id, loggedInUserName);
 
-        var result = await repository.FetchBy(topic.Id);
+        var result = await instance.Repository.FetchBy(topic.Id);
         Assert.Empty(result!.Votes);
     }
 
+    private static async Task<InstanceWrapper> CreateInstance(List<String> availableUserNames)
+    {
+        return await CreateInstance(availableUserNames, [AnAllowedPresentationTime, AnotherAllowedPresentationTime]);
+    }
+
+    private static async Task<InstanceWrapper> CreateInstance(List<String> availableUserNames,
+        List<int> allowedPresentationDurationsInMin)
+    {
+        var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
+        var topicRepository = new TopicRepository(dbContext);
+        var topicService = await GetService(dbContext, availableUserNames, topicRepository,
+            allowedPresentationDurationsInMin);
+        return new InstanceWrapper(topicRepository, topicService);
+    }
+
+
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,
-        TopicRepository repository)
+        TopicRepository repository, List<int> allowedPresentationDurationsInMin)
     {
         var voteRepository = new VoteRepository(dbContext);
         var userStore = new UserStore<User>(dbContext);
         var userManager = await CannotInjectUserStoreDirectlySoWrappingInUserManager(userStore, userNames);
-        var service = new TopicService(repository, voteRepository, userManager.Object);
+        var service = new TopicService(repository, voteRepository, userManager.Object,
+            allowedPresentationDurationsInMin);
         return service;
     }
 
@@ -483,5 +500,11 @@ public class TopicServiceTest
         userManager.Setup(c => c.FindByNameAsync(It.IsAny<string>()))
             .Returns((string inputUserName) => Task.FromResult(new User { UserName = inputUserName })!);
         return userManager;
+    }
+
+    private class InstanceWrapper(TopicRepository topicRepository, TopicService topicService)
+    {
+        public readonly TopicRepository Repository = topicRepository;
+        public readonly TopicService Service = topicService;
     }
 }

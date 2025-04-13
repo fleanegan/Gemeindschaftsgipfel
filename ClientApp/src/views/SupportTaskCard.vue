@@ -6,7 +6,7 @@
       <p class="support_task_duration">{{ task.duration }}</p>
     </div>
     <div class="card_action_container">
-      <div class="progress_bar" v-if="task.requiredSupporters > 1">
+      <div class="progress_bar">
         <div class="progress_bar_shell">
           <span :style="{width: calcProgressBarWidth(task)}" class="progress_bar_progress">
             <p :class="{progress_bar_progress_empty: task.supporterUserNames.length === 0}">

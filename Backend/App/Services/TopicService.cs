@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Gemeinschaftsgipfel.Services;
 
-public class TopicService(TopicRepository topicRepository, VoteRepository voteRepository, UserManager<User> userManager)
+public class TopicService(
+    TopicRepository topicRepository,
+    VoteRepository voteRepository,
+    UserManager<User> userManager,
+    List<int> allowedPresentationDurations)
     : ITopicService
 {
     public async Task<Topic> GetTopicById(string topicId)
@@ -18,8 +22,10 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
 
     public async Task<Topic> AddTopic(TopicCreationDto toBeAdded, string userName)
     {
+        PreventIlallowedPresentationDurations(toBeAdded.PresentationTimeInMinutes);
         var user = await userManager.FindByNameAsync(userName);
-        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.PresentationTimeInMinutes, toBeAdded.Description ?? "", user!);
+        var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.PresentationTimeInMinutes, toBeAdded.Description ?? "",
+            user!);
         return await topicRepository.Create(newTopic);
     }
 
@@ -31,7 +37,7 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
             throw new TopicNotFoundException(updatedTopicCreationContent.Id);
         if (userName != topicToChange.User.UserName)
             throw new UnauthorizedTopicModificationException(topicToChange.Id);
-
+        PreventIlallowedPresentationDurations(updatedTopicCreationContent.PresentationTimeInMinutes);
         topicToChange.Title = updatedTopicCreationContent.Title;
         topicToChange.PresentationTimeInMinutes = updatedTopicCreationContent.PresentationTimeInMinutes;
         topicToChange.Description = updatedTopicCreationContent.Description ?? "";
@@ -63,7 +69,8 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
     {
         var topicToVote = await topicRepository.FetchBy(topicId);
         if (topicToVote == null) throw new TopicNotFoundException(topicId);
-        var first = topicToVote.Votes.FirstOrDefault(vote => vote.Voter.UserName.ToLower() == loggedInUserName.ToLower());
+        var first = topicToVote.Votes.FirstOrDefault(
+            vote => vote.Voter.UserName.ToLower() == loggedInUserName.ToLower());
         if (first != null) await voteRepository.Remove(first);
     }
 
@@ -75,5 +82,11 @@ public class TopicService(TopicRepository topicRepository, VoteRepository voteRe
         if (topic.User.UserName != loggedInUserName)
             throw new Exception("Not your Topic");
         await topicRepository.Remove(topic);
+    }
+
+    private void PreventIlallowedPresentationDurations(int presentationTimeInMinutes)
+    {
+        if (!allowedPresentationDurations.Contains(presentationTimeInMinutes) && allowedPresentationDurations.Count > 0)
+            throw new ArgumentOutOfRangeException(presentationTimeInMinutes.ToString());
     }
 }
