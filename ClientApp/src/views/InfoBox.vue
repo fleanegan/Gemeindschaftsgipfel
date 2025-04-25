@@ -163,8 +163,8 @@ th:first-child, td:first-child {
   position: relative;
   margin-bottom: auto;
   margin-top: auto;
-  width: 27rem;
-  min-width: 350px;
+  width: 23rem;
+  min-width: 300px;
 }
 
 .info_tile_content h2 {
