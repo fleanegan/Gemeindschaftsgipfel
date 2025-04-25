@@ -89,4 +89,8 @@ public class TopicService(
         if (!allowedPresentationDurations.Contains(presentationTimeInMinutes) && allowedPresentationDurations.Count > 0)
             throw new ArgumentOutOfRangeException(presentationTimeInMinutes.ToString());
     }
+
+    public List<int> GetLegalPresentationDurations(){
+   	return allowedPresentationDurations; 
+    }
 }

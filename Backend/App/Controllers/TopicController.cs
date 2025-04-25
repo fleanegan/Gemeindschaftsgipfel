@@ -148,4 +148,9 @@ public class TopicController(ITopicService service) : AbstractController
             return NotFound(e.Message);
         }
     }
+
+    [HttpGet]
+    public List<int> GetLegalPresentationDurations(){
+	return service.GetLegalPresentationDurations();
+    } 
 }

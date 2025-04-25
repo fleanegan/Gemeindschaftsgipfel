@@ -463,6 +463,15 @@ public class TopicServiceTest
         Assert.Empty(result!.Votes);
     }
 
+    [Fact]
+    public async Task Test_getting_legal_presentation_durations_GIVEN_defined_values_THEN_return(){
+        var instance = await CreateInstance([]);
+
+	var result = instance.Service.GetLegalPresentationDurations();
+
+	Assert.Equal([5,15], result);
+    }
+
     private static async Task<InstanceWrapper> CreateInstance(List<String> availableUserNames)
     {
         return await CreateInstance(availableUserNames, [AnAllowedPresentationTime, AnotherAllowedPresentationTime]);

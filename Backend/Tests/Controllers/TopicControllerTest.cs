@@ -18,6 +18,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     private const string HappyPathDummyId = "happyPathDummyId";
     private const string NonExistingDummyId = "nonExistingDummyId";
     private const string ConflictingDummyId = "conflictingDummyId";
+    private List<int> legalPresentationDurations = [15,30,45];
 
     private readonly IEnumerable<Topic> _demoTopics =
     [
@@ -63,6 +64,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     private void SetupMock(IServiceCollection services)
     {
         _mockTopicService = new Mock<ITopicService>();
+	_mockTopicService.Setup(s => s.GetLegalPresentationDurations()).Returns(() => {return legalPresentationDurations;});
         _mockTopicService.Setup(s => s.GetTopicById(It.IsAny<string>())).Returns(
             async (string topicId) =>
             {
@@ -197,6 +199,18 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.GetAsync("/topic/GetOne/" + HappyPathDummyId);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_GetLegalPresentationDuration_GIVEN_present_configuration_WHEN_getting_THEN_return_array()
+    {
+        var client = _factoryWithAuthorization.CreateClient();
+
+        var response = await client.GetAsync("/topic/GetLegalPresentationDurations/");
+
+	var responseContent = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+	Assert.Equal(responseContent, JsonSerializer.Serialize(legalPresentationDurations));
     }
 
     [Fact]

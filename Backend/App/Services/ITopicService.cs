@@ -13,4 +13,5 @@ public interface ITopicService
     Task<IEnumerable<Topic>> FetchAllOfLoggedIn(string loggedInUserName);
     Task AddTopicVote(string topicId, string loggedInUserName);
     Task RemoveTopicVote(string topicId, string loggedInUserName);
+    List<int> GetLegalPresentationDurations();
 }

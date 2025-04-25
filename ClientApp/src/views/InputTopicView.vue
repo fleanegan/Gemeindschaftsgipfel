@@ -37,6 +37,7 @@ export default defineComponent({
       title: '',
       description: '',
       presentationTimeInMinutes: null,
+      legalDurations: [],
     };
   },
   methods: {
@@ -79,20 +80,6 @@ export default defineComponent({
     isEditing() {
       return this.isTopicIdSet();
     },
-    legalDurations() {
-      try {
-        const durations = import.meta.env.VITE_LEGAL_PRESENTATION_DURATIONS;
-        if (!durations) return [];
-        const values = durations.split(',').map((val: string) => parseInt(val.trim(), 10));
-        if (Array.isArray(values) && values.every((val: number) => Number.isInteger(val))) {
-          return values;
-        }
-        return [];
-      } catch (e) {
-        console.error("Error parsing LEGAL_PRESENTATION_DURATIONS environment variable:", e);
-        return [];
-      }
-    }
   },
   async beforeCreate() {
     // why is this.isEditing not working?
@@ -106,6 +93,8 @@ export default defineComponent({
         console.log("edit: could not get existing topic")
       }
     }
+   this.legalDurations = (await axios.get('/api/topic/GetLegalPresentationDurations', {})).data
+   console.log(this.legalDurations)
   },
   props: ['topicId'],
 });
