@@ -11,10 +11,10 @@
       <input id="description" v-model="description" class="form-input"/>
     </div>
     <div class="form-group">
-      <label for="presentationTimeInMinutes">Wie lange dauert dein Beitrag in etwa?</label>
+      <label for="presentationTimeInMinutes">Wie lange dauert dein Beitrag in etwa? Du musst die Zeit nicht ausfüllen.</label>
       <select v-if="legalDurations.length > 0" id="presentationTimeInMinutes" v-model.number="presentationTimeInMinutes"
               class="form-input" required>
-        <option value="" disabled selected>Bitte wähle eine Dauer</option>
+        <option value="" disabled selected>Bitte wähle eine Dauer (Wenn du weniger Zeit brauchst, ist das kein Problem)</option>
         <option v-for="option in legalDurations" :key="option" :value="option">{{ option }} Minuten</option>
       </select>
       <input v-else id="presentationTimeInMinutes" type="number" v-model.number="presentationTimeInMinutes"
