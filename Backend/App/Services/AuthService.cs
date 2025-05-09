@@ -38,10 +38,8 @@ public class AuthService(
             logger.LogInformation("LOGIN_REGISTER: " + userInput.UserName + " successfully logged in");
             return jwtGenerationService.Generate(new List<Claim>([new Claim(ClaimTypes.Name, userInput.UserName.ToLower())]));
         }
-
         logger.LogWarning("LOGIN_REGISTER: [LOGIN_FAILURE] username: " + userInput.UserName.ToLower() +
                           " failed to log in, password length: " + userInput.Password.Length);
-
         return "";
     }
 
@@ -55,15 +53,12 @@ public class AuthService(
                               " was not allowed to change the password of user " + userInput.UserName);
             return IdentityResult.Failed(new IdentityError { Code = "Unauthorized" });
         }
-
         var user = await userManager.FindByNameAsync(userInput.UserName);
         if (user == null) return IdentityResult.Failed(new IdentityError { Code = "NotFound" });
-
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         var result = await userManager.ResetPasswordAsync(user, token, userInput.Password);
         logger.LogInformation("LOGIN_REGISTER: user " + loggedInUserName + " changed the password for user " +
                               userInput.UserName);
-
         return result;
     }
 }

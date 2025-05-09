@@ -9,6 +9,7 @@ namespace Gemeinschaftsgipfel.Services;
 public class TopicService(
     TopicRepository topicRepository,
     VoteRepository voteRepository,
+    ForumPostRepository forumPostRepository,
     UserManager<User> userManager,
     List<int> allowedPresentationDurations)
     : ITopicService
@@ -22,7 +23,7 @@ public class TopicService(
 
     public async Task<Topic> AddTopic(TopicCreationDto toBeAdded, string userName)
     {
-        PreventIlallowedPresentationDurations(toBeAdded.PresentationTimeInMinutes);
+        PreventForbiddenPresentationDurations(toBeAdded.PresentationTimeInMinutes);
         var user = await userManager.FindByNameAsync(userName);
         var newTopic = Topic.Create(toBeAdded.Title, toBeAdded.PresentationTimeInMinutes, toBeAdded.Description ?? "",
             user!);
@@ -37,7 +38,7 @@ public class TopicService(
             throw new TopicNotFoundException(updatedTopicCreationContent.Id);
         if (userName != topicToChange.User.UserName)
             throw new UnauthorizedTopicModificationException(topicToChange.Id);
-        PreventIlallowedPresentationDurations(updatedTopicCreationContent.PresentationTimeInMinutes);
+        PreventForbiddenPresentationDurations(updatedTopicCreationContent.PresentationTimeInMinutes);
         topicToChange.Title = updatedTopicCreationContent.Title;
         topicToChange.PresentationTimeInMinutes = updatedTopicCreationContent.PresentationTimeInMinutes;
         topicToChange.Description = updatedTopicCreationContent.Description ?? "";
@@ -84,7 +85,22 @@ public class TopicService(
         await topicRepository.Remove(topic);
     }
 
-    private void PreventIlallowedPresentationDurations(int presentationTimeInMinutes)
+    public async Task AddForumPostToTopic(string topicId, string content, string userName)
+    {
+        var topic = await topicRepository.FetchBy(topicId);
+        if (topic == null)
+            throw new TopicNotFoundException(topicId);
+        var user = await userManager.FindByNameAsync(userName);
+        var post = ForumPost.Create(content, user!, topic);
+        await forumPostRepository.Create(post);
+    }
+
+    public async Task<IEnumerable<ForumPost>> GetForumPostsForTopic(string topicId)
+    {
+        return await forumPostRepository.GetPostsForTopic(topicId);
+    }
+
+    private void PreventForbiddenPresentationDurations(int presentationTimeInMinutes)
     {
         if (!allowedPresentationDurations.Contains(presentationTimeInMinutes) && allowedPresentationDurations.Count > 0)
             throw new ArgumentOutOfRangeException(presentationTimeInMinutes.ToString());

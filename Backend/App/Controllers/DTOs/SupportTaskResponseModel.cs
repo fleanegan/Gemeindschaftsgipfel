@@ -8,10 +8,10 @@ public class SupportTaskResponseModel(
     int requiredSupporters,
     List<string> supporterUserNames)
 {
-    public string Id { get; set; } = id;
-    public string Title { get; set; } = title;
-    public string Description { get; set; } = description;
-    public string Duration { get; set; } = duration;
-    public int RequiredSupporters { get; set; } = requiredSupporters;
-    public List<string> SupporterUserNames { get; set; } = supporterUserNames;
+    public string Id { get; } = id;
+    public string Title { get; } = title;
+    public string Description { get; } = description;
+    public string Duration { get; } = duration;
+    public int RequiredSupporters { get; } = requiredSupporters;
+    public List<string> SupporterUserNames { get; } = supporterUserNames;
 }

@@ -472,6 +472,39 @@ public class TopicServiceTest
 	Assert.Equal([5,15], result);
     }
 
+    [Fact]
+    public async Task Test_addPostToTopic_GIVEN_non_existing_topic_THEN_throw_exception()
+    {
+        const string loggedInUserName = "Fake User";
+        var instance = await CreateInstance([loggedInUserName]);
+        const string nonExistingId = "non-existing-id";
+
+        async Task Action()
+        {
+            await instance.Service.AddForumPostToTopic(nonExistingId, "Test content", loggedInUserName);
+        }
+
+        await Assert.ThrowsAsync<TopicNotFoundException>(Action);
+    }
+
+    [Fact]
+    public async Task Test_addPostToTopic_GIVEN_existing_topic_THEN_create_post()
+    {
+        const string loggedInUserName = "Fake User";
+        var instance = await CreateInstance([loggedInUserName]);
+        var topic = await instance.Service.AddTopic(
+            new TopicCreationDto("Test Topic", AnAllowedPresentationTime, "Test Description"), 
+            loggedInUserName);
+        
+        await instance.Service.AddForumPostToTopic(topic.Id, "Test post content", loggedInUserName);
+
+        var postsAsArray = await FetchAllPostsFromRepositoryForTopic(instance, topic);
+        Assert.Single(postsAsArray);
+        Assert.Equal("Test post content", postsAsArray[0].Content);
+        Assert.Equal(loggedInUserName, postsAsArray[0].Creator.UserName);
+        Assert.Equal(topic.Id, postsAsArray[0].Topic.Id);
+    }
+
     private static async Task<InstanceWrapper> CreateInstance(List<String> availableUserNames)
     {
         return await CreateInstance(availableUserNames, [AnAllowedPresentationTime, AnotherAllowedPresentationTime]);
@@ -482,19 +515,19 @@ public class TopicServiceTest
     {
         var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var topicRepository = new TopicRepository(dbContext);
-        var topicService = await GetService(dbContext, availableUserNames, topicRepository,
+        var postRepository = new ForumPostRepository(dbContext);
+        var topicService = await GetService(dbContext, availableUserNames, topicRepository, postRepository,
             allowedPresentationDurationsInMin);
-        return new InstanceWrapper(topicRepository, topicService);
+        return new InstanceWrapper(topicRepository, postRepository, topicService);
     }
 
-
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,
-        TopicRepository repository, List<int> allowedPresentationDurationsInMin)
+        TopicRepository repository, ForumPostRepository forumPostRepository, List<int> allowedPresentationDurationsInMin)
     {
         var voteRepository = new VoteRepository(dbContext);
         var userStore = new UserStore<User>(dbContext);
         var userManager = await CannotInjectUserStoreDirectlySoWrappingInUserManager(userStore, userNames);
-        var service = new TopicService(repository, voteRepository, userManager.Object,
+        var service = new TopicService(repository, voteRepository, forumPostRepository, userManager.Object,
             allowedPresentationDurationsInMin);
         return service;
     }
@@ -511,9 +544,20 @@ public class TopicServiceTest
         return userManager;
     }
 
-    private class InstanceWrapper(TopicRepository topicRepository, TopicService topicService)
+    private class InstanceWrapper(
+        TopicRepository topicRepository,
+        ForumPostRepository forumPostRepository,
+        TopicService topicService)
     {
         public readonly TopicRepository Repository = topicRepository;
+        public readonly ForumPostRepository ForumPostRepository = forumPostRepository;
         public readonly TopicService Service = topicService;
+    }
+
+    private static async Task<ForumPost[]> FetchAllPostsFromRepositoryForTopic(InstanceWrapper instance, Topic topic)
+    {
+        var posts = await instance.ForumPostRepository.GetPostsForTopic(topic.Id);
+        var postsAsArray = posts as ForumPost[] ?? posts.ToArray();
+        return postsAsArray;
     }
 }

@@ -18,4 +18,6 @@ public static class Constants
         "Die Vortragsidentitifikationsnummer ist obligatorisch, um Vortragsthemen zu modifizieren.";
 
     public const string MissingPresentationTimeErrorMessage = "Gib an, wie lang der Vortrag geht.";
+
+    public const int MaxLengthForumPostContent = 5000;
 }

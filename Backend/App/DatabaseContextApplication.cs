@@ -10,4 +10,5 @@ public class DatabaseContextApplication(DbContextOptions<DatabaseContextApplicat
     public DbSet<Vote> Votes => Set<Vote>();
     public DbSet<SupportTask> SupportTasks => Set<SupportTask>();
     public DbSet<SupportPromise> SupportPromises => Set<SupportPromise>();
+    public DbSet<ForumPost> Posts => Set<ForumPost>();
 }
