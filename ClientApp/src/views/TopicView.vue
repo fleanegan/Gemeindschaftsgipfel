@@ -46,7 +46,7 @@
         </div>
         <div v-if="item.expanded" class="topic-card-details">
           <div class="topic_card_details_owner">
-            <p class='topic-card-presentation-time-in-minutes'>{{item.presentationTimeInMinutes}}'</p>  
+            <p class='topic-card-presentation-time-in-minutes'>{{ item.presentationTimeInMinutes }}'</p>
             <p class="description">{{ item.description }}</p>
             <div class="topic_card_details_owner_actions">
               <button class="action_button" style="margin-bottom: 0.25rem;" @click="removeTopic(item.id)">
@@ -57,6 +57,15 @@
               </button>
             </div>
           </div>
+          <ul>
+            <div v-for="comment in item.comments" :key="comment.createdAt" style="max-width: 90%; margin-bottom: 1.25rem">
+              <div style="display: flex; flex-direction: row">
+                <p style="font-weight: bold">{{ comment.creatorUserName }}</p>
+                <p style="margin-left: .25rem">kommentierte am : {{ formatDateTime(comment.createdAt) }}:</p>
+              </div>
+              <p style="margin-left: 1rem; margin-top: 0.15rem">{{comment.content}}</p>
+            </div>
+          </ul>
         </div>
       </li>
       <li>
@@ -79,10 +88,10 @@
           </button>
         </div>
         <div v-if="item.expanded" class="topic-card-details">
-	  <div style='display: flex; flex-direction: row;'>
-	      <p class='topic-card-presentation-time-in-minutes'>{{item.presentationTimeInMinutes}}'</p>  
-	      <p class="description">{{ item.description }}</p>
-	  </div>
+          <div style='display: flex; flex-direction: row;'>
+            <p class='topic-card-presentation-time-in-minutes'>{{ item.presentationTimeInMinutes }}'</p>
+            <p class="description">{{ item.description }}</p>
+          </div>
           <p class="presenter">{{ item.presenterUserName }}</p>
         </div>
       </li>
@@ -99,6 +108,13 @@
 import {defineComponent} from 'vue';
 import axios from "axios";
 
+interface Comment {
+  id: string;
+  content: string;
+  creatorUserName: string;
+  createdAt: string;
+}
+
 interface MyTopic {
   id: string;
   title: string;
@@ -106,6 +122,7 @@ interface MyTopic {
   votes: number;
   presentationTimeInMinutes: number;
   expanded: boolean;
+  comments: Comment[];
 }
 
 interface ForeignTopic {
@@ -116,6 +133,7 @@ interface ForeignTopic {
   presentationTimeInMinutes: number;
   didIVoteForThis: boolean;
   expanded: boolean;
+  comments: Comment[];
 }
 
 export default defineComponent({
@@ -131,8 +149,17 @@ export default defineComponent({
       this.myTopics = (await axios.get('/api/topic/allOfLoggedIn', {})).data
       this.foreignTopics = (await axios.get('/api/topic/allExceptLoggedIn', {})).data;
     },
-    toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): void {
+    async toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): Promise<void> {
       topic[index].expanded = !topic[index].expanded;
+      if (topic[index].expanded) {
+        topic[index].comments = (await axios.get('/api/topic/comments?TopicId=' + topic[index].id)).data;
+        topic[index].comments.sort((a: Comment, b: Comment) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        console.log(topic[index].comments);
+      } else {
+        topic[index].comments = [];
+      }
     },
     async toggleVote(index: number): Promise<void> {
       if (!this.foreignTopics[index].didIVoteForThis)
@@ -148,6 +175,16 @@ export default defineComponent({
           'topicId': topicId,
         }
       });
+    },
+    formatDateTime(dateTimeString: string): string {
+      const date = new Date(dateTimeString);
+      return new Intl.DateTimeFormat('de-DE', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(date);
     },
     async removeTopic(topicId: string) {
       await axios.delete('api/topic/delete/' + topicId);
