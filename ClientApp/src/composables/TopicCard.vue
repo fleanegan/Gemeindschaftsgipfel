@@ -109,6 +109,7 @@ export default defineComponent({
 .comments-list {
   margin-bottom: 1rem;
   margin-left: 0.5rem;
+  max-width: 100%;
 }
 
 .comment-item {
@@ -135,6 +136,10 @@ export default defineComponent({
 .comment-content {
   margin-left: 1rem;
   margin-top: 0.15rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  max-width: 100%;
 }
 
 .comment-input {
