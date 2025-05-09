@@ -8,10 +8,10 @@ public class ForeignTopicResponseModel(
     string presenterUserName,
     bool didIVoteForThis)
 {
-    public string Id { get; set; } = id;
-    public string Title { get; set; } = title;
-    public int PresentationTimeInMinutes {get; set; } = presentationTimeInMinutes; 
-    public string? Description { get; set; } = description;
-    public string PresenterUserName { get; set; } = presenterUserName;
-    public bool DidIVoteForThis { get; set; } = didIVoteForThis;
+    public string Id { get; } = id;
+    public string Title { get; } = title;
+    public int PresentationTimeInMinutes {get; } = presentationTimeInMinutes; 
+    public string? Description { get; } = description;
+    public string PresenterUserName { get; } = presenterUserName;
+    public bool DidIVoteForThis { get; } = didIVoteForThis;
 }

@@ -128,7 +128,6 @@ public class TopicController(ITopicService service) : AbstractController
         }
     }
 
-
     [Authorize]
     [HttpDelete]
     public async Task<IActionResult> RemoveVote(string id)
@@ -146,6 +145,49 @@ public class TopicController(ITopicService service) : AbstractController
         catch (TopicNotFoundException e)
         {
             return NotFound(e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> AttachForumPost([FromBody] TopicForumPostDto userInput)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var userName = GetUserNameFromAuthorization();
+        try
+        {
+            await service.AddForumPostToTopic(userInput.topicId, userInput.content, userName);
+            return Ok();
+        }
+        catch (TopicNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+    
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetPosts(string topicId)
+    {
+        try
+        {
+            var posts = await service.GetForumPostsForTopic(topicId);
+            var postsResponse = posts.Select(p => new ForumPostResponseModel(
+                p.Id,
+                p.Content,
+                p.Creator.UserName,
+                p.CreatedAt));
+            
+            return Ok(postsResponse);
+        }
+        catch (TopicNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }

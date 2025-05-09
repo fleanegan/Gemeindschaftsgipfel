@@ -13,4 +13,6 @@ public interface ITopicService
     Task<IEnumerable<Topic>> FetchAllOfLoggedIn(string loggedInUserName);
     Task AddTopicVote(string topicId, string loggedInUserName);
     Task RemoveTopicVote(string topicId, string loggedInUserName);
+    Task AddForumPostToTopic(string topicId, string content, string userName);
+    Task<IEnumerable<ForumPost>> GetForumPostsForTopic(string topicId);
 }

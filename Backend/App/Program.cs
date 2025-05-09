@@ -170,6 +170,7 @@ builder.Services.AddScoped<ITopicService>(provider =>
     return new TopicService(
         provider.GetRequiredService<TopicRepository>(),
         provider.GetRequiredService<VoteRepository>(),
+        provider.GetRequiredService<ForumPostRepository>(),
         provider.GetRequiredService<UserManager<User>>(),
         allowedPresentationDurations
         );
