@@ -62,10 +62,23 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['toggle-details'],
+  emits: ['toggle-details', 'comment-sent'],
   methods: {
-    sendComment(topicId: string){
-      axios.post('api/topic/CommentOnTopic/', { TopicId: topicId, Content: this.content })
+    async sendComment(topicId: string){
+      try {
+        if (!this.content) {
+          return;
+        }
+        const response = await axios.post('api/topic/CommentOnTopic/', { TopicId: topicId, Content: this.content });
+        this.$emit('comment-sent', {
+          topicId: topicId,
+          comment: response.data,
+          content: this.content
+        });
+        this.content = '';
+      } catch (error) {
+        console.error('Error sending comment:', error);
+      }
     },
     axios,
     formatDateTime(dateTimeString: string): string {
