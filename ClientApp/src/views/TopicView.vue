@@ -36,38 +36,24 @@
     </div>
     <h2>Meine Vorschläge</h2>
     <ul class="list">
-      <li v-for="(item, index) in myTopics" :key="item.votes" class="card_scroll_container">
-        <p v-if="item===mostLikedTopic && mostLikedTopic.votes > 0" class="most_liked_hint">Publikumsliebling</p>
-        <div :class="{topic_card_header:true, most_liked_highlight:item===mostLikedTopic && mostLikedTopic.votes > 0}">
-          <button class="action_button" @click="toggleDetails(myTopics, index)">
-            <img :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
-          </button>
-          <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
-        </div>
-        <div v-if="item.expanded" class="topic-card-details">
-          <div class="topic_card_details_owner">
-            <p class='topic-card-presentation-time-in-minutes'>{{ item.presentationTimeInMinutes }}'</p>
-            <p class="description">{{ item.description }}</p>
-            <div class="topic_card_details_owner_actions">
-              <button class="action_button" style="margin-bottom: 0.25rem;" @click="removeTopic(item.id)">
-                <img alt="Expand" src='/empty_delete.svg'>
-              </button>
-              <button class="action_button" @click="editTopic(item.id)">
-                <img alt="Expand" src='/empty_edit_no_border.svg'>
-              </button>
-            </div>
+      <TopicCard
+          v-for="(item, index) in myTopics"
+          :key="item.id"
+          :topic="item"
+          :isHighlighted="item === mostLikedTopic && mostLikedTopic?.votes > 0"
+          @toggle-details="toggleDetails(myTopics, index)"
+      >
+        <template #actions>
+          <div class="topic_card_details_owner_actions">
+            <button class="action_button" style="margin-bottom: 0.25rem;" @click="removeTopic(item.id)">
+              <img alt="Delete" src="/empty_delete.svg">
+            </button>
+            <button class="action_button" @click="editTopic(item.id)">
+              <img alt="Edit" src="/empty_edit_no_border.svg">
+            </button>
           </div>
-          <ul>
-            <div v-for="comment in item.comments" :key="comment.createdAt" style="max-width: 90%; margin-bottom: 1.25rem">
-              <div style="display: flex; flex-direction: row">
-                <p style="font-weight: bold">{{ comment.creatorUserName }}</p>
-                <p style="margin-left: .25rem">kommentierte am : {{ formatDateTime(comment.createdAt) }}:</p>
-              </div>
-              <p style="margin-left: 1rem; margin-top: 0.15rem">{{comment.content}}</p>
-            </div>
-          </ul>
-        </div>
-      </li>
+        </template>
+      </TopicCard>
       <li>
         <hr>
         <div id="owner_action" class="my-topics-add-button-container">
@@ -77,25 +63,22 @@
     </ul>
     <h2>Ideen der Anderen</h2>
     <ul class="list">
-      <li v-for="(item, index) in foreignTopics" :key="index" class="card_scroll_container">
-        <div class="topic_card_header">
-          <button class="action_button" @click="toggleDetails(foreignTopics, index)"><img
-              :src="item.expanded ? 'collapse.svg' : '/expand.svg'" alt="Expand">
+      <TopicCard
+          v-for="(item, index) in foreignTopics"
+          :key="item.id"
+          :topic="item"
+          :isHighlighted="false"
+          @toggle-details="toggleDetails(foreignTopics, index)"
+      >
+        <template #action-button>
+          <button class="action_button" @click="toggleVote(index)">
+            <img :src="item.didIVoteForThis ? '/full_heart.svg' : '/empty_heart.svg'" alt="Vote">
           </button>
-          <h4 :class="{topic_card_header_toggled: item.expanded}">{{ item.title }}</h4>
-          <button class="action_button" @click="toggleVote(index)"><img
-              :src="item.didIVoteForThis ? '/full_heart.svg' : '/empty_heart.svg'" alt="Vote">
-          </button>
-        </div>
-        <div v-if="item.expanded" class="topic-card-details">
-          <div style='display: flex; flex-direction: row;'>
-            <p class='topic-card-presentation-time-in-minutes'>{{ item.presentationTimeInMinutes }}'</p>
-            <p class="description">{{ item.description }}</p>
-          </div>
+        </template>
+        <template #presenter>
           <p class="presenter">{{ item.presenterUserName }}</p>
-        </div>
-      </li>
-      <hr>
+        </template>
+      </TopicCard>
       <li class="topic-card-details">Ende der Liste. Danke fürs Abstimmen!
         <br style="margin-bottom: 25rem">
       </li>
@@ -107,36 +90,12 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import axios from "axios";
+import type {ForeignTopic, MyTopic, Comment} from "@/composables/TopicInterfaces";
+import TopicCard from "@/composables/TopicCard.vue";
 
-interface Comment {
-  id: string;
-  content: string;
-  creatorUserName: string;
-  createdAt: string;
-}
-
-interface MyTopic {
-  id: string;
-  title: string;
-  description: string;
-  votes: number;
-  presentationTimeInMinutes: number;
-  expanded: boolean;
-  comments: Comment[];
-}
-
-interface ForeignTopic {
-  id: string;
-  title: string;
-  description: string;
-  presenterUserName: string;
-  presentationTimeInMinutes: number;
-  didIVoteForThis: boolean;
-  expanded: boolean;
-  comments: Comment[];
-}
 
 export default defineComponent({
+  components: {TopicCard},
   data() {
     return {
       foreignTopics: [] as ForeignTopic[],
@@ -156,7 +115,6 @@ export default defineComponent({
         topic[index].comments.sort((a: Comment, b: Comment) => {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
-        console.log(topic[index].comments);
       } else {
         topic[index].comments = [];
       }
