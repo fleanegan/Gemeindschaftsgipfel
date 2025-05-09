@@ -19,5 +19,5 @@ public static class Constants
 
     public const string MissingPresentationTimeErrorMessage = "Gib an, wie lang der Vortrag geht.";
 
-    public const int MaxLengthForumPostContent = 5000;
+    public const int MaxLengthTopicCommentContent = 5000;
 }

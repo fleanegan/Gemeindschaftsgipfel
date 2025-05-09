@@ -9,7 +9,7 @@ namespace Gemeinschaftsgipfel.Services;
 public class TopicService(
     TopicRepository topicRepository,
     VoteRepository voteRepository,
-    ForumPostRepository forumPostRepository,
+    TopicCommentRepository topicCommentRepository,
     UserManager<User> userManager,
     List<int> allowedPresentationDurations)
     : ITopicService
@@ -85,19 +85,18 @@ public class TopicService(
         await topicRepository.Remove(topic);
     }
 
-    public async Task AddForumPostToTopic(string topicId, string content, string userName)
+    public async Task CommentOnTopic(string topicId, string content, string userName)
     {
         var topic = await topicRepository.FetchBy(topicId);
         if (topic == null)
             throw new TopicNotFoundException(topicId);
         var user = await userManager.FindByNameAsync(userName);
-        var post = ForumPost.Create(content, user!, topic);
-        await forumPostRepository.Create(post);
+        await topicCommentRepository.Save(TopicComment.Create(content, user!, topic));
     }
 
-    public async Task<IEnumerable<ForumPost>> GetForumPostsForTopic(string topicId)
+    public async Task<IEnumerable<TopicComment>> GetCommentsForTopic(string topicId)
     {
-        return await forumPostRepository.GetPostsForTopic(topicId);
+        return await topicCommentRepository.GetCommentsForTopic(topicId);
     }
 
     private void PreventForbiddenPresentationDurations(int presentationTimeInMinutes)

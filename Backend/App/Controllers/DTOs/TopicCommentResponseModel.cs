@@ -1,6 +1,6 @@
 namespace Gemeinschaftsgipfel.Controllers.DTOs;
 
-public class ForumPostResponseModel(
+public class TopicCommentResponseModel(
     string id,
     string content,
     string creatorUserName,

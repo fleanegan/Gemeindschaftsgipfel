@@ -14,6 +14,6 @@ public interface ITopicService
     Task AddTopicVote(string topicId, string loggedInUserName);
     Task RemoveTopicVote(string topicId, string loggedInUserName);
     List<int> GetLegalPresentationDurations();
-    Task AddForumPostToTopic(string topicId, string content, string userName);
-    Task<IEnumerable<ForumPost>> GetForumPostsForTopic(string topicId);
+    Task CommentOnTopic(string topicId, string content, string userName);
+    Task<IEnumerable<TopicComment>> GetCommentsForTopic(string topicId);
 }
