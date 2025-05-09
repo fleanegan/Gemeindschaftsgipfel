@@ -16,27 +16,26 @@
       </div>
       <slot name="presenter"></slot>
     </div>
-    <div v-if="topic.comments && topic.comments.length > 0">
-      <p style="margin-left: 3rem; margin-top: .1rem">Kommentare:</p>
-      <ul style="margin-bottom: 1rem; margin-left: .5rem">
-        <div v-for="comment in topic.comments" :key="comment.createdAt"
-             style="max-width: 90%; margin-left: 0.5rem; font-size: small; margin-top: 0.25rem">
-          <div style="display: flex; flex-direction: row">
-            <p style="font-weight: bold">{{ comment.creatorUserName }}</p>
-            <p style="margin-left: .25rem">({{ formatDateTime(comment.createdAt) }})</p>
-          </div>
-          <p style="margin-left: 1rem; margin-top: 0.15rem">{{ comment.content }}</p>
-        </div>
-      </ul>
-      <div style="display: flex; flex-direction: row">
-        <input v-model="content"
-               style="border-color: var(--main-color-primary);color: var(--main-color-primary);margin-left: 3rem; border-style: solid; border-width: 0.01rem; border-radius: 0.2rem;"
-               placeholder="Kommentar schreiben ..."/>
-        <button class="action_button" style="color: var(--color-primary)"
-                @click="sendComment(topic.id)">Senden
-        </button>
+    <div v-if="topic.comments && topic.comments.length > 0" class="comments-container">
+  <p class="comments-title">Kommentare:</p>
+  <ul class="comments-list">
+    <div v-for="comment in topic.comments" :key="comment.createdAt" class="comment-item">
+      <div class="flex-row">
+        <p class="comment-author">{{ comment.creatorUserName }}</p>
+        <p class="comment-timestamp">({{ formatDateTime(comment.createdAt) }})</p>
       </div>
+      <p class="comment-content">{{ comment.content }}</p>
     </div>
+  </ul>
+  <div class="flex-row" style="margin-bottom: 2rem">
+    <input v-model="content"
+           class="comment-input"
+           placeholder="Kommentar schreiben ..."/>
+    <button class="action_button comment-send-button"
+            @click="sendComment(topic.id)">Senden
+    </button>
+  </div>
+</div>
 
   </li>
 </template>
@@ -97,3 +96,57 @@ export default defineComponent({
 
 <style scoped src="src/assets/topics.css"></style>
 <style scoped src="src/assets/instructions.css"></style>
+<style scoped>
+.comments-container {
+  margin-top: 0.5rem;
+}
+
+.comments-title {
+  margin-left: 3rem;
+  margin-top: 0.1rem;
+}
+
+.comments-list {
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+}
+
+.comment-item {
+  max-width: 90%;
+  margin-left: 0.5rem;
+  font-size: small;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.comment-author {
+  font-weight: bold;
+}
+
+.comment-timestamp {
+  margin-left: 0.25rem;
+}
+
+.comment-content {
+  margin-left: 1rem;
+  margin-top: 0.15rem;
+}
+
+.comment-input {
+  border-color: var(--main-color-primary);
+  color: var(--main-color-primary);
+  margin-left: 3rem;
+  border-style: solid;
+  border-width: 0.01rem;
+  border-radius: 0.2rem;
+}
+
+.comment-send-button {
+  color: var(--color-primary);
+}
+</style>

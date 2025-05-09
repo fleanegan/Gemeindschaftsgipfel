@@ -110,17 +110,30 @@ export default defineComponent({
       this.myTopics = (await axios.get('/api/topic/allOfLoggedIn', {})).data
       this.foreignTopics = (await axios.get('/api/topic/allExceptLoggedIn', {})).data;
     },
-    async toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): Promise<void> {
-      topic[index].expanded = !topic[index].expanded;
-      if (topic[index].expanded) {
-        topic[index].comments = (await axios.get('/api/topic/comments?TopicId=' + topic[index].id)).data;
-        topic[index].comments.sort((a: Comment, b: Comment) => {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-      } else {
-        topic[index].comments = [];
-      }
-    },
+async toggleDetails(topic: MyTopic[] | ForeignTopic[], index: number): Promise<void> {
+  if (topic[index].isLoading) return;
+  try {
+    topic[index].expanded = !topic[index].expanded;
+    if (topic[index].expanded) {
+      topic[index].isLoading = true;
+      const response = await axios.get('/api/topic/comments?TopicId=' + topic[index].id);
+      topic[index].comments = response.data;
+
+      topic[index].comments.sort((a: Comment, b: Comment) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+    } else {
+      topic[index].comments = [];
+    }
+  } catch (error) {
+    console.error('Error toggling details:', error);
+    // Revert expanded state on error
+    topic[index].expanded = !topic[index].expanded;
+  } finally {
+    // Clear loading state
+    topic[index].isLoading = false;
+  }
+},
     async toggleVote(index: number): Promise<void> {
       if (!this.foreignTopics[index].didIVoteForThis)
         await axios.post('/api/topic/addVote', {"TopicId": this.foreignTopics[index].id})
