@@ -3,7 +3,7 @@ using static Gemeinschaftsgipfel.Properties.Constants;
 
 namespace Gemeinschaftsgipfel.Models;
 
-public class ForumPost
+public class TopicComment
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Content { get; set; }
@@ -11,17 +11,17 @@ public class ForumPost
     public User Creator { get; set; }
     public Topic Topic { get; set; }
 
-    private ForumPost() { }
+    private TopicComment() { }
 
-    public static ForumPost Create(string content, User creator, Topic topic)
+    public static TopicComment Create(string content, User creator, Topic topic)
     {
         if (string.IsNullOrWhiteSpace(content))
             throw new ValidationException("Content cannot be empty");
         
-        if (content.Length > MaxLengthForumPostContent)
+        if (content.Length > MaxLengthTopicCommentContent)
             throw new ValidationException("Content is too long (max 5000 characters)");
 
-        return new ForumPost
+        return new TopicComment
         {
             Content = content,
             CreatedAt = DateTime.UtcNow,

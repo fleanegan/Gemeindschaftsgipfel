@@ -472,7 +472,7 @@ public class TopicServiceTest
 
         async Task Action()
         {
-            await instance.Service.AddForumPostToTopic(nonExistingId, "Test content", loggedInUserName);
+            await instance.Service.CommentOnTopic(nonExistingId, "Test content", loggedInUserName);
         }
 
         await Assert.ThrowsAsync<TopicNotFoundException>(Action);
@@ -487,7 +487,7 @@ public class TopicServiceTest
             new TopicCreationDto("Test Topic", AnAllowedPresentationTime, "Test Description"), 
             loggedInUserName);
         
-        await instance.Service.AddForumPostToTopic(topic.Id, "Test post content", loggedInUserName);
+        await instance.Service.CommentOnTopic(topic.Id, "Test post content", loggedInUserName);
 
         var postsAsArray = await FetchAllPostsFromRepositoryForTopic(instance, topic);
         Assert.Single(postsAsArray);
@@ -506,19 +506,19 @@ public class TopicServiceTest
     {
         var dbContext = TestHelper.GetDbContext<DatabaseContextApplication>();
         var topicRepository = new TopicRepository(dbContext);
-        var postRepository = new ForumPostRepository(dbContext);
+        var postRepository = new TopicCommentRepository(dbContext);
         var topicService = await GetService(dbContext, availableUserNames, topicRepository, postRepository,
             allowedPresentationDurationsInMin);
         return new InstanceWrapper(topicRepository, postRepository, topicService);
     }
 
     private static async Task<TopicService> GetService(DatabaseContextApplication dbContext, List<string> userNames,
-        TopicRepository repository, ForumPostRepository forumPostRepository, List<int> allowedPresentationDurationsInMin)
+        TopicRepository repository, TopicCommentRepository topicCommentRepository, List<int> allowedPresentationDurationsInMin)
     {
         var voteRepository = new VoteRepository(dbContext);
         var userStore = new UserStore<User>(dbContext);
         var userManager = await CannotInjectUserStoreDirectlySoWrappingInUserManager(userStore, userNames);
-        var service = new TopicService(repository, voteRepository, forumPostRepository, userManager.Object,
+        var service = new TopicService(repository, voteRepository, topicCommentRepository, userManager.Object,
             allowedPresentationDurationsInMin);
         return service;
     }
@@ -537,18 +537,18 @@ public class TopicServiceTest
 
     private class InstanceWrapper(
         TopicRepository topicRepository,
-        ForumPostRepository forumPostRepository,
+        TopicCommentRepository topicCommentRepository,
         TopicService topicService)
     {
         public readonly TopicRepository Repository = topicRepository;
-        public readonly ForumPostRepository ForumPostRepository = forumPostRepository;
+        public readonly TopicCommentRepository TopicCommentRepository = topicCommentRepository;
         public readonly TopicService Service = topicService;
     }
 
-    private static async Task<ForumPost[]> FetchAllPostsFromRepositoryForTopic(InstanceWrapper instance, Topic topic)
+    private static async Task<TopicComment[]> FetchAllPostsFromRepositoryForTopic(InstanceWrapper instance, Topic topic)
     {
-        var posts = await instance.ForumPostRepository.GetPostsForTopic(topic.Id);
-        var postsAsArray = posts as ForumPost[] ?? posts.ToArray();
+        var posts = await instance.TopicCommentRepository.GetCommentsForTopic(topic.Id);
+        var postsAsArray = posts as TopicComment[] ?? posts.ToArray();
         return postsAsArray;
     }
 }

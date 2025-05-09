@@ -158,6 +158,7 @@ builder.Services.AddRateLimiter(rateLimiterOptions =>
     });
 });
 builder.Services.AddScoped<TopicRepository, TopicRepository>();
+builder.Services.AddScoped<TopicCommentRepository, TopicCommentRepository>();
 builder.Services.AddScoped<VoteRepository, VoteRepository>();
 builder.Services.AddScoped<SupportPromiseRepository, SupportPromiseRepository>();
 builder.Services.AddScoped<SupportTaskRepository, SupportTaskRepository>();
@@ -170,7 +171,7 @@ builder.Services.AddScoped<ITopicService>(provider =>
     return new TopicService(
         provider.GetRequiredService<TopicRepository>(),
         provider.GetRequiredService<VoteRepository>(),
-        provider.GetRequiredService<ForumPostRepository>(),
+        provider.GetRequiredService<TopicCommentRepository>(),
         provider.GetRequiredService<UserManager<User>>(),
         allowedPresentationDurations
         );

@@ -134,7 +134,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                         throw new UnauthorizedTopicModificationException(topicId);
                 });
             });
-        _mockTopicService.Setup(c => c.AddForumPostToTopic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockTopicService.Setup(c => c.CommentOnTopic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(async (string topicId, string content, string userName) =>
             {
                 await Task.Run(() =>
@@ -143,7 +143,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
                         throw new TopicNotFoundException(topicId);
                 });
             });
-        _mockTopicService.Setup(c => c.GetForumPostsForTopic(It.IsAny<string>())).ReturnsAsync((String topicId) =>
+        _mockTopicService.Setup(c => c.GetCommentsForTopic(It.IsAny<string>())).ReturnsAsync((String topicId) =>
         {
             if (topicId == NonExistingDummyId)
                 throw new TopicNotFoundException(topicId);
@@ -541,7 +541,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             content = "Test content"
         };
 
-        var response = await client.PostAsync("/topic/AttachPost", TestHelper.EncodeBody(newPost));
+        var response = await client.PostAsync("/topic/CommentOnTopic", TestHelper.EncodeBody(newPost));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -552,7 +552,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var client = _factoryWithAuthorization.CreateClient();
         var jsonContent = TestHelper.EncodeBody(new { });
 
-        var response = await client.PostAsync("/topic/AttachPost", jsonContent);
+        var response = await client.PostAsync("/topic/CommentOnTopic", jsonContent);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -567,11 +567,11 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             content = "Test content"
         };
 
-        var response = await client.PostAsync("/topic/AttachPost", TestHelper.EncodeBody(newPost));
+        var response = await client.PostAsync("/topic/CommentOnTopic", TestHelper.EncodeBody(newPost));
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         _mockTopicService?.Verify(
-            x => x.AddForumPostToTopic(NonExistingDummyId, "Test content", AutoAuthorizeMiddleware.UserName),
+            x => x.CommentOnTopic(NonExistingDummyId, "Test content", AutoAuthorizeMiddleware.UserName),
             Times.Once);
     }
 
@@ -585,11 +585,11 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
             content = "Test content"
         };
 
-        var response = await client.PostAsync("/topic/AttachPost", TestHelper.EncodeBody(newPost));
+        var response = await client.PostAsync("/topic/CommentOnTopic", TestHelper.EncodeBody(newPost));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         _mockTopicService?.Verify(
-            x => x.AddForumPostToTopic(HappyPathDummyId, "Test content", AutoAuthorizeMiddleware.UserName),
+            x => x.CommentOnTopic(HappyPathDummyId, "Test content", AutoAuthorizeMiddleware.UserName),
             Times.Once);
     }
 
@@ -598,7 +598,7 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     {
         var client = _factoryWithoutAuthorization.CreateClient();
 
-        var response = await client.GetAsync($"/topic/GetPosts?topicId={HappyPathDummyId}");
+        var response = await client.GetAsync($"/topic/Comments?topicId={HappyPathDummyId}");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -609,10 +609,10 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
         var client = _factoryWithAuthorization.CreateClient();
 
 
-        var response = await client.GetAsync($"/topic/GetPosts?topicId={NonExistingDummyId}");
+        var response = await client.GetAsync($"/topic/Comments?topicId={NonExistingDummyId}");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        _mockTopicService?.Verify(x => x.GetForumPostsForTopic(NonExistingDummyId), Times.Once);
+        _mockTopicService?.Verify(x => x.GetCommentsForTopic(NonExistingDummyId), Times.Once);
     }
 
     [Fact]
@@ -620,9 +620,9 @@ public class TopicControllerTest : IClassFixture<WebApplicationFactory<Program>>
     {
         var client = _factoryWithAuthorization.CreateClient();
 
-        var response = await client.GetAsync($"/topic/GetPosts?topicId={HappyPathDummyId}");
+        var response = await client.GetAsync($"/topic/Comments?topicId={HappyPathDummyId}");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        _mockTopicService?.Verify(x => x.GetForumPostsForTopic(HappyPathDummyId), Times.Once);
+        _mockTopicService?.Verify(x => x.GetCommentsForTopic(HappyPathDummyId), Times.Once);
     }
 }
