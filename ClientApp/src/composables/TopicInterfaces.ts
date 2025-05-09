@@ -13,6 +13,7 @@ export interface MyTopic {
   presentationTimeInMinutes: number;
   expanded: boolean;
   comments: Comment[];
+  isLoading: boolean;
 }
 
 export interface ForeignTopic {
@@ -24,4 +25,5 @@ export interface ForeignTopic {
   didIVoteForThis: boolean;
   expanded: boolean;
   comments: Comment[];
+  isLoading: boolean;
 }
