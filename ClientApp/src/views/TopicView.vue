@@ -42,6 +42,7 @@
           :topic="item"
           :isHighlighted="item === mostLikedTopic && mostLikedTopic?.votes > 0"
           @toggle-details="toggleDetails(myTopics, index)"
+          @comment-sent="handleCommentSent"
       >
         <template #actions>
           <div class="topic_card_details_owner_actions">
@@ -69,6 +70,7 @@
           :topic="item"
           :isHighlighted="false"
           @toggle-details="toggleDetails(foreignTopics, index)"
+          @comment-sent="handleCommentSent"
       >
         <template #action-button>
           <button class="action_button" @click="toggleVote(index)">
@@ -156,7 +158,30 @@ export default defineComponent({
     },
     scrollToTop() {
       scrollTo(0, 0);
-    }
+    },
+    async handleCommentSent(payload: { topicId: string, comment: Comment, content: string }): Promise<void> {
+      const updateTopicComments = (topics: (MyTopic | ForeignTopic)[]) => {
+        const topicIndex = topics.findIndex(t => t.id === payload.topicId);
+        if (topicIndex !== -1 && topics[topicIndex].expanded) {
+          if (payload.comment) {
+            topics[topicIndex].comments.unshift(payload.comment);
+          } else {
+            this.refreshTopicComments(topics[topicIndex]);
+          }
+        }
+      };
+
+      updateTopicComments(this.myTopics);
+      updateTopicComments(this.foreignTopics);
+    },
+    async refreshTopicComments(topic: MyTopic | ForeignTopic): Promise<void> {
+      if (topic.expanded) {
+        topic.comments = (await axios.get('/api/topic/comments?TopicId=' + topic.id)).data;
+        topic.comments.sort((a: Comment, b: Comment) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+      }
+    },
   },
   computed: {
     mostLikedTopic() {
@@ -210,3 +235,4 @@ export default defineComponent({
 <style scoped src="src/assets/topics.css"></style>
 <style scoped src="src/assets/instructions.css">
 </style>
+
