@@ -20,10 +20,10 @@
         />
       </li>
     </ul>
-    <h2>Hauptverantwortliche</h2>
+    <h2><span style="font-weight: bold">NEU!</span> Hauptverantwortliche</h2>
     <p class="support_description">Hierfür braucht es etwas Engagement, und der Ruhm wird ewig währen.
       Zu Anfang des Festivals werden wir dich in Alles einweihen, was du wissen musst, damit du den spannenden Aufgaben
-      problemlos Herr wirst.
+      problemlos Herr wirst und dann in der Lage bist, alle anderen Teilnehmer:innen in allen Fragen rund um deine Verantwortlichkeit zu unterstützen.
     </p>
     <ul class="list">
       <li v-for="(item, index) in singleSupportTasks" :key="index" class="card_scroll_container">

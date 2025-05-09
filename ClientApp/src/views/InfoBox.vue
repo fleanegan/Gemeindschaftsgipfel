@@ -36,7 +36,7 @@ export default defineComponent({
             class="path"
             d="M30,30 L30,170 L170,170 L170,30 Z"
             fill="none"
-            pathLength="0.3"
+            pathLength="0.2888"
             stroke="white"
             stroke-width="5"
             vector-effect="non-scaling-stroke"

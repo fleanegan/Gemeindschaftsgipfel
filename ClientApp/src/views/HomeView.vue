@@ -1,10 +1,10 @@
 <template>
   <div class="title">
-    <p>Gemeinschaftsgipfel</p>
+    <p>Gemeinschaftsgipfel<span style="display: block; margin-bottom: 0.5rem;">2025</span></p>
     <img v-if="isNotScrolled" alt="arrow" class="animate_scroll_down_motivator" src="/down.svg" style="width: 2rem">
   </div>
   <div id="action_container" class="action_container">
-    <img alt="Icon" src="/icon.svg" style="width: 100%; height:100%;"></img>
+    <img alt="Icon" src="/icon.svg" style="width: 100%; height:100%;"/>
   </div>
   <div :class="{'slider':true, 'key_information_slider': true}"></div>
   <info-box :data="secretData" :globalProgress="progress.infoScreen"></info-box>
@@ -255,6 +255,12 @@ background-color: var(--main-color-primary);
   margin: 2rem 2rem 0 2rem;
   max-width: 45rem;
 
+}
+
+.title p {
+  margin-top: 25rem;
+  font-size: 2rem;
+  text-align: center;
 }
 
 </style>
