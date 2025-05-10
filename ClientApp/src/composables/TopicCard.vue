@@ -15,28 +15,27 @@
         <slot name="actions"></slot>
       </div>
       <slot name="presenter"></slot>
-    </div>
-    <div v-if="topic.comments && topic.comments.length > 0" class="comments-container">
-  <p class="comments-title">Kommentare:</p>
-  <ul class="comments-list">
-    <div v-for="comment in topic.comments" :key="comment.createdAt" class="comment-item">
-      <div class="flex-row">
-        <p class="comment-author">{{ comment.creatorUserName }}</p>
-        <p class="comment-timestamp">({{ formatDateTime(comment.createdAt) }})</p>
+      <div class="comments-container">
+        <p class="comments-title">Kommentare:</p>
+        <ul class="comments-list">
+          <div v-for="comment in topic.comments" :key="comment.createdAt" class="comment-item">
+            <div class="flex-row">
+              <p class="comment-author">{{ comment.creatorUserName }}</p>
+              <p class="comment-timestamp">({{ formatDateTime(comment.createdAt) }})</p>
+            </div>
+            <p class="comment-content">{{ comment.content }}</p>
+          </div>
+        </ul>
+        <div class="flex-row" style="margin-bottom: 2rem">
+          <input v-model="content"
+                 class="comment-input"
+                 placeholder="Kommentar schreiben ..."/>
+          <button class="action_button comment-send-button"
+                  @click="sendComment(topic.id)">Senden
+          </button>
+        </div>
       </div>
-      <p class="comment-content">{{ comment.content }}</p>
     </div>
-  </ul>
-  <div class="flex-row" style="margin-bottom: 2rem">
-    <input v-model="content"
-           class="comment-input"
-           placeholder="Kommentar schreiben ..."/>
-    <button class="action_button comment-send-button"
-            @click="sendComment(topic.id)">Senden
-    </button>
-  </div>
-</div>
-
   </li>
 </template>
 
@@ -63,12 +62,12 @@ export default defineComponent({
   },
   emits: ['toggle-details', 'comment-sent'],
   methods: {
-    async sendComment(topicId: string){
+    async sendComment(topicId: string) {
       try {
         if (!this.content) {
           return;
         }
-        const response = await axios.post('api/topic/CommentOnTopic/', { TopicId: topicId, Content: this.content });
+        const response = await axios.post('api/topic/CommentOnTopic/', {TopicId: topicId, Content: this.content});
         this.$emit('comment-sent', {
           topicId: topicId,
           comment: response.data,
