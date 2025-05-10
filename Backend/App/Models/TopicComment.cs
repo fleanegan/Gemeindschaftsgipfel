@@ -24,7 +24,7 @@ public class TopicComment
         return new TopicComment
         {
             Content = content,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.Now,
             Creator = creator,
             Topic = topic
         };
