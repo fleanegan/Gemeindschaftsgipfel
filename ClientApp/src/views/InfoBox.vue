@@ -172,7 +172,7 @@ th:nth-child(2), td:nth-child(2) {
   position: relative;
   margin: auto;
   width: 100%;
-  max-width: 23rem;
+  max-width: min(26rem, 80vw);
   min-width: min(300px, 90vw);
   padding: 0;
   box-sizing: border-box;
