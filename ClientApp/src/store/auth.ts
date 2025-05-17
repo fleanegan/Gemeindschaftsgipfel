@@ -9,7 +9,7 @@ export const useAuthStore = defineStore({
     actions: {
         login(token: string, userName: string) {
             this.token = token;
-            this.userName = userName;
+            this.userName = userName.toLowerCase();
         },
         logout() {
             this.token = null;
