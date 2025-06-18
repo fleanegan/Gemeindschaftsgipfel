@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="card_action_button_container">
-        <div @mouseenter="$emit('update:showSupporter', true)" @mouseleave="$emit('update:showSupporter', false)">
+        <div @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
           <img v-if="isUserSubscribed(task)" src="/helper_filled.svg" alt="helper">
           <img v-else src="/helper.svg" alt="helper">
         </div>
@@ -70,7 +70,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
+  setup(props, {emit}) {
     const calcProgressBarWidth = (task: SupportTask): string => {
       if (task.requiredSupporters === 0)
         return '0';
@@ -85,14 +85,20 @@ export default defineComponent({
         result = 100
       return result + "%";
     };
-
     const isUserSubscribed = (task: SupportTask): boolean => {
       return task.supporterUserNames.includes(props.userName);
     };
-
+    const handleMouseEnter = () :void => {
+  	emit('show-supporter', true);
+    }
+    const handleMouseLeave = (): void => {
+  	emit('hide-supporter', true);
+    }
     return {
       calcProgressBarWidth,
       isUserSubscribed,
+      handleMouseEnter,
+      handleMouseLeave,
     };
   }
 });

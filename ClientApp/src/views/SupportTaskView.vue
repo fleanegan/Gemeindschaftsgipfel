@@ -17,6 +17,8 @@
           :taskIndex="index"
           :toggleSupporting="toggleSupporting"
           :user-name="userName!"
+          @show-supporter="item.showSupporter=true"
+	  @hide-supporter="item.showSupporter=false"
         />
       </li>
     </ul>
@@ -33,6 +35,8 @@
           :taskIndex="index"
           :toggleSupporting="toggleSupporting"
           :user-name="userName!"
+          @show-supporter="item.showSupporter=true"
+	  @hide-supporter="item.showSupporter=false"
         />
       </li>
     </ul>
